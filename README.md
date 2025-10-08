@@ -1,5 +1,13 @@
 # project-b02
 Tugas Project per Kelompok
+Jonathan Hans Emanuelle 2406414025
+Alexius Christhoper Wijaya 2406496164
+Jovian Felix Rustan 2406360016
+Aufa Daffa' Satriatama 2406426321
+Mirza Radithya Ramadhana 2406405563 
+jovanus irwan susanto 2406434140
+
+
 
 Deskripsi
 
@@ -15,6 +23,8 @@ Ballistic juga menghadirkan fitur saldo dan pembayaran internal, di mana penggun
 Pada bagian profil akun, pengguna dapat melihat saldo yang dimiliki, deskripsi akun, daftar barang yang telah dibeli, serta daftar produk yang dijual (jika pengguna juga memiliki akun penjual). Jika pengguna hanya berperan sebagai pembeli dan belum memiliki akun penjual, maka akan muncul pesan “Maaf, Anda belum membuat akun penjualan.”. ”Sebaliknya, jika pengguna adalah penjual tetapi belum pernah membeli barang, maka akan muncul pesan “Maaf, Anda belum melakukan pembelian barang.”. Selain itu, tombol Beli akan otomatis dinonaktifkan apabila penjual mencoba membeli produknya sendiri, untuk mencegah transaksi tidak valid.
 
 Dengan seluruh fitur tersebut, Ballistic tidak hanya berfungsi sebagai toko peralatan olahraga biasa, tetapi juga memberikan pengalaman berbelanja yang cerdas, efisien, dan aman. Aplikasi ini membantu pengguna mendapatkan produk yang sesuai kebutuhan mereka, mempermudah penjual mengelola barang dagangan, dan menciptakan ekosistem jual beli alat olahraga yang terpercaya dan mudah digunakan.
+
+
 
 Modul Produk
 
@@ -49,3 +59,6 @@ Selain itu, modul ini dilengkapi dengan *dashboard analitik* yang menampilkan da
 
 
 DATASET : https://www.kaggle.com/datasets/larysa21/retail-data-american-football-gear-sales
+
+PWS : https://pbp.cs.ui.ac.id/jovian.felix/ballistic
+
