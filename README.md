@@ -5,7 +5,7 @@ Alexius Christhoper Wijaya 2406496164
 Jovian Felix Rustan 2406360016
 Aufa Daffa' Satriatama 2406426321
 Mirza Radithya Ramadhana 2406405563 
-jovanus irwan susanto 2406434140
+Jovanus Irwan Susanto 2406434140
 
 
 
@@ -62,3 +62,26 @@ DATASET : https://www.kaggle.com/datasets/larysa21/retail-data-american-football
 
 PWS : https://pbp.cs.ui.ac.id/jovian.felix/ballistic
 
+Penjelasan User
+
+1. Admin
+Role Admin adalah peran dengan tingkat akses tertinggi. User dengan role ini bertanggung jawab untuk mengawasi dan mengontrol aktivitas platform, khususnya yang berkaitan dengan transaksi.
+Hak akses utama:
+- Melihat daftar transaksi yang sedang menunggu persetujuan. Ini berarti admin dapat melakukan verifikasi terhadap transaksi sebelum transaksi tersebut benar-benar dianggap sah.
+- Memberikan keputusan terhadap transaksi, apakah disetujui atau ditolak, tergantung pada hasil pemeriksaan validitas transaksi.
+- Mengakses data statistik platform, misalnya: Jumlah akun yang terdaftar, total transaksi yang terjadi dalam sistem (baik sukses maupun gagal), serta Daftar produk paling populer atau paling banyak dibeli, yang bisa digunakan untuk analisis tren pembelian.
+Batasan:
+- User yang sudah memiliki role Admin tidak bisa memiliki role lain seperti Penjual atau Pembeli.
+Tujuan utama: menjaga transparansi, keamanan, dan kelancaran jalannya sistem transaksi.
+
+2. Penjual
+Role Penjual adalah peran yang memungkinkan user untuk menawarkan produk atau jasa di dalam platform. User dengan role ini bertindak sebagai penyedia barang/jasa yang dapat diakses oleh pembeli. User dengan role Penjual masih dapat memiliki role lain, yaitu Pembeli, sehingga mereka tidak hanya bisa menjual, tapi juga bisa membeli produk dari penjual lain.
+Hak akses utama: Membuat dan mengelola daftar produk yang dijual, termasuk menambahkan deskripsi, harga, stok, dan gambar produk.
+Tujuan utama: memberi kesempatan kepada user untuk membuka usaha atau berjualan melalui platform.
+
+3. Pembeli
+Role Pembeli adalah peran yang memungkinkan user untuk melakukan aktivitas pembelian produk atau jasa yang ditawarkan oleh para penjual di dalam platform. User dengan role Pembeli dapat juga memiliki role Penjual, sehingga memungkinkan mereka untuk menjadi pembeli sekaligus penjual di platform.
+Hak akses utama:
+- Melihat katalog produk yang tersedia.
+- Melakukan transaksi pembelian dengan memilih produk dan melakukan pembayaran.
+Tujuan utama: memberikan kemudahan kepada user dalam berbelanja berbagai produk sesuai kebutuhan mereka.
