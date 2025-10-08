@@ -53,7 +53,7 @@ Modul Voucher juga bersifat eksklusif untuk admin dan digunakan untuk mengatur s
 
 DATASET : https://www.kaggle.com/datasets/larysa21/retail-data-american-football-gear-sales
 
-PWS : https://pbp.cs.ui.ac.id/jovian.felix/ballistic
+PWS : https://jovian-felix-ballistic.pbp.cs.ui.ac.id/
 
 Penjelasan User
 
