@@ -1,4 +1,5 @@
-{% load static %} <!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +9,50 @@
     <title>{% block title %}Modern Shop{% endblock %}</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        nav ul li.dropdown {
+            position: relative; /* Diperlukan agar menu 'absolute' di bawahnya */
+        }
+
+        nav ul li .dropdown-menu {
+            display: none; /* Sembunyikan by default */
+            position: absolute; /* Posisikan 'melayang' di bawah parent */
+            top: 100%; /* Tepat di bawah link parent */
+            left: 0;
+            background-color: #fff; /* Latar belakang putih */
+            border: 1px solid #f0f0f0; /* Garis batas */
+            list-style: none; /* Hilangkan bullet points */
+            padding: 10px 0; /* Padding atas/bawah */
+            margin: 0;
+            min-width: 200px; /* Lebar minimum dropdown */
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Bayangan halus */
+        }
+
+        /* Tampilkan dropdown saat parent-nya (li.dropdown) di-hover */
+        nav ul li.dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            width: 100%;
+        }
+
+        .dropdown-menu li a {
+            display: block; /* Buat link jadi full-width */
+            padding: 8px 20px; /* Padding di dalam link dropdown */
+            color: #555;
+            font-size: 0.8rem;
+            text-transform: none; /* Tidak perlu uppercase di dropdown */
+            font-weight: 400; /* Font weight normal */
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: #f9f9f9; /* Ganti warna background saat hover */
+            color: #000;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,9 +63,11 @@
                 <a href="#">[p]</a>
                 <a href="#">[in]</a>
             </div>
-            <div class="logo">
+            
+            <a href="{% url 'main:main-view' %}" class="logo">
                 <strong>M</strong> MODERN SHOP
-            </div>
+            </a>
+            
             <div class="user-icons">
                 <a href="#">🔍</a>
                 <a href="#">👤</a>
@@ -31,16 +78,31 @@
 
     <nav>
         <ul>
-            <li><a href="#" class="active">HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
             <li><a href="#">SHOP</a></li>
-            <li><a href="#">FORUM</a></li>
+            
+            <li class="dropdown">
+                <a href="#">PRODUCTS ▾</a> <ul class="dropdown-menu">
+                    
+                    {% for category in all_categories %}
+                        <li><a href="#">{{ category.name }}</a></li>
+                    {% endfor %}
+
+                    <li><a href="#">Contoh: Baju</a></li>
+                    <li><a href="#">Contoh: Celana</a></li>
+                    <li><a href="#">Contoh: Sepatu</a></li>
+                </ul>
+            </li>
+            
             <li><a href="#">NEWS</a></li>
             <li><a href="#">ABOUT</a></li>
         </ul>
     </nav>
+
     <main>
         {% block content %}
         {% endblock %}
     </main>
-    </body>
+    
+</body>
 </html>
