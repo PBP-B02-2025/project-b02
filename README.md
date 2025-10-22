@@ -5,77 +5,60 @@ Alexius Christhoper Wijaya 2406496164
 Jovian Felix Rustan 2406360016
 Aufa Daffa' Satriatama 2406426321
 Mirza Radithya Ramadhana 2406405563 
-Jovanus Irwan Susanto 2406434140
+jovanus irwan susanto 2406434140
 
 
 
 Deskripsi
 
-Ballistic adalah sebuah website e-commerce peralatan olahraga yang dirancang untuk mempermudah pengguna dalam membeli, menjual, dan berinteraksi seputar perlengkapan olahraga secara praktis dan personal. Platform ini ditujukan bagi pecinta olahraga maupun penjual perlengkapan olahraga yang ingin memiliki satu tempat untuk bertransaksi, berbagi pengalaman, serta mengelola akun dan produk dengan efisien. Produk yang dijual meliputi baju olahraga, celana, bola, botol minum, dan kaus kaki, lengkap dengan informasi harga, stok, ukuran, dan ulasan pengguna lainnya.
+Ballistic adalah sebuah website e-commerce peralatan olahraga yang dirancang untuk mempermudah pengguna dalam membeli dan menjual perlengkapan olahraga dengan cara yang praktis, personal, dan interaktif. Website ini ditujukan untuk para pecinta olahraga maupun penjual perlengkapan olahraga yang ingin memiliki satu tempat untuk melakukan digital transaksi, rekomendasi produk, serta pengelolaan akun yang efisien. Kategori utama produk yang dijual meliputi baju olahraga, celana, botol minum, bola, dan kaus kaki. Setiap produk dapat ditampilkan lengkap dengan ukuran, harga, stok, serta ulasan pengguna lainnya.
 
-Salah satu keunggulan Ballistic adalah adanya modul rekomendasi ukuran berbasis berat dan tinggi badan, di mana pengguna cukup memasukkan data tubuh mereka untuk mendapatkan rekomendasi ukuran yang sesuai (S, M, L, atau XL). Fitur ini membantu pengguna memilih produk dengan lebih akurat dan mengurangi risiko kesalahan ukuran saat berbelanja online. Selain itu, terdapat modul review produk yang memungkinkan pengguna memberikan komentar dan rating terhadap barang yang telah dibeli. Review dengan rating tertinggi akan muncul di bagian atas, sehingga calon pembeli dapat menilai kualitas produk dengan cepat dan objektif.
+Salah satu fitur unggulan dari Ballistic adalah terdapat fitur rekomendasi ukuran cerdas, di mana pengguna cukup memasukkan tinggi dan berat badan mereka, lalu sistem akan secara otomatis merekomendasikan ukuran yang sesuai (S, M, L, atau XL).
+Fitur ini bekerja seperti sistem prediksi sederhana berdasarkan data tinggi dan berat badan serta menggunakan acuan perhitungan BMI (Body Mass Index). Hasil rekomendasi tersebut kemudian digunakan sebagai filter di fitur pencarian, sehingga ketika pengguna menekan tombol Search, produk yang ditampilkan akan disesuaikan dengan ukuran yang direkomendasikan.
 
-Proses transaksi di Ballistic didukung oleh modul pembelian produk yang mengatur seluruh tahapan pembelian mulai dari pemilihan produk, konfirmasi pembayaran melalui saldo internal, hingga proses verifikasi oleh admin. Transaksi akan masuk ke status pending sebelum disetujui oleh admin untuk memastikan keaslian dan keamanan pembelian. Setelah disetujui, saldo pembeli otomatis terpotong dan saldo penjual bertambah.
+Dengan demikian, pengguna tidak perlu bingung menentukan ukuran yang pas saat berbelanja online. Selain itu, aplikasi ini dilengkapi dengan fitur review produk yang mengurutkan ulasan dari bintang tertinggi, sehingga produk dengan penilaian terbaik selalu tampil di posisi atas. Hal ini membantu calon pembeli melihat kualitas produk secara objektif dan meningkatkan kepercayaan terhadap toko
 
-Di sisi manajemen, terdapat dua modul yang hanya dapat diakses oleh admin: modul News dan modul Voucher. Modul News digunakan untuk membuat dan mengelola berita seputar promosi, event olahraga, maupun pengumuman penting dari toko. Sedangkan modul Voucher digunakan untuk membuat, memperbarui, atau menghapus kode promo dan potongan harga yang berlaku. Kedua modul ini membantu admin menjaga informasi dan promosi toko agar selalu menarik dan relevan bagi pengguna.
+Ballistic juga menghadirkan fitur saldo dan pembayaran internal, di mana pengguna bisa mengisi saldo pada halaman profil dan menggunakannya untuk bertransaksi. Saldo ini terpotong secara otomatis setiap kali pembelian dilakukan, sehingga proses pembayaran menjadi lebih cepat dan aman. Selain itu saldo penjual akan masuk jika transaksi telah berhasil. 
 
-Selain berfokus pada transaksi, Ballistic juga membangun sisi komunitas melalui modul Forum Diskusi, tempat pengguna dapat membuat postingan, berdiskusi, dan berbagi tips seputar olahraga atau pengalaman menggunakan produk. Forum ini menjadikan Ballistic bukan hanya platform jual beli, tetapi juga ruang interaktif bagi komunitas olahraga.
+Pada bagian profil akun, pengguna dapat melihat saldo yang dimiliki, deskripsi akun, daftar barang yang telah dibeli, serta daftar produk yang dijual (jika pengguna juga memiliki akun penjual). Jika pengguna hanya berperan sebagai pembeli dan belum memiliki akun penjual, maka akan muncul pesan “Maaf, Anda belum membuat akun penjualan.”. ”Sebaliknya, jika pengguna adalah penjual tetapi belum pernah membeli barang, maka akan muncul pesan “Maaf, Anda belum melakukan pembelian barang.”. Selain itu, tombol Beli akan otomatis dinonaktifkan apabila penjual mencoba membeli produknya sendiri, untuk mencegah transaksi tidak valid.
 
-Dengan integrasi keenam modul tersebut — Admin News, Admin Voucher, Pembelian Produk, Review Produk, Berat Badan, dan Forum Diskusi — Ballistic menghadirkan pengalaman belanja yang lebih cerdas, efisien, dan interaktif. Platform ini tidak hanya membantu pengguna mendapatkan produk yang sesuai, tetapi juga membangun ekosistem olahraga digital yang aman, aktif, dan saling terhubung.
+Dengan seluruh fitur tersebut, Ballistic tidak hanya berfungsi sebagai toko peralatan olahraga biasa, tetapi juga memberikan pengalaman berbelanja yang cerdas, efisien, dan aman. Aplikasi ini membantu pengguna mendapatkan produk yang sesuai kebutuhan mereka, mempermudah penjual mengelola barang dagangan, dan menciptakan ekosistem jual beli alat olahraga yang terpercaya dan mudah digunakan.
+
+
 
 Modul Produk
 
 1. Modul Review Produk (Aufa Daffa)
 
-Modul ini menampilkan ulasan pengguna terhadap produk peralatan olahraga yang dijual di website. Setiap pengguna dapat memberikan komentar dan penilaian berupa bintang (1–5). Sistem akan otomatis mengurutkan ulasan berdasarkan nilai bintang tertinggi, sehingga review dengan rating 5 bintang akan tampil paling atas. Hal ini bertujuan agar pengguna lain dapat langsung melihat penilaian terbaik dari pelanggan sebelumnya dan meningkatkan kepercayaan terhadap produk. Admin atau penjual juga dapat melihat rata-rata rating untuk memantau kualitas produknya.
+Modul ini menampilkan ulasan (review) pengguna terhadap produk peralatan olahraga yang dijual di website. Setiap pengguna dapat memberikan komentar dan penilaian berupa bintang (1–5). Sistem akan otomatis mengurutkan ulasan berdasarkan nilai bintang tertinggi, sehingga review dengan rating 5 bintang akan tampil paling atas. Hal ini bertujuan agar pengguna lain bisa langsung melihat penilaian terbaik dari pelanggan sebelumnya dan meningkatkan kepercayaan terhadap produk. Admin atau penjual juga dapat melihat rata-rata rating untuk memantau kualitas produknya.
  
-2. Modul Forum (Mirza)
+2. Modul Pembayaran dan Saldo (Jovan)
 
-Modul Forum berfungsi sebagai wadah interaksi antar pengguna untuk berdiskusi mengenai olahraga, produk, maupun tips penggunaan perlengkapan. Pengguna dapat membuat postingan baru, membaca diskusi dari pengguna lain, mengedit posting mereka, serta menghapus komentar atau topik yang tidak relevan. Forum ini juga dapat dimoderasi oleh admin untuk menjaga kenyamanan dan etika diskusi. Melalui fitur ini, Ballistic tidak hanya menjadi platform jual beli, tetapi juga komunitas bagi para pecinta olahraga.
+Modul ini mengatur sistem pembayaran dan penyimpanan saldo pengguna. Pengguna dapat melakukan top up saldo melalui halaman profil, dan saldo tersebut digunakan untuk membeli produk di website. Saat pembelian dilakukan, saldo akan otomatis terpotong sesuai harga barang. Jika saldo tidak cukup maka akan menampilkan notifikasi saldo tidak cukup dan harus top up. Jika berhasil maka akan muncul invoice pembayaran serta saldo penjual akan bertambah. Dengan sistem saldo ini, proses pembayaran menjadi lebih cepat dan efisien tanpa harus keluar dari aplikasi.
 
  3. Modul Rekomendasi Ukuran (Baju dan Celana) (Jovian)
 
-Modul ini digunakan untuk menyimpan data tinggi dan berat pengguna yang menjadi dasar bagi sistem rekomendasi ukuran. Setiap pengguna dapat menambahkan data berat badan mereka, memperbaruinya seiring waktu, atau menghapus data lama yang tidak relevan. Modul ini memiliki relasi one-to-many dengan pembelian atau produk, karena satu pengguna bisa memiliki beberapa data pengukuran yang digunakan untuk menyesuaikan rekomendasi ukuran pakaian (S, M, L, XL). Fitur ini membuat pengalaman belanja menjadi lebih personal dan akurat.
+Modul ini berfungsi untuk membantu pengguna memilih ukuran produk yang sesuai berdasarkan data tinggi dan berat badan. Saat pengguna memasukkan tinggi dan berat badan, sistem akan menghitung estimasi ukuran yang cocok (misalnya: S, M, L, XL) menggunakan logika sederhana seperti perhitungan mirip BMI (Body Mass Index). Setelah ukuran direkomendasikan, hasil tersebut akan digunakan untuk memfilter hasil pencarian di tombol “Search”. Misalnya, jika pengguna direkomendasikan ukuran “L”, maka hasil pencarian otomatis akan menampilkan produk dengan ukuran “L” terlebih dahulu. Fitur ini meningkatkan pengalaman pengguna dengan memberikan rekomendasi yang personal dan efisien.
 
-4. Modul Create News (Jovanus)
+4. Modul Profil Akun (Mirza)
 
-Modul News hanya dapat diakses oleh admin dan berfungsi untuk mengelola berita resmi yang berkaitan dengan promosi, event olahraga, maupun pengumuman penting dari Ballistic. Admin dapat membuat, membaca, memperbarui, dan menghapus (CRUD) berita sesuai kebutuhan. Setiap berita akan muncul di halaman utama atau menu informasi pengguna, membantu menjaga komunikasi antara pihak toko dan pelanggan. Dengan adanya modul ini, platform selalu menampilkan informasi terbaru, relevan, dan profesional..
+Modul ini menampilkan informasi lengkap tentang akun pengguna, termasuk saldo yang dimiliki, deskripsi akun, daftar barang yang telah dibeli, serta daftar produk yang dijual (jika pengguna memiliki akun penjual). Jika pengguna hanya pembeli dan belum membuat akun penjual, maka pada bagian “Produk yang Dijual” akan muncul pesan: “Maaf, Anda belum membuat akun penjualan.”
+
+Sebaliknya, jika pengguna hanya penjual dan belum membeli barang, maka pada bagian “Barang yang Dibeli” akan muncul pesan: “Maaf, Anda belum melakukan pembelian barang.”. Fitur ini juga memungkinkan pengguna untuk mengatur saldo dan mengedit deskripsi profil mereka agar lebih personal.
 
 
 5. Modul Tampilan Produk dan Pembelian ( Jonathan Hans Emanuelle)
 
-Modul ini menangani seluruh proses pembelian produk oleh pengguna. Ketika pengguna membeli barang dan saldo mencukupi, sistem akan mencatat transaksi baru dengan status “Pending” untuk diverifikasi oleh admin. Setelah disetujui, saldo pembeli otomatis terpotong dan saldo penjual bertambah. Modul ini juga menampilkan daftar riwayat pembelian, status transaksi, serta detail produk yang dibeli. Admin dan pengguna dapat memantau pembelian melalui dashboard yang aman dan transparan.
+Modul ini menampilkan daftar produk peralatan olahraga yang dijual di platform. Terdapat tombol “Beli” di setiap produk, namun sistem akan mematikan tombol tersebut (disable) apabila penjual mencoba membeli produknya sendiri. Hal ini mencegah aktivitas pembelian tidak valid. Modul ini juga akan menampilkan produk yang ukurannya sudah dianjurkan pada baju dan celana. Selain itu nanti juga akan menampilkan barang-barang lain yaitu  botol minum (dalam milliliter), kaos kaki, dan bola sehingga pengguna dapat lebih mudah mencari barang sesuai kebutuhan. 
 
-6. Modul Voucher (Alexius Christhoper)
+6. Admin Dashboard (Alexius Christhoper)
 
-Modul Voucher juga bersifat eksklusif untuk admin dan digunakan untuk mengatur sistem diskon atau promo pembelian. Admin dapat membuat kode voucher baru, seperti potongan harga, cashback, atau promo kategori tertentu, serta menentukan masa berlaku dan syarat penggunaannya. Admin juga dapat melihat daftar voucher aktif, memperbarui informasi voucher, dan menghapus voucher yang sudah tidak berlaku. Modul ini mendukung strategi pemasaran toko agar lebih menarik dan meningkatkan penjualan produk olahraga di platform..
+Salah satu fitur utama dalam modul *Admin & Analitik* Ballistic adalah *verifikasi pembelian, yang memastikan setiap transaksi berlangsung aman dan valid. Ketika pengguna melakukan pembelian dan saldo mencukupi, transaksi akan masuk ke **antrian dengan status “Pending”* hingga admin melakukan verifikasi. Melalui dashboard, admin dapat melihat daftar transaksi menunggu persetujuan beserta detail seperti nama pembeli, produk, harga, dan waktu pembelian. Admin dapat menekan tombol *Approve (✔)* untuk menyetujui transaksi — saldo pembeli akan otomatis terpotong dan saldo penjual bertambah — atau *Reject (❌)* untuk menolak transaksi tanpa mengubah saldo. Semua aktivitas tersebut tercatat dalam log sistem untuk keperluan audit dan pelacakan.
+
+Selain itu, modul ini dilengkapi dengan *dashboard analitik* yang menampilkan data penting seperti *jumlah akun pengguna, **total transaksi, serta statistik **transaksi berhasil, **gagal karena saldo tidak cukup, dan **gagal karena ditolak admin. Admin juga dapat melihat **kategori produk yang paling banyak dibeli*, membantu dalam memahami tren penjualan dan mengoptimalkan strategi toko. Data ini disajikan melalui grafik dan diagram interaktif, memberikan admin kontrol penuh untuk memantau performa platform, menjaga keamanan transaksi, serta mengambil keputusan berdasarkan data secara efisien dan transparan.
 
 
 DATASET : https://www.kaggle.com/datasets/larysa21/retail-data-american-football-gear-sales
 
-PWS : https://jovian-felix-ballistic.pbp.cs.ui.ac.id/
+PWS : https://pbp.cs.ui.ac.id/jovian.felix/ballistic
 
-Penjelasan User
-
-1. Admin
-
-Role Admin memiliki tingkat akses tertinggi dalam sistem Ballistic. User dengan role ini bertanggung jawab untuk mengawasi, mengatur, dan memverifikasi seluruh aktivitas penting di platform, khususnya yang berkaitan dengan transaksi dan konten publik. Admin memiliki akses penuh terhadap dua modul khusus, yaitu modul News dan modul Voucher.
-Melalui modul News, admin dapat membuat, mengedit, dan menghapus berita atau pengumuman terkait promosi, event olahraga, maupun informasi penting lainnya. Sementara modul Voucher digunakan untuk mengatur kode promo, potongan harga, serta masa berlaku voucher yang dapat digunakan oleh pembeli. Selain itu, admin juga memiliki kemampuan untuk melihat data analitik sistem, seperti jumlah akun, total transaksi, transaksi gagal (karena saldo tidak cukup atau ditolak), dan produk paling populer.
-Admin juga berperan penting dalam verifikasi transaksi pembelian, di mana setiap pembelian dengan status pending harus disetujui (approve) agar transaksi dinyatakan berhasil.
-Batasan: User dengan role Admin tidak dapat memiliki role lain seperti Penjual atau Pembeli.
-Tujuan utama: menjaga transparansi, keamanan, dan kelancaran seluruh proses dalam sistem Ballistic.
-
-2. Penjual
-
-Role Penjual memungkinkan user untuk menawarkan dan mengelola produk di platform melalui modul Pembelian (Produk). Penjual dapat membuat entri produk baru, melengkapi informasi seperti nama barang, deskripsi, kategori, stok, harga, dan gambar. Modul ini juga memungkinkan mereka untuk menghapus atau memperbarui data produk sesuai kebutuhan.
-Penjual dapat memantau status transaksi produk mereka, apakah sedang dalam proses, berhasil, atau dibatalkan oleh admin. Selain itu, penjual juga bisa menerima review produk dari pembeli sebagai bentuk umpan balik yang membantu meningkatkan kualitas produk.
-Hak akses utama: mengelola data produk dan memantau transaksi yang berkaitan dengan barang yang mereka jual.
-Tujuan utama: memberikan kesempatan bagi user untuk membuka toko olahraga secara digital dan memperluas jangkauan penjualan mereka.
-
-3. Pembeli
-
-Role Pembeli berfungsi untuk memungkinkan user melakukan pencarian, pemilihan, dan pembelian produk olahraga yang dijual oleh para penjual di Ballistic. Melalui modul Pembelian Produk, pembeli dapat melakukan transaksi dengan saldo internal yang dimiliki, yang akan otomatis terpotong setelah admin menyetujui pembelian. Jika saldo tidak mencukupi, maka transaksi otomatis gagal.
-Pembeli juga dapat memberikan review dan rating produk melalui modul Review, membantu pengguna lain dalam menilai kualitas barang. Selain itu, terdapat modul Berat Badan, di mana pembeli dapat memasukkan tinggi dan berat badan mereka untuk memperoleh rekomendasi ukuran produk (S, M, L, XL) yang sesuai.
-Pembeli juga dapat berpartisipasi dalam modul Forum Diskusi, tempat berbagi pengalaman, bertanya seputar olahraga, dan berinteraksi dengan komunitas.
-Hak akses utama: melihat katalog produk, melakukan pembelian, memberikan ulasan, dan ikut serta dalam forum.
-Tujuan utama: memberikan pengalaman belanja yang mudah, akurat, dan interaktif bagi pengguna.

@@ -1,0 +1,137 @@
+/* === Reset Dasar & Font === */
+body {
+    margin: 0;
+    /* Menggunakan font Montserrat yang mirip dengan gambar */
+    font-family: 'Montserrat', sans-serif;
+    color: #333; /* Warna teks default */
+    background-color: #fff;
+}
+
+a {
+    text-decoration: none;
+    color: inherit; /* Mewarisi warna dari parent */
+}
+
+/* === Header - Top Bar === */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem; /* Padding atas/bawah 1rem, kiri/kanan 2.5rem */
+    border-bottom: 1px solid #f0f0f0; /* Garis tipis pemisah */
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.logo strong {
+    font-weight: 900;
+    /* Di gambar aslinya, 'M' ada di dalam lingkaran hitam, 
+       ini adalah versi teks sederhananya */
+}
+
+.social-icons, .user-icons {
+    display: flex;
+    gap: 1.5rem; /* Jarak antar ikon */
+    font-size: 1.1rem;
+    /* Mengatur agar lebarnya sama sehingga logo bisa pas di tengah */
+    flex-basis: 150px; 
+}
+
+.social-icons {
+    justify-content: flex-start; /* Ikon sosial rata kiri */
+}
+
+.user-icons {
+    justify-content: flex-end; /* Ikon user rata kanan */
+}
+
+/* === Navigasi Utama === */
+nav {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 0.5rem 0;
+}
+
+nav ul {
+    list-style: none; /* Hilangkan bullet points */
+    display: flex;
+    justify-content: center; /* Menu di tengah */
+    align-items: center;
+    gap: 2.5rem; /* Jarak antar menu */
+    margin: 0;
+    padding: 1rem 0;
+}
+
+nav a {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase; /* Huruf kapital semua */
+    color: #555; /* Warna abu-abu */
+    padding-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+/* Link yang aktif (seperti 'HOME' di gambar) */
+nav a.active {
+    color: #cda34f; /* Warna gold/mustard */
+}
+
+nav a:hover {
+    color: #000; /* Warna saat mouse hover */
+}
+
+/* === Hero Section (Bagian Utama) === */
+.hero-section {
+    position: relative;
+    height: 80vh; /* 80% dari tinggi layar, bisa diubah misal jadi 700px */
+    
+    /* Ini adalah bagian penting untuk foto Anda */
+    background-size: cover; /* Foto menutupi seluruh area */
+    background-position: center; /* Foto terpusat */
+    
+    display: flex;
+    align-items: center; /* Konten vertikal di tengah */
+    padding-left: 10%; /* Konten menjorok ke kiri 10% */
+
+    /* Efek kabut putih di gambar aslinya bisa ditiru dengan ini.
+       Jika foto Anda sudah terang/berkabut, Anda bisa hapus 2 baris ini */
+    background-color: rgba(255, 255, 255, 0.3);
+    background-blend-mode: lighten;
+}
+
+.hero-content {
+    max-width: 550px; /* Batas lebar teks */
+    color: #000; /* Warna teks hitam */
+}
+
+.hero-content h1 {
+    font-size: 3.2rem; /* Ukuran font judul */
+    font-weight: 700;
+    line-height: 1.2; /* Jarak antar baris */
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1rem;
+    color: #444; /* Warna teks deskripsi sedikit lebih pudar */
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Tombol 'See Collection' */
+.cta-button {
+    display: inline-block; /* Agar bisa di-style padding-nya */
+    background-color: #000; /* Latar hitam */
+    color: #fff; /* Teks putih */
+    padding: 0.9rem 2rem; /* Padding atas/bawah & kiri/kanan */
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease; /* Efek transisi halus */
+}
+
+.cta-button:hover {
+    background-color: #333; /* Warna sedikit lebih terang saat hover */
+}
