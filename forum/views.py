@@ -21,6 +21,22 @@ def show_json_forum(request):
     ]
     return JsonResponse(forum_data, safe=False)
 
+def show_json_forum_by_id(request, id):
+    try:
+        forum = Forum.objects.get(pk=id)
+        forum_data = {
+            'id': str(forum.id),
+            'title': forum.title,
+            'author': forum.author.username,
+            'content': forum.content,
+            'created_at': forum.created_at.isoformat(),
+            'updated_at': forum.updated_at.isoformat(),
+            'views': str(forum.forum_views),
+        } 
+        return JsonResponse(forum_data)
+    except Forum.DoesNotExist:
+        return JsonResponse({'detail': 'Not found'}, status=404)
+
 def show_json_comment(request, id):
     comment_list = Comment.objects.filter(forum_id=id)
     comment_data = [
