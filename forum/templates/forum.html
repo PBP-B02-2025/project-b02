@@ -89,7 +89,7 @@ function renderAllForumCards(forumItems) {
   });
 }
 
-// Fetch news data from server
+// Fetch forum data from server
 async function fetchForumFromServer() {
   try {    
     const response = await fetch(FORUM_API_ENDPOINT, {
@@ -98,8 +98,8 @@ async function fetchForumFromServer() {
     if (!response.ok) {
       throw new Error('Failed to fetch forum data from server');
     }
-    const newsData = await response.json();
-    forum_data = newsData || [];
+    const forumData = await response.json();
+    forum_data = forumData || [];
     renderAllForumCards(forum_data);
   } catch (error) {
     console.error('Error loading forum:', error);

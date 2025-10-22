@@ -130,6 +130,7 @@
 
         const formData = new FormData(registerForm);
         document.querySelectorAll('.error-text').forEach(el => el.remove());
+        document.querySelectorAll('.form-error-global').forEach(el => el.remove());
         try {
             const response = await fetch("{% url 'main:register_ajax' %}", {
                 method: "POST",
@@ -146,7 +147,7 @@
                 registerForm.reset();
                 setTimeout(() => {
                     window.location.href = "{% url 'main:login' %}";
-                }, 300);
+                }, 500);
             } else {
                 const errorMessage = 'Failed to register';
                 showToast('Error', errorMessage, 'error');
@@ -163,7 +164,7 @@
                 } else {
                     const formContainer = registerForm.closest('.form-style');
                     const generalError = document.createElement('div');
-                    generalError.className = 'px-4 py-3 mb-4 rounded-md text-sm border bg-red-50 border-red-200 text-red-700';
+                    generalError.className = 'form-error-global px-4 py-3 mb-4 rounded-md text-sm border bg-red-50 border-red-200 text-red-700';
                     generalError.textContent = data.error || 'Registration failed.';
                     formContainer.insertAdjacentElement('afterbegin', generalError);
                 }

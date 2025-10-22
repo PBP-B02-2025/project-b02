@@ -2,14 +2,16 @@
 
 from django.urls import path
 from . import views
-from main.views import register_ajax, register, login
+from main.views import *
 # Beri nama 'main' agar bisa dipanggil pakai {% url 'main:nama_url' %}
 app_name = 'main' 
 
 urlpatterns = [
     # Path '' (kosong) berarti ini adalah homepage untuk aplikasi 'main'
     path('', views.main_view, name='main-view'),
-    path('register_ajax/', register_ajax, name='register_ajax'),
-    path('register/', register, name='register'),
-    path('login/', login, name='login')
+    path('register-ajax/', register_ajax, name='register_ajax'),
+    path('register/', register_user, name='register'),
+    path('login/', login_user, name='login'),
+    path('login-ajax/', login_ajax, name='login_ajax'),
+    path('logout/', logout_user, name='logout')
 ]
