@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Daftar Berita</h2>
+
+  <!-- Form Tambah Berita -->
+  <form id="create-form" class="mb-4">
+    <input name="title" class="form-control mb-2" placeholder="Judul berita" required>
+    <input name="author" class="form-control mb-2" placeholder="Nama penulis" required>
+    <textarea name="content" class="form-control mb-2" placeholder="Isi berita" required></textarea>
+    <select name="category" class="form-select mb-2">
+      <option value="promo">Promo</option>
+      <option value="product_update">Product Update</option>
+      <option value="event">Event</option>
+      <option value="training_tips">Training Tips</option>
+      <option value="sports_news">Sports News</option>
+    </select>
+    <input name="thumbnail" class="form-control mb-2" placeholder="URL gambar (https://...)" required>
+    <button class="btn btn-primary" type="submit">Tambah</button>
+  </form>
+
+  <hr>
+
+  <!-- Daftar Berita -->
+  <div id="news-list">
+    {% for news in news_list %}
+      <div id="news-{{ news.id }}" class="border p-3 mb-3 rounded">
+        <div class="d-flex align-items-center">
+          {% if news.thumbnail %}
+            <img src="{{ news.thumbnail }}" width="100" class="me-3 rounded">
+          {% endif %}
+          <div>
+            <h5>{{ news.title }}</h5>
+            <p class="small text-muted">Oleh: {{ news.author }} | {{ news.category }}</p>
+            <p>{{ news.short_content }}</p>
+            <a href="{% url 'createnews:show_news_detail' news.id %}" class="btn btn-sm btn-outline-info">Detail</a>
+            <button class="btn btn-sm btn-secondary" onclick="enableEdit('{{ news.id }}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteNews('{{ news.id }}')">Hapus</button>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+// CREATE
+document.getElementById("create-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+
+  const res = await fetch("{% url 'createnews:create_news_ajax' %}", { method: "POST", body: formData });
+  const data = await res.json();
+
+  if (data.id) {
+    const list = document.getElementById("news-list");
+    const newCard = `
+      <div id="news-${data.id}" class="border p-3 mb-3 rounded">
+        <div class="d-flex align-items-center">
+          ${data.thumbnail ? `<img src="${data.thumbnail}" width="100" class="me-3 rounded">` : ""}
+          <div>
+            <h5>${data.title}</h5>
+            <p class="small text-muted">Oleh: ${data.author} | ${data.category}</p>
+            <p>${data.content}</p>
+            <a href="/detail/${data.id}/" class="btn btn-sm btn-outline-info">Detail</a>
+            <button class="btn btn-sm btn-secondary" onclick="enableEdit('${data.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteNews('${data.id}')">Hapus</button>
+          </div>
+        </div>
+      </div>
+    `;
+    list.insertAdjacentHTML("afterbegin", newCard);
+    form.reset();
+  }
+});
+
+// EDIT
+function enableEdit(id) {
+  const card = document.getElementById("news-" + id);
+  const title = prompt("Ubah judul:");
+  const author = prompt("Ubah penulis:");
+  const content = prompt("Ubah isi berita:");
+  if (!title || !author || !content) return;
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("author", author);
+  formData.append("content", content);
+
+  fetch(`/edit/${id}/`, { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => {
+      card.querySelector("h5").textContent = data.title;
+      card.querySelector(".small").textContent = `Oleh: ${data.author} | ${data.category}`;
+      card.querySelector("p:nth-of-type(2)").textContent = data.content;
+    });
+}
+
+// DELETE
+function deleteNews(id) {
+  fetch(`/delete/${id}/`, { method: "POST" })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "deleted") {
+        document.getElementById("news-" + id).remove();
+      }
+    });
+}
+</script>
+{% endblock %}

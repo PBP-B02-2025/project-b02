@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Daftar Berita Peralatan Olahraga</h2>
+
+  <form id="create-news-form">
+    <div class="mb-2">
+      <input type="text" name="title" placeholder="Judul berita" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <textarea name="content" placeholder="Isi berita" class="form-control" required></textarea>
+    </div>
+    <div class="mb-2">
+      <select name="category" class="form-select">
+        <option value="event">Event</option>
+        <option value="training_tips">Training Tips</option>
+        <option value="sports_news">Sports News</option>
+      </select>
+    </div>
+    <div class="mb-2">
+      <input type="url" name="thumbnail" placeholder="URL Gambar (https://...)" class="form-control">
+    </div>
+    <div class="mb-2 form-check">
+      <input type="checkbox" name="is_featured" class="form-check-input"> Featured
+    </div>
+    <button type="submit" class="btn btn-primary">Tambah Berita</button>
+  </form>
+
+  <hr>
+
+  <div id="news-list">
+    {% for news in news_list %}
+      <div id="news-{{ news.id }}" class="card mb-3">
+        <div class="card-body">
+          <h5>{{ news.title }}</h5>
+          <p>{{ news.content }}</p>
+          {% if news.thumbnail %}
+            <img src="{{ news.thumbnail }}" width="150">
+          {% endif %}
+          <p><strong>Kategori:</strong> {{ news.get_category_display }}</p>
+          <button class="btn btn-sm btn-warning" onclick="editNews('{{ news.id }}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteNews('{{ news.id }}')">Hapus</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// ✅ CREATE
+document.getElementById("create-news-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+
+  const response = await fetch("{% url 'createnews:create_news_ajax' %}", {
+    method: "POST",
+    body: formData
+  });
+  const result = await response.json();
+
+  if (result.status === "success") {
+    Swal.fire("Sukses", result.message, "success");
+
+    const newsList = document.getElementById("news-list");
+    const newCard = `
+      <div id="news-${result.data.id}" class="card mb-3">
+        <div class="card-body">
+          <h5>${result.data.title}</h5>
+          <p>${result.data.content}</p>
+          ${result.data.thumbnail ? `<img src="${result.data.thumbnail}" width="150">` : ""}
+          <p><strong>Kategori:</strong> ${result.data.category}</p>
+          <button class="btn btn-sm btn-warning" onclick="editNews('${result.data.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteNews('${result.data.id}')">Hapus</button>
+        </div>
+      </div>
+    `;
+    newsList.insertAdjacentHTML("afterbegin", newCard);
+    form.reset();
+  }
+});
+
+function deleteNews(id) {
+  fetch(`/delete/${id}/`, { method: "POST" })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        Swal.fire("Terhapus!", data.message, "success");
+        document.getElementById(`news-${id}`).remove();
+      }
+    });
+}
+
+function editNews(id) {
+  const title = prompt("Masukkan judul baru:");
+  const content = prompt("Masukkan isi berita baru:");
+  if (!title || !content) return;
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("content", content);
+
+  fetch(`/edit/${id}/`, { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        Swal.fire("Berhasil!", data.message, "success");
+        location.reload();
+      }
+    });
+}
+</script>
+{% endblock %}
