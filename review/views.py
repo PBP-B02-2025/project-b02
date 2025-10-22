@@ -4,7 +4,7 @@ from review.models import Review
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.http import HttpResponse
-# import Product
+from shop.models import Product
 from django.core import serializers
 
 from django.utils.html import strip_tags
@@ -111,15 +111,15 @@ def delete_review(request, id):
     
 def average_star(request, product_id):
     try:
-        #product = Product.objects.get(id=product_id)
+        product = Product.objects.get(id=product_id)
         avg = 0
         size = 0
 
         
 
-        # for review in product.review_set.all():
-        #     avg += review.star
-        #     size += 1
+        for review in product.review_set.all():
+            avg += review.star
+            size += 1
 
         if size == 0:
             return JsonResponse(0)
@@ -130,12 +130,12 @@ def average_star(request, product_id):
     
 def show_all_from_one_product(request, product_id):
     try:
-        # product = Product.objects.get(id=product_id)
+        product = Product.objects.get(id=product_id)
 
         review_list = []
 
-        # for review in product.review_set.all():
-        #     review_list.append(review)
+        for review in product.review_set.all():
+            review_list.append(review)
 
         return JsonResponse(review_list)
     except:
