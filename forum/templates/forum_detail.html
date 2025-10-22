@@ -1,11 +1,133 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Forum Detail</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-3xl mx-auto p-6">
+    <!-- Back button -->
+    <a href="/forum/" class="inline-block mb-6 text-indigo-600 hover:text-indigo-800 font-medium transition">
+      ← Back to forum list
+    </a>
+
+    <!-- Forum card -->
+    <div id="forum-card" class="bg-white rounded-2xl shadow p-6">
+      <!-- Title -->
+      <h1 id="forum-title" class="text-2xl font-semibold mb-3"></h1>
+
+      <!-- Meta -->
+      <div id="forum-meta" class="flex flex-wrap items-center text-sm text-gray-500 space-x-3 mb-4">
+        <span id="forum-author"></span>
+        <span id="forum-created"></span>
+        <span id="forum-updated"></span>
+        <span id="forum-views"></span>
+      </div>
+
+      <!-- Content -->
+      <div id="forum-content" class="text-gray-700 leading-relaxed whitespace-pre-line"></div>
+
+      <!-- Actions (optional buttons) -->
+      <div id="forum-actions" class="mt-6 flex gap-3"></div>
+    </div>
+
+    <!-- Comments Section -->
+    <section id="comments-section" class="mt-10">
+      <h2 class="text-lg font-medium text-gray-800 mb-4">Comments</h2>
+      <div id="comments-container" class="space-y-4"></div>
+    </section>
+  </div>
 </body>
 </html>
+<script>
+// Configuration
+const FORUM_ID = "{{ id }}";
+const FORUM_DETAIL_ENDPOINT = `{% url 'forum:show_json_forum_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
+const FORUM_COMMENT_ENDPOINT =  `{% url 'forum:show_json_comment' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
+// DOM Elements
+const forumContent = document.getElementById('forum-content');
+const forumTitle = document.getElementById('forum-title');
+const forumCreated = document.getElementById('forum-created');
+const forumUpdated = document.getElementById('forum-updated');
+const forumAuthor = document.getElementById('forum-author');
+const forumViews = document.getElementById('forum-views');
+
+let forum_comment = [];
+
+// Render article content
+function renderForum(item) {
+    // Set title
+    forumTitle.textContent = item.title;
+    document.title = `${item.title} - Ballistic`;
+    
+    // Set date and views
+    const formattedDateCreate = new Date(item.created_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    forumCreated.textContent = formattedDateCreate;
+
+    // Set date and views
+    const formattedDateUpdate = new Date(item.updated_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    forumUpdated.textContent = formattedDateUpdate;
+    forumViews.textContent = `${item.views} views`;
+    
+    // Set content
+    forumContent.textContent = item.content;
+    
+    // Set author
+    const authorName = item.author || 'Anonymous';
+    forumAuthor.textContent = `Author: ${authorName}`;
+}
+
+// Fetch forum detail
+async function loadForumDetail() {
+    try {
+        const response = await fetch(FORUM_DETAIL_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch forum detail');
+        }
+
+        const forumData = await response.json();
+        renderForum(forumData);
+    } catch (error) {
+        console.error('Error loading forum detail:', error);
+    }
+}
+
+// Fetch forum comment
+async function loadComment() {
+    try {
+        const response = await fetch(FORUM_DETAIL_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch comment detail');
+        }
+
+        const commentData = await response.json();
+        forum_comment = commentData || [];
+        renderForum(commentData);
+    } catch (error) {
+        console.error('Error loading comment detail:', error);
+    }
+}
+
+// Initialize page
+loadForumDetail();
+</script>

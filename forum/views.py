@@ -3,8 +3,14 @@ from forum.models import Forum, Comment
 from django.http import JsonResponse
 # Create your views here.
 
-def show_forum(request):
+def show_forum_list(request):
     return render(request, "forum.html", {})
+
+def show_forum(request, id):
+    context = {
+        'id': id
+    }
+    return render(request, "forum_detail.html", context)
 
 def show_json_forum(request):
     forum_list = Forum.objects.all()
