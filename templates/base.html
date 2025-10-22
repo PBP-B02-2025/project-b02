@@ -1,0 +1,46 @@
+{% load static %} <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    
+    <title>{% block title %}Modern Shop{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="top-bar">
+            <div class="social-icons">
+                <a href="#">[f]</a>
+                <a href="#">[p]</a>
+                <a href="#">[in]</a>
+            </div>
+            <div class="logo">
+                <strong>M</strong> MODERN SHOP
+            </div>
+            <div class="user-icons">
+                <a href="#">🔍</a>
+                <a href="#">👤</a>
+                <a href="#">🛒</a>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#" class="active">HOME</a></li>
+            <li><a href="#">SHOP</a></li>
+            <li><a href="#">FORUM</a></li>
+            <li><a href="#">NEWS</a></li>
+            <li><a href="#">ABOUT</a></li>
+        </ul>
+    </nav>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    </body>
+</html>
