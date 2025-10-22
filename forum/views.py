@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from forum.models import Forum, Comment
 from django.http import JsonResponse
+from django.db.models import Count
 # Create your views here.
 
 def show_forum_list(request):
@@ -13,7 +14,7 @@ def show_forum(request, id):
     return render(request, "forum_detail.html", context)
 
 def show_json_forum(request):
-    forum_list = Forum.objects.all()
+    forum_list = Forum.objects.annotate(comment_count=Count('comment'))
     forum_data = [
         {
             'id': str(forum.id),
@@ -23,6 +24,7 @@ def show_json_forum(request):
             'created_at': forum.created_at.isoformat(),
             'updated_at': forum.updated_at.isoformat(),
             'views': str(forum.forum_views),
+            'comment_count': str(forum.comment_count),
         } for forum in forum_list
     ]
     return JsonResponse(forum_data, safe=False)

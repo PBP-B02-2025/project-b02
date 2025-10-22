@@ -1,29 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-        <title>Document</title>
-    </head>
-    <body class="bg-gray-50 font-[Montserrat] min-h-screen flex flex-col">
-        <!-- Header section -->
-        <header class="bg-white shadow-sm py-6 mb-6">
-            <h1 class="text-3xl font-bold text-center text-gray-800 tracking-tight">
-                Forum Diskusi
-            </h1>
-            <p class="text-center text-gray-500 text-sm mt-1">
-                Berbagi ide, tanya jawab, dan diskusi seru bersama komunitas.
-            </p>
-        </header>
-        <!-- Forum grid -->
-        <main class="flex-grow">
-            <div id="forumGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-6 max-w-6xl mx-auto mb-10"></div>
-        </main>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<!-- Toolbar -->
+<section class="bg-white py-4">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center">
+      <button class="mb-3 sm:mb-0 bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-[#333] transition">
+          + Tambah Topik Baru
+      </button>
+
+      <div class="flex items-center gap-2">
+        <label for="sort" class="text-gray-600 text-sm font-medium">Urutkan:</label>
+        <select id="sort" class="border border-gray-300 rounded-md text-sm px-3 py-1 focus:ring-2 focus:ring-blue-500">
+            <option value="newest">Terbaru ▼</option>
+            <option value="oldest">Terlama</option>
+            <option value="popular">Terpopuler</option>
+        </select>
+      </div>
+  </div>
+</section>
+
+<!-- Forum section -->
+<main class="flex-grow pt-4 bg-white">
+  <div id="forumGrid" class="max-w-6xl mx-auto px-6 mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</main>
+
 <script>
 // Configuration
 const FORUM_API_ENDPOINT = "{% url 'forum:show_json' %}";
@@ -52,21 +51,28 @@ function buildForumCardElement(item) {
         day: 'numeric' 
     }));
     const views = DOMPurify.sanitize(item.views);
+    const comment_count = DOMPurify.sanitize(item.comment_count);
 
     const linkDetail = `{% url 'forum:show_forum' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000',item.id);
 
     card.innerHTML = `
         <a href="${linkDetail}" class="block p-5 h-full hover:bg-gray-50 transition duration-200">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-xl font-semibold text-gray-800 line-clamp-2">${title}</h2>
-                <span class="text-sm text-gray-500">👁️ ${views} views</span>
+            <div>
+                <h2 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${title}</h2>
+                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                    ${content}
+                </p>
             </div>
-            <p class="text-gray-700 text-sm mb-3 line-clamp-3">${content}</p>
-            <div class="flex justify-between items-center text-sm text-gray-500">
+
+            <div class="flex justify-between items-center text-sm text-gray-500 border-t border-gray-100 pt-3">
                 <span>By <strong>${author}</strong></span>
-                <span>Created: ${createdAt}</span>
+                <span>Update: ${updatedAt}</span>
             </div>
-            <div class="text-xs text-gray-400 mt-1">Updated: ${updatedAt}</div>
+
+            <div class="flex justify-end gap-3 text-gray-400 text-sm mt-1">
+                <span>💬 ${comment_count}</span>
+                <span>👀 ${views}</span>
+            </div>
         </a>
     `;
 
@@ -108,3 +114,4 @@ function initializeForumPage() {
 // Start application
 initializeForumPage();
 </script>
+{% endblock %}
