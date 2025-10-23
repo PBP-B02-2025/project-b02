@@ -44,10 +44,10 @@
         <p>{{ review.comment|linebreaksbr }}</p>
     </div>
 
-    <!-- Remove date display since created_at field doesn't exist -->
 </article>
 
 <script>
+
 function deleteReview(reviewId) {
     if (confirm('Are you sure you want to delete this review?')) {
         fetch(`/review/review/${reviewId}/delete`, {
@@ -85,7 +85,7 @@ function deleteReview(reviewId) {
 
 
 function editReview(reviewId) {
-    // For now, redirect to edit page or implement inline editing
+   
     window.location.href = `/review/review/${reviewId}/edit`;
 }
 </script>

@@ -112,33 +112,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const stars = document.querySelectorAll('.star-btn');
     const ratingInput = document.getElementById('selectedRating');
 
-    // Open modal
+    // buka modal
     openBtn?.addEventListener('click', function() {
         modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
     });
 
-    // Close modal functions
+    //tutup modal
     function closeModal() {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
         // Reset form
         form.reset();
-        updateStarDisplay(5); // Reset to 5 stars
+        updateStarDisplay(5);
         document.getElementById('formErrors').innerHTML = '';
     }
 
     closeBtn?.addEventListener('click', closeModal);
     cancelBtn?.addEventListener('click', closeModal);
 
-    // Close modal when clicking outside
+    
     modal?.addEventListener('click', function(e) {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    // Star rating functionality
+    // untuk bintang
     function updateStarDisplay(rating) {
         stars.forEach((star, index) => {
             if (index < rating) {
@@ -172,12 +172,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Reset stars on mouse leave
     document.getElementById('starRating')?.addEventListener('mouseleave', function() {
         updateStarDisplay(parseInt(ratingInput.value));
     });
 
-    // Form submission
     form?.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -205,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             console.log('Response status:', response.status);
             if (response.ok) {
-                // Success - close modal and reload page
+
                 console.log('Review submitted successfully!');
                 closeModal();
                 window.location.reload();
@@ -216,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data && data.errors) {
-                // Display form errors
+
                 const errorsDiv = document.getElementById('formErrors');
                 errorsDiv.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-md p-3">' +
                     Object.values(data.errors).flat().map(error => 
@@ -230,13 +228,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<div class="bg-red-50 border border-red-200 rounded-md p-3"><p class="text-red-600 text-sm">Network error occurred. Please check your connection and try again.</p></div>';
         })
         .finally(() => {
-            // Reset button state
+
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
         });
     });
 
-    // Initialize with 5 stars selected
+    // saat init, pakai 5 bntang
     updateStarDisplay(5);
 });
 </script>
