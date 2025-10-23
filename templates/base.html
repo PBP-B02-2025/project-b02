@@ -71,7 +71,12 @@
             
             <div class="user-icons">
                 <a href="#">🔍</a>
-                <a href="#">👤</a>
+                <li class="dropdown" style="list-style:none;">
+                    <a href="#" id="user-icon" style="padding:0 1rem;">👤</a>
+                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:120px;">
+                        <li><a href="{% url 'main:logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
                 <a href="#">🛒</a>
             </div>
         </div>

@@ -22,6 +22,7 @@
                     <div class="voucher-discount">{{ voucher.persentase_diskon }}%</div>
                     <p class="voucher-description">{{ voucher.deskripsi|default:"Tidak ada deskripsi" }}</p>
                 </div>
+                {% if is_admin %}
                 <div class="voucher-actions">
                     <button class="btn-action btn-edit" onclick="editVoucher({{ voucher.id }}, '{{ voucher.kode }}', '{{ voucher.deskripsi }}', '{{ voucher.persentase_diskon }}', {{ voucher.is_active|lower }})" title="Edit">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -35,62 +36,26 @@
                         </svg>
                     </button>
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}
             <div class="empty-state">
-                <p>Belum ada voucher. Klik tombol + untuk membuat voucher baru!</p>
+                <p>Belum ada voucher. {% if is_admin %}Klik tombol + untuk membuat voucher baru!{% else %}Silakan hubungi admin untuk membuat voucher.{% endif %}</p>
             </div>
         {% endif %}
     </div>
 </div>
 
+{% if is_admin %}
 <!-- Floating Action Button -->
 <button id="add-voucher-btn" class="floating-btn" title="Tambah Voucher">
     <span class="plus-icon">+</span>
 </button>
+{% endif %}
 
 <!-- Modal Form -->
-<div id="voucherModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle">Buat Voucher Baru</h2>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="voucherForm">
-                {% csrf_token %}
-                <input type="hidden" id="voucher_id" name="voucher_id" value="">
-                <div class="form-group">
-                    <label for="kode">Kode Voucher *</label>
-                    <input type="text" id="kode" name="kode" class="form-input" placeholder="Contoh: PROMOHEMAT20" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="deskripsi">Deskripsi</label>
-                    <textarea id="deskripsi" name="deskripsi" class="form-input" rows="3" placeholder="Deskripsi voucher..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="persentase_diskon">Persentase Diskon (%) *</label>
-                    <input type="number" id="persentase_diskon" name="persentase_diskon" class="form-input" step="0.01" min="0.01" max="100" placeholder="0.00" required>
-                </div>
-                
-                <div class="form-group checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="is_active" name="is_active" checked>
-                        <span>Voucher Aktif</span>
-                    </label>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
-                    <button type="submit" class="btn btn-primary">Buat Voucher</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{% include 'voucher_modal.html' %}
 
 <!-- Toast Notification -->
 <div id="toast" class="toast"></div>
@@ -509,6 +474,7 @@
     }
     
     const csrftoken = getCookie('csrftoken');
+    const isAdmin = {{ is_admin|yesno:"true,false" }};
     
     // Modal elements
     const modal = document.getElementById('voucherModal');
@@ -519,14 +485,16 @@
     const modalTitle = document.getElementById('modalTitle');
     let isEditMode = false;
     
-    // Open modal for create
-    addBtn.addEventListener('click', () => {
-        isEditMode = false;
-        modalTitle.textContent = 'Buat Voucher Baru';
-        form.reset();
-        document.getElementById('voucher_id').value = '';
-        modal.style.display = 'block';
-    });
+    // Open modal for create (only if button exists - admin only)
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            isEditMode = false;
+            modalTitle.textContent = 'Buat Voucher Baru';
+            form.reset();
+            document.getElementById('voucher_id').value = '';
+            modal.style.display = 'block';
+        });
+    }
     
     // Close modal
     closeBtn.addEventListener('click', () => {
@@ -660,24 +628,17 @@
             const container = document.getElementById('voucher-cards-container');
             
             if (data.vouchers.length === 0) {
+                const emptyMessage = isAdmin 
+                    ? 'Belum ada voucher. Klik tombol + untuk membuat voucher baru!' 
+                    : 'Belum ada voucher. Silakan hubungi admin untuk membuat voucher.';
                 container.innerHTML = `
                     <div class="empty-state">
-                        <p>Belum ada voucher. Klik tombol + untuk membuat voucher baru!</p>
+                        <p>${emptyMessage}</p>
                     </div>
                 `;
             } else {
-                container.innerHTML = data.vouchers.map(voucher => `
-                    <div class="voucher-card ${voucher.is_active ? '' : 'inactive'}" data-voucher-id="${voucher.id}">
-                        <div class="voucher-header">
-                            <span class="voucher-badge ${voucher.is_active ? 'active' : 'inactive'}">
-                                ${voucher.is_active ? 'Aktif' : 'Nonaktif'}
-                            </span>
-                        </div>
-                        <div class="voucher-body">
-                            <h3 class="voucher-code">${voucher.kode}</h3>
-                            <div class="voucher-discount">${voucher.persentase_diskon}%</div>
-                            <p class="voucher-description">${voucher.deskripsi || 'Tidak ada deskripsi'}</p>
-                        </div>
+                container.innerHTML = data.vouchers.map(voucher => {
+                    const actionsHtml = isAdmin ? `
                         <div class="voucher-actions">
                             <button class="btn-action btn-edit" onclick="editVoucher(${voucher.id}, '${voucher.kode}', '${voucher.deskripsi}', '${voucher.persentase_diskon}', ${voucher.is_active})" title="Edit">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -691,8 +652,24 @@
                                 </svg>
                             </button>
                         </div>
-                    </div>
-                `).join('');
+                    ` : '';
+                    
+                    return `
+                        <div class="voucher-card ${voucher.is_active ? '' : 'inactive'}" data-voucher-id="${voucher.id}">
+                            <div class="voucher-header">
+                                <span class="voucher-badge ${voucher.is_active ? 'active' : 'inactive'}">
+                                    ${voucher.is_active ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                            </div>
+                            <div class="voucher-body">
+                                <h3 class="voucher-code">${voucher.kode}</h3>
+                                <div class="voucher-discount">${voucher.persentase_diskon}%</div>
+                                <p class="voucher-description">${voucher.deskripsi || 'Tidak ada deskripsi'}</p>
+                            </div>
+                            ${actionsHtml}
+                        </div>
+                    `;
+                }).join('');
             }
         } catch (error) {
             console.error('Error refreshing vouchers:', error);

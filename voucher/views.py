@@ -2,20 +2,31 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth.decorators import login_required
 from .models import Voucher
 from .forms import VoucherForm
 import json
 
+@login_required(login_url='/login/')
 def voucher_view(request):
     vouchers = Voucher.objects.all().order_by('-id')
     context = {
         'active_page': 'voucher',
-        'vouchers': vouchers
+        'vouchers': vouchers,
+        'is_admin': request.user.is_superuser
     }
     return render(request, 'voucher.html', context)
 
+@login_required(login_url='/login/')
 @require_POST
 def create_voucher_ajax(request):
+    # Only superuser can create voucher
+    if not request.user.is_superuser:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk membuat voucher!'
+        }, status=403)
+    
     try:
         # Parse data dari AJAX request
         kode = request.POST.get('kode')
@@ -63,8 +74,16 @@ def create_voucher_ajax(request):
             'message': f'Terjadi kesalahan: {str(e)}'
         }, status=500)
 
+@login_required(login_url='/login/')
 @require_POST
 def update_voucher_ajax(request, voucher_id):
+    # Only superuser can update voucher
+    if not request.user.is_superuser:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk mengubah voucher!'
+        }, status=403)
+    
     try:
         voucher = get_object_or_404(Voucher, id=voucher_id)
         
@@ -112,8 +131,16 @@ def update_voucher_ajax(request, voucher_id):
             'message': f'Terjadi kesalahan: {str(e)}'
         }, status=500)
 
+@login_required(login_url='/login/')
 @require_POST
 def delete_voucher_ajax(request, voucher_id):
+    # Only superuser can delete voucher
+    if not request.user.is_superuser:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk menghapus voucher!'
+        }, status=403)
+    
     try:
         voucher = get_object_or_404(Voucher, id=voucher_id)
         voucher_kode = voucher.kode
