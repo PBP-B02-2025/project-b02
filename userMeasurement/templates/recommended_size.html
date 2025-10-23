@@ -1,69 +1,89 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profil Ukuran Saya</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
+{% extends 'base.html' %}
+{% load static %}
 
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+{% block title %}Rekomendasi Produk - Modern Shop{% endblock %}
 
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Hai, {{ request.user.username }} 👋</h1>
-      <p class="text-gray-600">Berikut data ukuran badanmu saat ini.</p>
-    </div>
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Card User Measurement -->
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8 mb-10">
-      {% if data %}
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Data Ukuran Badan</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
-          <div>
-            <p><span class="font-medium">Tinggi:</span> {{ data.height }} cm</p>
-            <p><span class="font-medium">Berat:</span> {{ data.weight }} kg</p>
-          </div>
-          <div>
-            {% if data.waist %}<p><span class="font-medium">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
-            {% if data.hip %}<p><span class="font-medium">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
-            {% if data.chest %}<p><span class="font-medium">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
-          </div>
-        </div>
-
-        <div class="mt-6">
-          <p class="text-lg font-semibold text-gray-900">
-            Rekomendasi Ukuran: 
-            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md">
-              {{ data.recommended_size|default_if_none:"Belum dihitung" }}
-            </span>
-          </p>
-        </div>
-
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors text-center">
-            Update Data Ukuran
-          </a>
-        </div>
-
-      {% else %}
-        <div class="text-center py-10">
-          <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
-          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
-            Isi Sekarang
-          </a>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- Placeholder Produk -->
-    <div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-      <p>Produk rekomendasi berdasarkan ukuranmu akan muncul di sini 🔍</p>
-      <p class="text-sm text-gray-400 mt-2">(fitur ini akan aktif setelah model produk selesai dibuat)</p>
-    </div>
-
+  <!-- Header User -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Hai, {{ request.user.username }} 👋</h1>
+    <p class="text-gray-600">Berikut data ukuran badanmu saat ini.</p>
   </div>
 
-</body>
-</html>
+  <!-- Card User Measurement -->
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8 mb-10">
+    {% if data %}
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Data Ukuran Badan</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
+        <div>
+          <p><span class="font-medium">Tinggi:</span> {{ data.height }} cm</p>
+          <p><span class="font-medium">Berat:</span> {{ data.weight }} kg</p>
+        </div>
+        <div>
+          {% if data.waist %}<p><span class="font-medium">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
+          {% if data.hip %}<p><span class="font-medium">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
+          {% if data.chest %}<p><span class="font-medium">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <p class="text-lg font-semibold text-gray-900">
+          Rekomendasi Ukuran: 
+          <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md">
+            {{ data.recommended_size|default_if_none:"Belum dihitung" }}
+          </span>
+        </p>
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row gap-4">
+    <!-- Tombol Update -->
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors text-center">
+          Update Data Ukuran
+        </a>
+
+    <!-- Tombol Hapus -->
+        <form action="{% url 'userMeasurement:delete_measurement' %}" method="POST" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors">
+                Hapus Data
+            </button>
+        </form>
+      </div>
+    {% else %}
+      <div class="text-center py-10">
+        <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+          Isi Sekarang
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Grid Produk -->
+  {% if product %}
+  <h2 class="text-2xl font-bold mb-4">Produk Rekomendasi</h2>
+  <div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {% for p in product %}
+      <div class="product-card bg-white rounded-lg border p-4 shadow-sm">
+        <div class="product-image">
+          <img src="{{ p.thumbnail.url|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-48 object-cover rounded">
+        </div>
+        <div class="product-info mt-2">
+          <span class="product-category text-gray-500 text-sm">{{ p.get_category_display }}</span>
+          <h4 class="product-name font-semibold">{{ p.name }}</h4>
+          <span class="product-size">Size: {{ p.size }}</span>
+          <h5 class="product-price font-bold">Rp {{ p.price }}</h5>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+      <p>Tidak ada produk yang sesuai ukuranmu.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
