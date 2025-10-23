@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop - Modern Shop{% endblock %}
+
+{% block content %}
+
+<section class="shop-header-bar">
+    <div class="shop-header-content">
+        <h1>Shop</h1>
+        <div class="breadcrumb">
+            <a href="{% url 'main:main-view' %}">Home</a> / <span>Shop</span>
+        </div>
+    </div>
+</section>
+
+<div class="shop-container">
+    
+    <aside class="shop-sidebar">
+        
+        <div class="sidebar-widget">
+    <h3>Product Categories</h3>
+    <ul class="category-list">
+        <li>
+            <a href="{% url 'shop:shop-main' %}" class="{% if not selected_category %}active{% endif %}">
+                All Products
+            </a>
+        </li>
+        
+        {% for value, display_name in all_categories %}
+        <li>
+            <a href="?category={{ value }}" class="{% if selected_category == value %}active{% endif %}">
+                {{ display_name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+    </aside>
+
+    <section class="shop-content">
+        
+        <div class="product-grid">
+            
+            {% for product in products %}
+            <div class="product-card {% if product.is_featured %}featured-product{% endif %}">
+                
+                {% if product.is_featured %}
+                    <span class="featured-badge">FEATURED</span>
+                {% endif %}
+                <div class="product-image">
+                    <img src="{{ product.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.get_category_display }}</span>
+                    <a href="{% url 'shop:product-detail' product.id %}">
+                        <h4 class="product-name">{{ product.name }}</h4>
+                    </a>
+                    <span class="product-size">Size: {{ product.size }}</span>
+                    <h5 class="product-price">Rp {{ product.price }}</h5>
+                </div>
+            </div>
+            {% empty %}
+                <p>Tidak ada produk yang ditemukan.</p>
+            {% endfor %}
+
+        </div>
+
+        <nav class="pagination">
+            <ul>
+                {% if products.has_previous %}
+                    <li><a href="?page=1{{ current_filter_params }}">&laquo; First</a></li>
+                    <li><a href="?page={{ products.previous_page_number }}{{ current_filter_params }}">Previous</a></li>
+                {% endif %}
+
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <li><a href="?page={{ num }}{{ current_filter_params }}" class="active">{{ num }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ num }}{{ current_filter_params }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                    <li><a href="?page={{ products.next_page_number }}{{ current_filter_params }}">Next</a></li>
+                    <li><a href="?page={{ products.paginator.num_pages }}{{ current_filter_params }}">Last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+    </section>
+
+</div>
+<div class="fab" id="open-add-modal-btn" title="Tambah Produk Baru">
+    +
+</div>
+
+<div id="add-product-modal" class="ajax-modal">
+    <div class="ajax-modal-content">
+        <span class="modal-close-btn" id="modal-close-btn">&times;</span>
+        
+        <h3>Tambah Produk Baru</h3>
+
+        <form id="add-product-form" action="{% url 'shop:add-product-ajax' %}" method="POST" novalidate>
+            {% csrf_token %}
+            
+            {{ add_product_form.as_p }}
+
+            <div id="form-errors"></div>
+            
+            <button type="submit">Simpan Produk</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function() {
+    
+    // Ambil elemen-elemen modal
+    var modal = $('#add-product-modal');
+    var fab = $('#open-add-modal-btn');
+    var closeBtn = $('#modal-close-btn');
+
+    // Buka modal saat FAB diklik
+    fab.on('click', function() {
+        modal.css('display', 'block');
+    });
+
+    // Tutup modal saat tombol 'x' diklik
+    closeBtn.on('click', function() {
+        modal.css('display', 'none');
+    });
+
+    // Tutup modal saat klik di luar area konten modal
+    $(window).on('click', function(event) {
+        if (event.target == modal[0]) {
+            modal.css('display', 'none');
+        }
+    });
+
+    // --- Handle AJAX Form Submission ---
+    $('#add-product-form').on('submit', function(e) {
+        e.preventDefault(); // Hentikan submit form standar
+
+        var form = $(this);
+        var url = form.attr('action');
+
+        // Hapus error lama
+        $('.form-error-list').remove();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // Ambil semua data form
+            
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Jika sukses:
+                    alert(response.message);
+                    // Tutup modal
+                    modal.css('display', 'none');
+                    // Muat ulang halaman untuk melihat produk baru
+                    location.reload(); 
+                } else if (response.status === 'error') {
+                    // Jika gagal (form tidak valid):
+                    // Tampilkan error di dalam modal
+                    var errors = response.errors;
+                    for (var field in errors) {
+                        var errorList = $('<ul>').addClass('form-error-list');
+                        errors[field].forEach(function(error) {
+                            errorList.append($('<li>').text(error));
+                        });
+                        // Tampilkan error di atas field yang salah
+                        form.find('[name="' + field + '"]').before(errorList);
+                    }
+                }
+            },
+            error: function(xhr, errmsg, err) {
+                console.log("AJAX error:", errmsg);
+                alert("Terjadi kesalahan pada server. Silakan coba lagi.");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
