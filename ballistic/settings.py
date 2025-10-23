@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'forum',
     'main',
     'createnews',
+
+    'review',
 'voucher',
     'shop',
 ]

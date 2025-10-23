@@ -5,17 +5,17 @@ from django.utils.html import strip_tags
 from createnews.models import News
 
 def show_news_list(request): 
-    # 🟩 Filter kategori dari dropdown (?category=event)
+    # Filter kategori dari dropdown (?category=event)
     category = request.GET.get('category')
     if category:
         news_list = News.objects.filter(category=category).order_by('-created_at')
     else:
         news_list = News.objects.all().order_by('-created_at')
 
-    # 🟨 Sidebar Populer: berita dengan is_featured=True
+    # Sidebar Populer: berita dengan is_featured=True
     popular = News.objects.filter(is_featured=True).order_by('-news_views')[:5]
 
-    # 🟢 Kalau request dari AJAX (fetch updatePopularList)
+    # Kalau request dari AJAX (fetch updatePopularList)
     if request.GET.get("ajax") == "1":
         return JsonResponse({
             "popular_list": [
@@ -29,7 +29,7 @@ def show_news_list(request):
             ]
         })
 
-    # 🟦 Kalau bukan AJAX, render template biasa
+    # kalau bukan AJAX, render template biasa
     context = {
         'news_list': news_list,
         'popular_list': popular,
@@ -57,7 +57,7 @@ def create_news_ajax(request):
         return JsonResponse({"error": "Not allowed"}, status=403)
 
     title = strip_tags(request.POST.get("title", ""))
-    author = request.user.username if request.user.is_authenticated else "Anonymous"
+    author = request.POST.get("author", "")
     content = strip_tags(request.POST.get("content", ""))
     category = request.POST.get("category", "sports_news")
     thumbnail = request.POST.get("thumbnail", "")
@@ -96,7 +96,7 @@ def edit_news_ajax(request, id):
     "id": str(news.id),
     "title": news.title,
     "author": news.author,
-    "content": news.content,  # ✅ kirim konten penuh
+    "content": news.content,  # kirim konten penuh
     "category": news.category,
     "thumbnail": news.thumbnail,
     "is_featured": news.is_featured,

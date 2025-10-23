@@ -6,15 +6,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Latest News</h2>
+  <h2 class="fw-bold ballistic-title text-center">BALLISTIC NEWS</h2>
     {% if request.user.is_authenticated and request.user.is_staff %}
-      <button class="btn btn-success rounded-circle" id="openCreateBtn" style="width:45px; height:45px;">＋</button>
+    <div class="d-flex justify-content-end mb-4">
+    <button class="btn-create rounded-circle" id="openCreateBtn">＋</button>
+</div>
     {% endif %}
   </div>
 
   <div class="row">
-    <!-- MAIN CONTENT -->
+    <!-- main konten -->
     <div class="col-lg-9">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <label class="fw-semibold me-2">Sort by category:</label>
@@ -42,11 +43,12 @@
               <p class="text-truncate" style="max-height:60px;">{{ news.content }}</p>
             </div>
             <div class="card-footer bg-white border-0 d-flex justify-content-between">
-              <a href="{% url 'createnews:show_news_detail' news.id %}" class="btn btn-outline-primary btn-sm">Detail</a>
+              <a href="{% url 'createnews:show_news_detail' news.id %}" class="btn btn-outline-dark btn-sm">Detail</a>
+
               {% if request.user.is_authenticated and request.user.is_staff %}
                 <div>
                   <button class="btn btn-sm btn-secondary me-1" onclick="openEditModal('{{ news.id }}')">Edit</button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteNews('{{ news.id }}')">Delete</button>
+                  <button class="btn btn-sm btn-danger delete-btn" data-id="{{ news.id }}">Delete</button>
                 </div>
               {% endif %}
             </div>
@@ -58,7 +60,7 @@
       </div>
     </div>
 
-    <!-- SIDEBAR -->
+    <!-- sidebar -->
     <div class="col-lg-3">
       <h5 class="fw-bold mb-3">Populer</h5>
       <ul class="list-group list-group-flush">
@@ -85,7 +87,7 @@
   </div>
 </div>
 
-<!-- CREATE MODAL -->
+<!-- create modal -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <form id="create-form" class="modal-content shadow">
@@ -167,10 +169,10 @@ const csrftoken = document.cookie.split('=')[1];
 const createModal = new bootstrap.Modal(document.getElementById('createModal'));
 const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 
-// BUKA MODAL TAMBAH
+// buka modal create
 document.getElementById('openCreateBtn')?.addEventListener('click', () => createModal.show());
 
-// CREATE NEWS (tanpa reload)
+// create news (tanpa reload)
 document.getElementById('create-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -179,7 +181,7 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
 
   const res = await fetch("{% url 'createnews:create_news_ajax' %}", {
     method: 'POST',
-    credentials: 'same-origin', // ✅ penting biar session admin ikut
+    credentials: 'same-origin', // penting biar session admin ikut
     headers: {'X-CSRFToken': csrftoken},
     body: formData,
   });
@@ -191,9 +193,9 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
 
   const data = await res.json();
 
-  if (res.ok && data.title) {
-    // ✅ Tambahkan berita baru langsung ke tampilan
-    const cardHTML = `
+if (res.ok && data.title) {
+  // menambahkan berita baru langsung ke tampilan
+  const cardHTML = `
       <div class="col-md-4 mb-4" id="news-${data.id}">
         <div class="card h-100 shadow-sm border-0">
           ${data.thumbnail ? `<img src="${data.thumbnail}" class="card-img-top" style="height:200px; object-fit:cover;">` : ""}
@@ -204,26 +206,31 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
             <p class="text-truncate" style="max-height:60px;">${data.content}</p>
           </div>
           <div class="card-footer bg-white border-0 d-flex justify-content-between">
-            <a href="/news/detail/${data.id}/" class="btn btn-outline-primary btn-sm">Detail</a>
+            <a href="/news/detail/${data.id}/" class="btn btn-outline-dark btn-sm">Detail</a>
             <div>
               <button class="btn btn-sm btn-secondary me-1" onclick="openEditModal('${data.id}')">Edit</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteNews('${data.id}')">Delete</button>
+              <button class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Delete</button>
             </div>
           </div>
         </div>
       </div>`;
-    document.getElementById("news-grid").insertAdjacentHTML("afterbegin", cardHTML);
+  
+  document.getElementById("news-grid").insertAdjacentHTML("afterbegin", cardHTML);
 
-    showToast("success", "Berita berhasil ditambahkan 🎉");
-    form.reset();
-    createModal.hide();
+  // menambahkan baris ini supaya sidebar populer ikut diperbarui:
+  if (data.is_featured) {
+    await updatePopularList();
+  }
+
+  showToast("success", "Berita berhasil ditambahkan 🎉");
+  form.reset();
+  createModal.hide();
   } else {
     showToast("error", "Gagal menambah berita!");
   }
 });
 
-// EDIT NEWS
-// ✅ EDIT NEWS (versi fix)
+// edit news
 document.getElementById('edit-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('edit-id').value;
@@ -249,15 +256,15 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
 
     const data = await res.json();
 
-    // 🟢 Jika berhasil, update DOM langsung tanpa reload
+    // jika berhasil, update DOM langsung tanpa reload
     if (data && data.title) {
       const card = document.getElementById(`news-${id}`);
       if (card) {
-        // 🔄 Update gambar (kalau ada)
+        // update gambar (kalau ada)
         const img = card.querySelector("img");
         if (img && data.thumbnail) img.src = data.thumbnail;
 
-        // 🔄 Update judul, author, dan konten
+        // update judul, author, dan konten
         card.querySelector(".card-title").textContent = data.title;
         card.querySelector(".text-muted").textContent = "Dibuat oleh: " + data.author;
 
@@ -265,7 +272,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
         desc.innerHTML = data.content || "(tanpa konten)";
         desc.style.display = "block"; // pastikan muncul lagi kalau sempat hilang
 
-        // 🟡 Update badge Populer
+        // update badge Populer
         const badge = card.querySelector(".badge");
         if (data.is_featured) {
           if (!badge) {
@@ -279,7 +286,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
         }
       }
 
-      // 🟣 Update sidebar Populer juga (tanpa reload)
+      // update sidebar Populer juga (tanpa reload)
       updatePopularList();
 
       showToast("success", "✅ Berita berhasil diperbarui!");
@@ -294,7 +301,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
   }
 });
 
-// 🟢 Fungsi untuk memperbarui sidebar populer tanpa reload
+//  Fungsi untuk memperbarui sidebar populer tanpa reload
 async function updatePopularList() {
   try {
     const res = await fetch("{% url 'createnews:show_news_list' %}?ajax=1");
@@ -325,23 +332,38 @@ async function updatePopularList() {
 }
 
 
-// DELETE NEWS
-async function deleteNews(id) {
-  if (!confirm('Yakin ingin menghapus berita ini?')) return;
-  const res = await fetch(`/news/delete/${id}/`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {'X-CSRFToken': csrftoken},
-  });
-  if (res.status === 403) {
-    showToast("error", "Hanya admin yang bisa menghapus berita!");
-    return;
+// event Delegation untuk tombol Delete (termasuk yang baru ditambahkan)
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("delete-btn")) return;
+
+  const id = e.target.dataset.id;
+  if (!confirm("Yakin ingin menghapus berita ini?")) return;
+
+  try {
+const res = await fetch(`/news/delete/${id}/`, {
+  method: "POST", // <-- bukan delete kalau view-nya pakai POST
+  headers: { "X-CSRFToken": csrftoken },
+});
+
+    if (res.ok) {
+      // hapus card dari tampilan
+      const card = document.getElementById(`news-${id}`);
+      if (card) card.remove();
+
+      // melakukan update sidebar populer langsung tanpa reload
+      updatePopularList();
+
+      showToast("success", "🗑️ Berita berhasil dihapus!");
+    } else {
+      showToast("error", "Gagal menghapus berita!");
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+    showToast("error", "Terjadi kesalahan koneksi saat menghapus berita!");
   }
-  if (res.ok) {
-    document.getElementById('news-' + id).remove();
-    showToast("success", "Berita berhasil dihapus 🗑️");
-  } else showToast("error", "Gagal menghapus berita!");
-}
+});
+
+
 document.getElementById('categoryFilter').addEventListener('change', (e) => {
   const value = e.target.value;
   const url = new URL(window.location.href);

@@ -7,10 +7,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('', include('main.urls', namespace='main')),
-
     path('news/', include('createnews.urls', namespace='createnews')),
+    path('review/', include('review.urls')),
     path('shop/', include('shop.urls')), # <-- TAMBAHKAN BARIS INI
     path('forum/', include('forum.urls')),
     path('voucher/', include('voucher.urls')),

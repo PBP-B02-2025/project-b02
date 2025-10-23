@@ -12,9 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* ==========================================
-           GLOBAL STYLE
-        =========================================== */
+        /* global style*/
         body {
             font-family: 'Montserrat', sans-serif;
             color: #222;
@@ -23,9 +21,7 @@
             background-color: #fff;
         }
 
-        /* ==========================================
-           LINK STYLE — TANPA UNDERLINE DI MANA PUN
-        =========================================== */
+        /* link style*/
         a,
         a:visited,
         a:focus,
@@ -41,9 +37,7 @@
             text-decoration: none !important;
         }
 
-        /* ==========================================
-           HEADER STYLE
-        =========================================== */
+        /* header style*/
         header {
             border-bottom: 1px solid #eee;
             padding: 15px 0;
@@ -83,9 +77,7 @@
             color: #000 !important;
         }
 
-        /* ==========================================
-           NAVBAR STYLE
-        =========================================== */
+        /* navbarstyle*/
         nav {
             text-align: center;
             border-bottom: 1px solid #f2f2f2;
@@ -121,9 +113,7 @@
             font-weight: 700;
         }
 
-        /* ==========================================
-           DROPDOWN STYLE (PRODUCTS)
-        =========================================== */
+        /* dropdown style (products) */
         nav ul li.dropdown {
             position: relative;
         }
@@ -169,9 +159,7 @@
             text-decoration: none !important;
         }
 
-        /* ==========================================
-           MAIN CONTENT WRAPPER
-        =========================================== */
+        /* main content wrapper */
         main {
             padding: 40px 80px;
             min-height: 80vh;
@@ -181,7 +169,7 @@
 
 <body>
 
-    <!-- ==================== HEADER ==================== -->
+    <!--  header  -->
     <header>
         <div class="top-bar">
             <div class="social-icons">
@@ -196,50 +184,69 @@
 
             <div class="user-icons">
                 <a href="#">🔍</a>
-                <a href="#">👤</a>
+                <a href="#">👤
+                    
+                </a>
+                
                 <a href="#">🛒</a>
             </div>
         </div>
     </header>
 
-    <!-- ==================== NAVBAR ==================== -->
-<nav class="navbar">
-  <ul class="nav-left">
-    <li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
-    <li><a href="#">SHOP</a></li>
+  <!-- Bagian Top Bar (bar ungu, ikon kanan atas) -->
 
-    <li class="dropdown">
-      <a href="#">PRODUCTS ▾</a>
-      <ul class="dropdown-menu">
-        <li><a href="#">Contoh: Baju</a></li>
-        <li><a href="#">Contoh: Celana</a></li>
-        <li><a href="#">Contoh: Sepatu</a></li>
-      </ul>
-    </li>
+  <div class="user-icons">
+    <i class="fa fa-search"></i>
+    <i class="fa fa-user"></i>
+    <i class="fa fa-shopping-cart"></i>
 
-    <li><a href="#">FORUM</a></li>
-    <li><a href="{% url 'createnews:show_news_list' %}" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
-    <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
-    <li><a href="#">ABOUT</a></li>
-  </ul>
-
-  <ul class="nav-right">
     {% if user.is_authenticated %}
-      <li><a href="{% url 'main:logout' %}" class="logout-btn">Log Out</a></li>
+      <a href="{% url 'main:logout' %}" class="logout-btn">Log Out</a>
     {% else %}
-      <li><a href="{% url 'main:login' %}" class="login-btn">Log In</a></li>
+      <a href="{% url 'main:login' %}" class="logout-btn">Log In</a>
     {% endif %}
-  </ul>
-</nav>
+  </div>
+</div>
+
+<!-- Logo + Navigasi -->
+<header class="main-header">
+  <nav>
+    <ul>
+      <li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
+      <li><a href="#">SHOP</a></li>
+      <li class="dropdown">
+        <a href="#">PRODUCTS ▾</a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Contoh: Baju</a></li>
+          <li><a href="#">Contoh: Celana</a></li>
+          <li><a href="#">Contoh: Sepatu</a></li>
+        </ul>
+      </li>
+     <li><a href="{% url 'createnews:show_news_list' %}" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
+      <li><a href="#">FORUM</a></li>
+      <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
+      <li><a href="#">ABOUT</a></li>
+    </ul>
+  </nav>
+</header>
 
 
-
-    <!-- ==================== MAIN CONTENT ==================== -->
+    <!--  main content -->
     <main>
         {% block content %}
         {% endblock %}
     </main>
 
+<div id="toast-component"
+     class="fixed bottom-8 right-8 opacity-0 translate-y-10 p-4 rounded-2xl shadow-lg z-50 flex items-center gap-3 transition-all duration-500 max-w-sm">
+  <div id="toast-icon" class="text-xl">🔔</div>
+  <div class="flex-1">
+      <h4 id="toast-title" class="font-semibold text-gray-900">Notifikasi</h4>
+      <p id="toast-message" class="text-sm text-gray-600">Pesan di sini</p>
+  </div>
+</div>
+
+<script src="{% static 'js/toast.js' %}"></script>
 </body>
 </html>
 
