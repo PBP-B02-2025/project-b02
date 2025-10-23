@@ -8,9 +8,9 @@
       </button>
 
       <div class="flex items-center gap-2">
-        <label for="sort" class="text-gray-600 text-sm font-medium">Urutkan:</label>
-        <select id="sort" class="border border-gray-300 rounded-md text-sm px-3 py-1 focus:ring-2 focus:ring-blue-500">
-            <option value="newest">Terbaru ▼</option>
+        <label for="sortForum" class="text-gray-600 text-sm font-medium">Urutkan:</label>
+        <select id="sortForum" class="rounded-md border border-black text-sm px-3 py-1 focus:outline-none focus:ring-2 focus:ring-black">
+            <option value="newest">Terbaru</option>
             <option value="oldest">Terlama</option>
             <option value="popular">Terpopuler</option>
         </select>
@@ -27,12 +27,32 @@
 <script>
 // Configuration
 const FORUM_API_ENDPOINT = "{% url 'forum:show_json' %}";
+const FORUM_SORT_API_ENDPOINT = "{% url 'forum:json_forum_sort' %}";
 
 // DOM Elements
 const forumGridContainer = document.getElementById('forumGrid');
+const sortForumSelection = document.getElementById('sortForum');
 
 // State Variables
 let forum_data = [];
+
+sortForumSelection.addEventListener('change',async (e) => {
+  const value = e.target.value;
+  try {
+    const response = await fetch(`${FORUM_SORT_API_ENDPOINT}?sort=${value}`, {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch forum data from server');
+    }
+    const forumData = await response.json();
+    forum_data = forumData || [];
+    renderAllForumCards(forum_data);
+    console.log("test");
+  } catch (error) {
+    console.error('Error loading forum:', error);
+  }
+})
 
 function buildForumCardElement(item) {
     const card = document.createElement('div');

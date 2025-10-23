@@ -15,4 +15,5 @@ urlpatterns = [
     path('edit-forum-ajax/', edit_forum_ajax, name='edit_forum_ajax'),
     path('delete-comment-ajax/', delete_comment_ajax, name='delete_comment_ajax'),
     path('edit-comment-ajax/', edit_comment_ajax, name='edit_comment_ajax'),
+    path('json-forum-sort/', show_json_forum_sort, name='json_forum_sort'),
 ]

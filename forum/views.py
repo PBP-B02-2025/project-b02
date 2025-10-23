@@ -20,8 +20,32 @@ def show_forum(request, id):
     }
     return render(request, "forum_detail.html", context)
 
-def show_json_forum(request):
+def show_json_forum_sort(request):
+    sort_by = request.GET.get('sort')
     forum_list = Forum.objects.annotate(comment_count=Count('comment'))
+    if sort_by == 'newest':
+        forum_list = forum_list.order_by('-updated_at')
+    elif sort_by == 'oldest':
+        forum_list = forum_list.order_by('updated_at')
+    elif sort_by == 'popular':
+        forum_list = forum_list.order_by('-forum_views')
+    forum_data = [
+        {
+            'id': str(forum.id),
+            'title': forum.title,
+            'author': forum.author.username,
+            'content': forum.content,
+            'created_at': forum.created_at.isoformat(),
+            'updated_at': forum.updated_at.isoformat(),
+            'views': str(forum.forum_views),
+            'comment_count': str(forum.comment_count),
+            'author_id': forum.author_id,
+        } for forum in forum_list
+    ]
+    return JsonResponse(forum_data, safe=False)
+
+def show_json_forum(request):
+    forum_list = Forum.objects.annotate(comment_count=Count('comment')).order_by('-updated_at')
     forum_data = [
         {
             'id': str(forum.id),
@@ -140,11 +164,14 @@ def edit_forum_ajax(request):
 @require_POST
 def edit_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
+    forum = comment.forum
+    forum.updated_at = timezone.now()
+    forum.save()
     comment.content = strip_tags(request.POST.get("content"))
     comment.updated_at = timezone.now()
     comment.save()
     return JsonResponse({
         "success": True,
-        "message": "Forum updated successfully!",
+        "message": "Comment updated successfully!",
         "comment_id": comment.id
     })
