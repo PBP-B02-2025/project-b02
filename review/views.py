@@ -109,7 +109,7 @@ def delete_review(request, id):
     else:
         return JsonResponse({'success': False})
     
-def average_star(request, product_id):
+def average_star(product_id):
     try:
         product = Product.objects.get(id=product_id)
         avg = 0
@@ -128,7 +128,7 @@ def average_star(request, product_id):
     except:
         return JsonResponse({'detail': 'Not found'}, status=404)
     
-def show_all_from_one_product(request, product_id):
+def show_all_review_from_one_product(product_id):
     try:
         product = Product.objects.get(id=product_id)
 
