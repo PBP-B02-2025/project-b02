@@ -1,6 +1,6 @@
 
 {% load static %}
-<article>
+<article id="review-{{ review.id }}">
     <!-- Bagian Username -->
     <div>
         <p>{{review.user.username}}</p>
@@ -15,10 +15,17 @@
         
     </div>
 
+    <!--Jika user saat ini adalah pembuat comment-->
+    {% if user.is_authenticated and review.user == user %}
+        <a href="{% url 'review:delete_review' review.id %}">
+            Delete comment
+        </a>
+    {% endif %}
+
 </article>
 
 <script>
 
-    //if
+
 
 </script>
