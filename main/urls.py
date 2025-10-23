@@ -1,13 +1,10 @@
-# Buat file baru di main/urls.py
-
 from django.urls import path
 from . import views
-from main.views import *
-# Beri nama 'main' agar bisa dipanggil pakai {% url 'main:nama_url' %}
-app_name = 'main' 
+
+app_name = 'main'  # <-- TAMBAHKAN BARIS INI. INI ADALAH KUNCINYA.
 
 urlpatterns = [
-    # Path '' (kosong) berarti ini adalah homepage untuk aplikasi 'main'
+    # Ini adalah view untuk homepage Anda
     path('', views.main_view, name='main-view'),
     path('register-ajax/', register_ajax, name='register_ajax'),
     path('register/', register_user, name='register'),
