@@ -1,0 +1,59 @@
+from django.shortcuts import render
+from forum.models import Forum, Comment
+from django.http import JsonResponse
+from django.db.models import Count
+# Create your views here.
+
+def show_forum_list(request):
+    return render(request, "forum.html", {})
+
+def show_forum(request, id):
+    context = {
+        'id': id
+    }
+    return render(request, "forum_detail.html", context)
+
+def show_json_forum(request):
+    forum_list = Forum.objects.annotate(comment_count=Count('comment'))
+    forum_data = [
+        {
+            'id': str(forum.id),
+            'title': forum.title,
+            'author': forum.author.username,
+            'content': forum.content,
+            'created_at': forum.created_at.isoformat(),
+            'updated_at': forum.updated_at.isoformat(),
+            'views': str(forum.forum_views),
+            'comment_count': str(forum.comment_count),
+        } for forum in forum_list
+    ]
+    return JsonResponse(forum_data, safe=False)
+
+def show_json_forum_by_id(request, id):
+    try:
+        forum = Forum.objects.get(pk=id)
+        forum_data = {
+            'id': str(forum.id),
+            'title': forum.title,
+            'author': forum.author.username,
+            'content': forum.content,
+            'created_at': forum.created_at.isoformat(),
+            'updated_at': forum.updated_at.isoformat(),
+            'views': str(forum.forum_views),
+        } 
+        return JsonResponse(forum_data)
+    except Forum.DoesNotExist:
+        return JsonResponse({'detail': 'Not found'}, status=404)
+
+def show_json_comment(request, id):
+    comment_list = Comment.objects.filter(forum_id=id)
+    comment_data = [
+        {
+            'id': str(comment.id),
+            'author': comment.author.username,
+            'content': comment.content,
+            'created_at': comment.created_at.isoformat(),
+            'updated_at': comment.updated_at.isoformat(),
+        } for comment in comment_list
+    ]
+    return JsonResponse(comment_data, safe=False)
