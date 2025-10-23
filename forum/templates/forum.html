@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Toolbar -->
+<section class="bg-white py-4">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center">
+      <button class="mb-3 sm:mb-0 bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-[#333] transition">
+          + Tambah Topik Baru
+      </button>
+
+      <div class="flex items-center gap-2">
+        <label for="sort" class="text-gray-600 text-sm font-medium">Urutkan:</label>
+        <select id="sort" class="border border-gray-300 rounded-md text-sm px-3 py-1 focus:ring-2 focus:ring-blue-500">
+            <option value="newest">Terbaru ▼</option>
+            <option value="oldest">Terlama</option>
+            <option value="popular">Terpopuler</option>
+        </select>
+      </div>
+  </div>
+</section>
+
+<!-- Forum section -->
+<main class="flex-grow pt-4 bg-white">
+  <div id="forumGrid" class="max-w-6xl mx-auto px-6 mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</main>
+
+<script>
+// Configuration
+const FORUM_API_ENDPOINT = "{% url 'forum:show_json' %}";
+
+// DOM Elements
+const forumGridContainer = document.getElementById('forumGrid');
+
+// State Variables
+let forum_data = [];
+
+function buildForumCardElement(item) {
+    const card = document.createElement('div');
+    card.className = 'bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300 rounded-xl overflow-hidden flex flex-col h-full';
+
+    const author = DOMPurify.sanitize(item.author);
+    const title = DOMPurify.sanitize(item.title);
+    const content = DOMPurify.sanitize(item.content);
+    const createdAt = DOMPurify.sanitize(new Date(item.created_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    }));
+    const updatedAt = DOMPurify.sanitize(new Date(item.updated_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    }));
+    const views = DOMPurify.sanitize(item.views);
+    const comment_count = DOMPurify.sanitize(item.comment_count);
+
+    const linkDetail = `{% url 'forum:show_forum' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000',item.id);
+
+    card.innerHTML = `
+        <a href="${linkDetail}" class="block p-5 h-full hover:bg-gray-50 transition duration-200">
+            <div>
+                <h2 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${title}</h2>
+                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                    ${content}
+                </p>
+            </div>
+
+            <div class="flex justify-between items-center text-sm text-gray-500 border-t border-gray-100 pt-3">
+                <span>By <strong>${author}</strong></span>
+                <span>Update: ${updatedAt}</span>
+            </div>
+
+            <div class="flex justify-end gap-3 text-gray-400 text-sm mt-1">
+                <span>💬 ${comment_count}</span>
+                <span>👀 ${views}</span>
+            </div>
+        </a>
+    `;
+
+    return card;
+}
+
+
+// Render all forum cards
+function renderAllForumCards(forumItems) {
+  forumGridContainer.innerHTML = '';
+  forumItems.forEach(forum => {
+    const cardElement = buildForumCardElement(forum);
+    forumGridContainer.appendChild(cardElement);
+  });
+}
+
+// Fetch forum data from server
+async function fetchForumFromServer() {
+  try {    
+    const response = await fetch(FORUM_API_ENDPOINT, {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch forum data from server');
+    }
+    const forumData = await response.json();
+    forum_data = forumData || [];
+    renderAllForumCards(forum_data);
+  } catch (error) {
+    console.error('Error loading forum:', error);
+  }
+}
+
+// Initialize page
+function initializeForumPage() {
+  fetchForumFromServer();
+}
+
+// Start application
+initializeForumPage();
+</script>
+{% endblock %}
