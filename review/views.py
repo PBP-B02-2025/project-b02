@@ -26,11 +26,12 @@ from django.views.decorators.http import require_POST
 
 # Create your views here.
 
-def add_review(request):
+@login_required
+def add_review(request, product_id):
     comment = strip_tags(request.POST.get("comment"))
     star = request.POST.get("star")
     user = request.user
-    product = request.product
+    product = get_object_or_404(Product, id=product_id)
 
     new_review = Review(
         user=user,
@@ -140,4 +141,10 @@ def show_all_review_from_one_product(product_id):
         return JsonResponse(review_list)
     except:
         return JsonResponse({'detail': 'Not found'}, status=404)   
+    
+
+def base_page(request):
+    review_list = Review.objects.all()
+    
+    return render(request, 'dasar.html', {'review_list': review_list})
 

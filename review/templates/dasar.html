@@ -1,0 +1,17 @@
+
+<div>
+    <a href="{% url 'review:add_review' %}">
+        Add Review
+    </a>
+    
+    
+    <ul>
+        {% for item in review_list %}
+            {% include 'review_card.html' with review=item %}
+        {% empty %}
+            <p>Tidak ada review</p>
+        {% endfor %}
+    </ul>
+    
+
+</div>
