@@ -135,3 +135,16 @@ def edit_forum_ajax(request):
         "message": "Forum updated successfully!",
         "forum_id": forum.id
     })
+
+@csrf_exempt
+@require_POST
+def edit_comment_ajax(request):
+    comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
+    comment.content = strip_tags(request.POST.get("content"))
+    comment.updated_at = timezone.now()
+    comment.save()
+    return JsonResponse({
+        "success": True,
+        "message": "Forum updated successfully!",
+        "comment_id": comment.id
+    })
