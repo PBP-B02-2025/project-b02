@@ -6,4 +6,7 @@ from django.shortcuts import render
 def main_view(request):
     # Render file 'main.html' yang ada di 'main/templates/'
     # Django akan otomatis mencari di 'main/templates/main.html'
-    return render(request, 'main.html')
+    context = {
+        'active_page': 'home'
+    }
+    return render(request, 'main.html', context)
