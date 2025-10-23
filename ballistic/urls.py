@@ -10,5 +10,4 @@ urlpatterns = [
     path('', include('main.urls')),     # Ini untuk homepage Anda
     path('shop/', include('shop.urls')), # <-- TAMBAHKAN BARIS INI
     path('forum/', include('forum.urls')),
-    path('', include('main.urls')), # <-- TAMBAHKAN BARIS INI
 ]

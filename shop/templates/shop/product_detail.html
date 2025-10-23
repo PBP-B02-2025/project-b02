@@ -55,7 +55,9 @@
     <div class="product-reviews-section">
         <h2>Product Reviews</h2>
         
-        <p>Belum ada review untuk produk ini.</p>
+        <!-- <p>Belum ada review untuk produk ini.</p> -->
+
+        {% include "review_of_product.html" with product=product %}
     </div>
 
 </div> {% endblock %}

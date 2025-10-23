@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from review.forms import ProductForm
+from review.forms import ReviewForm
 from review.models import Review
 from django.shortcuts import render, redirect, get_object_or_404
-
+from .forms import ReviewForm    
 from django.http import HttpResponse
 from shop.models import Product
 from django.core import serializers
@@ -26,23 +26,44 @@ from django.views.decorators.http import require_POST
 
 # Create your views here.
 
+
 @login_required
 def add_review(request, product_id):
-    comment = strip_tags(request.POST.get("comment"))
-    star = request.POST.get("star")
-    user = request.user
     product = get_object_or_404(Product, id=product_id)
+    
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            
+            # Return JSON response for AJAX requests
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Review added successfully!'
+                }, status=201)
+            else:
+                # For non-AJAX requests, redirect to product detail
+                return redirect('shop:product-detail', product_id=product_id)
+        else:
+            # Return form with errors for AJAX requests
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'errors': form.errors
+                }, status=400)
+    else:
+        form = ReviewForm()
+    
+    context = {
+        'form': form,
+        'product': product
+    }
+    return render(request, 'add_review.html', context)
 
-    new_review = Review(
-        user=user,
-        comment=comment,
-        star=star,
-        product=product
-    )
-
-    new_review.save()
-
-    return HttpResponse(b"CREATED", status=201)
 
 
 def edit_review(request, id): #cek apakah ini ajax
@@ -50,7 +71,7 @@ def edit_review(request, id): #cek apakah ini ajax
     review = get_object_or_404(Review, pk=id)
 
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=review)
+        form = ReviewForm(request.POST, instance=review)
         
         # Debug logging
         print(f"POST data: {request.POST}")
@@ -67,7 +88,7 @@ def edit_review(request, id): #cek apakah ini ajax
                     'message': 'Review updated successfully!'
                 })
             else:
-                return redirect('main:show_main')
+                return redirect(reverse('shop:product-detail', args=[review.product.id]))
         
         # For AJAX requests with form errors
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -77,14 +98,14 @@ def edit_review(request, id): #cek apakah ini ajax
             }, status=400)
     
     else:
-        form = ProductForm(instance=review)
+        form = ReviewForm(instance=review)
 
     context = {
         'form': form,
         'review': review
     }
 
-    return render(request, "edit_jersey.html", context) 
+    return render(request, "update_review.html", context) 
 
 
 def read_review_by_json(request, id):
@@ -101,14 +122,31 @@ def read_review_by_json(request, id):
     except Review.DoesNotExist:
         return JsonResponse({'detail': 'Not found'}, status=404)
 
+def show_product_reviews(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = Review.objects.filter(product=product).select_related('user')
+    form = ReviewForm()
+    
+    context = {
+        'product': product,
+        'reviews': reviews,
+        'form': form,
+    }
+    return render(request, 'review_of_product.html', context)
+
+@login_required
 def delete_review(request, id):
     if request.method == 'DELETE' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         review = get_object_or_404(Review, pk=id)
+        
+        # Check if user owns the review
+        if review.user != request.user:
+            return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+        
         review.delete()
-
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, 'message': 'Review deleted successfully'})
     else:
-        return JsonResponse({'success': False})
+        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
     
 def average_star(product_id):
     try:
