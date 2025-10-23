@@ -472,9 +472,15 @@
         }
         return cookieValue;
     }
+    // Prefer csrf token from hidden input if present, fallback to cookie
+    function getCsrfToken() {
+        const el = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (el && el.value) return el.value;
+        return getCookie('csrftoken');
+    }
     
-    const csrftoken = getCookie('csrftoken');
-    const isAdmin = {{ is_admin|yesno:"true,false" }};
+    const csrftoken = getCsrfToken();
+    const isAdmin = "{{ is_admin|yesno:'true,false' }}" === "true";
     
     // Modal elements
     const modal = document.getElementById('voucherModal');
@@ -532,12 +538,12 @@
     // Submit form with AJAX
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('kode', document.getElementById('kode').value);
-        formData.append('deskripsi', document.getElementById('deskripsi').value);
-        formData.append('persentase_diskon', document.getElementById('persentase_diskon').value);
-        formData.append('is_active', document.getElementById('is_active').checked);
+        // Build FormData from the form so it includes csrfmiddlewaretoken
+        const formData = new FormData(form);
+        formData.set('kode', document.getElementById('kode').value);
+        formData.set('deskripsi', document.getElementById('deskripsi').value);
+        formData.set('persentase_diskon', document.getElementById('persentase_diskon').value);
+        formData.set('is_active', document.getElementById('is_active').checked ? 'true' : 'false');
         
         try {
             let url, method;
@@ -553,7 +559,7 @@
             const response = await fetch(url, {
                 method: method,
                 headers: {
-                    'X-CSRFToken': csrftoken,
+                    'X-CSRFToken': getCsrfToken(),
                 },
                 body: formData
             });
@@ -601,7 +607,7 @@
             const response = await fetch(`/voucher/delete-ajax/${id}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': csrftoken,
+                    'X-CSRFToken': getCsrfToken(),
                 }
             });
             
