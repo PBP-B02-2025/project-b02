@@ -30,6 +30,7 @@ def show_json_forum(request):
             'updated_at': forum.updated_at.isoformat(),
             'views': str(forum.forum_views),
             'comment_count': str(forum.comment_count),
+            'author_id': forum.author_id,
         } for forum in forum_list
     ]
     return JsonResponse(forum_data, safe=False)
@@ -45,7 +46,8 @@ def show_json_forum_by_id(request, id):
             'created_at': forum.created_at.isoformat(),
             'updated_at': forum.updated_at.isoformat(),
             'views': str(forum.forum_views),
-            'comment_count': str(forum.comment_set.count())
+            'comment_count': str(forum.comment_set.count()),
+            'author_id': forum.author_id,
         } 
         return JsonResponse(forum_data)
     except Forum.DoesNotExist:
@@ -60,6 +62,7 @@ def show_json_comment(request, id):
             'content': comment.content,
             'created_at': comment.created_at.isoformat(),
             'updated_at': comment.updated_at.isoformat(),
+            'author_id': comment.author_id,
         } for comment in comment_list
     ]
     return JsonResponse(comment_data, safe=False)
@@ -77,3 +80,29 @@ def create_forum_ajax(request):
     )
     new_forum.save()
     return HttpResponse(b"CREATED", status=201)
+
+@csrf_exempt
+@require_POST
+def create_comment_ajax(request):
+    forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
+    content = strip_tags(request.POST.get("content"))
+    author = request.user
+    new_comment = Comment(
+        forum=forum,
+        content=content,
+        author=author,
+    )
+    new_comment.save()
+    return HttpResponse(b"CREATED", status=201)
+
+@csrf_exempt
+@require_POST
+def delete_forum_ajax(request):
+    forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
+    forum.delete()
+    response = JsonResponse({
+        'success': True,
+        'message': 'Forum deleted succesful!',
+        'redirect_url': '/forum/'
+    })
+    return response
