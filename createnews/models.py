@@ -10,7 +10,7 @@ class News(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
-    author = models.CharField(max_length=100)  # 🆕 nama penulis
+    author = models.CharField(max_length=100)  
     content = models.TextField()
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='sports_news')
     thumbnail = models.URLField(blank=True, null=True)

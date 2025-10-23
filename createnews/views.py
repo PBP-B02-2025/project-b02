@@ -4,23 +4,39 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import strip_tags
 from createnews.models import News
 
-def show_news_list(request):
-    # filtering by category via ?category=event
+def show_news_list(request): 
+    # 🟩 Filter kategori dari dropdown (?category=event)
     category = request.GET.get('category')
     if category:
         news_list = News.objects.filter(category=category).order_by('-created_at')
     else:
         news_list = News.objects.all().order_by('-created_at')
 
-    # sidebar populer = is_featured True, limit 5
+    # 🟨 Sidebar Populer: berita dengan is_featured=True
     popular = News.objects.filter(is_featured=True).order_by('-news_views')[:5]
 
+    # 🟢 Kalau request dari AJAX (fetch updatePopularList)
+    if request.GET.get("ajax") == "1":
+        return JsonResponse({
+            "popular_list": [
+                {
+                    "id": str(p.id),
+                    "title": p.title,
+                    "author": p.author,
+                    "thumbnail": p.thumbnail,
+                }
+                for p in popular
+            ]
+        })
+
+    # 🟦 Kalau bukan AJAX, render template biasa
     context = {
         'news_list': news_list,
         'popular_list': popular,
         'categories': News.CATEGORY_CHOICES,
     }
     return render(request, "createnews/news_list.html", context)
+
 
 def show_news_detail(request, id):
     news = get_object_or_404(News, pk=id)

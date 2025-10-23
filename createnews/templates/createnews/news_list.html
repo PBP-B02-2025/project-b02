@@ -38,7 +38,7 @@
                 <span class="badge bg-warning text-dark mb-2">Populer</span>
               {% endif %}
               <h5 class="card-title fw-semibold">{{ news.title }}</h5>
-              <p class="small text-muted mb-1">Oleh: {{ news.author }}</p>
+              <p class="small text-muted mb-1">Dibuat oleh: {{ news.author }}</p>
               <p class="text-truncate" style="max-height:60px;">{{ news.content }}</p>
             </div>
             <div class="card-footer bg-white border-0 d-flex justify-content-between">
@@ -200,7 +200,7 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
           <div class="card-body">
             ${data.is_featured ? '<span class="badge bg-warning text-dark mb-2">Populer</span>' : ''}
             <h5 class="card-title fw-semibold">${data.title}</h5>
-            <p class="small text-muted mb-1">Oleh: ${data.author}</p>
+            <p class="small text-muted mb-1">Dibuat oleh: ${data.author}</p>
             <p class="text-truncate" style="max-height:60px;">${data.content}</p>
           </div>
           <div class="card-footer bg-white border-0 d-flex justify-content-between">
@@ -253,28 +253,34 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
     if (data && data.title) {
       const card = document.getElementById(`news-${id}`);
       if (card) {
+        // 🔄 Update gambar (kalau ada)
         const img = card.querySelector("img");
         if (img && data.thumbnail) img.src = data.thumbnail;
 
-        // update title, author, dan isi deskripsi
+        // 🔄 Update judul, author, dan konten
         card.querySelector(".card-title").textContent = data.title;
-        card.querySelector(".text-muted").textContent = "Oleh: " + data.author;
+        card.querySelector(".text-muted").textContent = "Dibuat oleh: " + data.author;
 
         const desc = card.querySelector(".text-truncate");
         desc.innerHTML = data.content || "(tanpa konten)";
-        desc.style.display = "block"; // ✅ pastikan tampil lagi
+        desc.style.display = "block"; // pastikan muncul lagi kalau sempat hilang
 
-        // update badge populer
+        // 🟡 Update badge Populer
         const badge = card.querySelector(".badge");
-        if (data.is_featured && !badge) {
-          card.querySelector(".card-body").insertAdjacentHTML(
-            "afterbegin",
-            '<span class="badge bg-warning text-dark mb-2">Populer</span>'
-          );
-        } else if (!data.is_featured && badge) {
+        if (data.is_featured) {
+          if (!badge) {
+            card.querySelector(".card-body").insertAdjacentHTML(
+              "afterbegin",
+              '<span class="badge bg-warning text-dark mb-2">Populer</span>'
+            );
+          }
+        } else if (badge) {
           badge.remove();
         }
       }
+
+      // 🟣 Update sidebar Populer juga (tanpa reload)
+      updatePopularList();
 
       showToast("success", "✅ Berita berhasil diperbarui!");
       editModal.hide();
@@ -287,6 +293,36 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
     showToast("error", "Terjadi kesalahan koneksi dengan server!");
   }
 });
+
+// 🟢 Fungsi untuk memperbarui sidebar populer tanpa reload
+async function updatePopularList() {
+  try {
+    const res = await fetch("{% url 'createnews:show_news_list' %}?ajax=1");
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const sidebar = document.querySelector(".list-group-flush");
+    sidebar.innerHTML = ""; // kosongkan dulu
+
+    data.popular_list.forEach(p => {
+      const itemHTML = `
+        <li class="list-group-item px-0 border-0 mb-2">
+          <a href="/news/detail/${p.id}/" class="text-decoration-none text-dark">
+            <div class="d-flex align-items-center">
+              ${p.thumbnail ? `<img src="${p.thumbnail}" class="me-2 rounded" width="50" height="50" style="object-fit:cover;">` : ""}
+              <div>
+                <small class="fw-semibold">${p.title}</small><br>
+                <small class="text-muted">${p.author}</small>
+              </div>
+            </div>
+          </a>
+        </li>`;
+      sidebar.insertAdjacentHTML("beforeend", itemHTML);
+    });
+  } catch (err) {
+    console.error("Gagal memperbarui sidebar populer:", err);
+  }
+}
 
 
 // DELETE NEWS
@@ -318,7 +354,7 @@ function openEditModal(id) {
     const card = document.getElementById('news-' + id);
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-title').value = card.querySelector('.card-title').textContent.trim();
-    document.getElementById('edit-author').value = card.querySelector('.card-body .text-muted').textContent.replace('Oleh: ', '').trim();
+    document.getElementById('edit-author').value = card.querySelector('.card-body .text-muted').textContent.replace('Dibuat oleh: ', '').trim();
     document.getElementById('edit-content').value = card.querySelector('.text-truncate').textContent.trim();
     document.getElementById('edit-thumbnail').value = card.querySelector('img')?.src || '';
     document.getElementById('edit-featured').checked = !!card.querySelector('.badge');

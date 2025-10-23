@@ -203,37 +203,33 @@
     </header>
 
     <!-- ==================== NAVBAR ==================== -->
-   <nav>
-    <ul>
-        <li>
-            <a href="{% url 'main:main-view' %}"
-               class="{% if request.path == '/' %}active{% endif %}">
-               HOME
-            </a>
-        </li>
+<nav class="navbar">
+  <ul class="nav-left">
+    <li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
+    <li><a href="#">SHOP</a></li>
 
-        <li><a href="#">SHOP</a></li>
+    <li class="dropdown">
+      <a href="#">PRODUCTS ▾</a>
+      <ul class="dropdown-menu">
+        <li><a href="#">Contoh: Baju</a></li>
+        <li><a href="#">Contoh: Celana</a></li>
+        <li><a href="#">Contoh: Sepatu</a></li>
+      </ul>
+    </li>
 
-        <li class="dropdown">
-            <a href="#">PRODUCTS ▾</a>
-            <ul class="dropdown-menu">
-                <li><a href="#">Contoh: Baju</a></li>
-                <li><a href="#">Contoh: Celana</a></li>
-                <li><a href="#">Contoh: Sepatu</a></li>
-            </ul>
-        </li>
+    <li><a href="#">FORUM</a></li>
+    <li><a href="{% url 'createnews:show_news_list' %}" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
+    <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
+    <li><a href="#">ABOUT</a></li>
+  </ul>
 
-        <li><a href="#">FORUM</a></li>
-
-        <li>
-            <a href="{% url 'createnews:show_news_list' %}"
-               class="{% if request.path|slice:':6' == '/news/' or '/news/' in request.path %}active{% endif %}">
-               NEWS
-            </a>
-        </li>
-
-        <li><a href="#">ABOUT</a></li>
-    </ul>
+  <ul class="nav-right">
+    {% if user.is_authenticated %}
+      <li><a href="{% url 'main:logout' %}" class="logout-btn">Log Out</a></li>
+    {% else %}
+      <li><a href="{% url 'main:login' %}" class="login-btn">Log In</a></li>
+    {% endif %}
+  </ul>
 </nav>
 
 
