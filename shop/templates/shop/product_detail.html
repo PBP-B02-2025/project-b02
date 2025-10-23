@@ -50,6 +50,22 @@
                 <button type="button" class="buy-button">Beli Sekarang</button>
             </div>
 
+            {% if product.user == request.user %}
+                <div class="product-owner-actions">
+                    <a href="{% url 'shop:edit-product' product.id %}" class="edit-button">
+                        Edit Product
+                    </a>
+                    
+                    <form action="{% url 'shop:delete-product' product.id %}" method="POST" 
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">
+                            Delete Product
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
         </div> </div> <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
 
     <div class="product-reviews-section">
