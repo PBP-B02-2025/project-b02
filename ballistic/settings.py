@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'userMeasurement',
     'forum',
     'main',
+    'shop',
 ]
 
 MIDDLEWARE = [
