@@ -613,7 +613,7 @@ nav a:hover {
 .buy-button {
     /* Mirip dengan .cta-button */
     display: inline-block;
-    background-color: #000;
+    background-color: #cda34f;
     color: #fff;
     padding: 1rem 2.5rem;
     font-size: 1rem;
@@ -629,4 +629,73 @@ nav a:hover {
 
 .buy-button:hover {
     background-color: #333;
+.form-style form input, form textarea, form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #bcbcbc;
+    border-radius: 0.375rem;
+}
+.form-style form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: black;
+    box-shadow: 0 0 0 3px black;
+}
+
+.form-style input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 2px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.form-style input[type="checkbox"]:checked {
+    background-color: black;
+    border-color: black;
+}
+
+.form-style input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.form-style input[type="checkbox"]:focus {
+    outline: none;
+    border-color: black;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+}
+
+.product-reviews-section {
+    /* (Tidak perlu margin/width karena sudah di dalam .product-detail-container) */
+    padding-top: 1rem; /* Sedikit jarak dari garis <hr> di atasnya */
+}
+
+.product-reviews-section h2 {
+    font-size: 1.8rem; /* Sedikit lebih kecil dari judul utama produk */
+    font-weight: 700;
+    color: #111;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee; /* Garis pemisah */
+    padding-bottom: 1rem;
+}
+
+.product-reviews-section p {
+    font-size: 0.95rem; /* Samakan dengan font deskripsi */
+    line-height: 1.8;
+    color: #444; /* Samakan dengan font deskripsi */
+    font-style: italic; /* Buat miring agar jelas ini adalah pesan status */
 }
