@@ -8,40 +8,48 @@
         <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     </head>
-    <body class="bg-gray-50 text-gray-900">
+    <body class="bg-gray-50 text-gray-900 font-sans">
         <div class="max-w-3xl mx-auto p-6">
             <!-- Back link -->
             <a href="/forum/" class="inline-block mb-6 text-indigo-600 hover:text-indigo-800 font-medium transition">
-                ← Back to forum list
+            ← Back to Forum List
             </a>
 
             <!-- Forum card -->
-            <div id="forum-card" class="bg-white rounded-2xl shadow-lg p-6">
-                <!-- Title -->
-                <h1 id="forum-title" class="text-2xl font-semibold mb-3"></h1>
+            <div id="forum-card" class="bg-white rounded-2xl shadow-xl p-8">
+            <!-- Title -->
+            <h1 id="forum-title" class="text-3xl font-bold text-gray-800 mb-4"></h1>
 
-                <!-- Meta info -->
-                <div id="forum-meta" class="flex flex-wrap items-center text-sm text-gray-500 gap-3 mb-4">
-                    <span id="forum-author"></span>
-                    <span id="forum-created"></span>
-                    <span id="forum-updated"></span>
-                    <span id="forum-views"></span>
-                </div>
+            <!-- Meta info -->
+            <div id="forum-meta" class="flex flex-wrap items-center text-sm text-gray-500 gap-4 mb-6">
+                <span id="forum-author" class="flex items-center gap-1">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-2.667 0-8 1.333-8 4v2h16v-2c0-2.667-5.333-4-8-4z"/></svg>
+                </span>
+                <span id="forum-created" class="flex items-center gap-1">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
+                </span>
+                <span id="forum-updated" class="flex items-center gap-1">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4v12h12V4H4zm2 2h8v8H6V6z"/></svg>
+                </span>
+                <span id="forum-views" class="flex items-center gap-1">
+                👁️
+                </span>
+            </div>
 
-                <!-- Content -->
-                <div id="forum-content" class="text-gray-700 leading-relaxed whitespace-pre-line mb-6"></div>
+            <!-- Content -->
+            <div id="forum-content" class="text-gray-700 leading-relaxed mb-6 prose prose-sm"></div>
 
-                <!-- Actions (optional buttons) -->
-                <div id="forum-actions" class="flex gap-3"></div>
+            <!-- Actions (optional) -->
+            <div id="forum-actions" class="flex gap-3"></div>
             </div>
 
             <!-- Comments Section -->
             <section id="comments-section" class="mt-10">
-                <h2 class="text-lg font-medium text-gray-800 mb-4">Comments</h2>
+                <h2 id="comment-count" class="text-xl font-semibold text-gray-800 mb-4"></h2>
                 <div id="comments-container" class="space-y-4"></div>
             </section>
         </div>
-    </body>
+  </body>
 </html>
 <script>
 // Configuration
@@ -56,6 +64,7 @@ const forumUpdated = document.getElementById('forum-updated');
 const forumAuthor = document.getElementById('forum-author');
 const forumViews = document.getElementById('forum-views');
 const commentContainer = document.getElementById('comments-container');
+const commentCount = document.getElementById('comment-count')
 
 let forum_comment = [];
 
@@ -91,7 +100,10 @@ function renderForum(item) {
     
     // Set author
     const authorName = item.author || 'Anonymous';
-    forumAuthor.textContent = `Author: ${authorName}`;
+    forumAuthor.textContent = `Author:  ${authorName}`;
+
+    // Set comment count
+    commentCount.textContent = `Comment (${item.comment_count})`;
 }
 
 // Fetch forum detail

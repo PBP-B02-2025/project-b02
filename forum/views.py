@@ -1,13 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from forum.models import Forum, Comment
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 # Create your views here.
 
 def show_forum_list(request):
     return render(request, "forum.html", {})
 
 def show_forum(request, id):
+    forum = get_object_or_404(Forum, pk=id)
+    forum.increment_views()
     context = {
         'id': id
     }
@@ -40,6 +45,7 @@ def show_json_forum_by_id(request, id):
             'created_at': forum.created_at.isoformat(),
             'updated_at': forum.updated_at.isoformat(),
             'views': str(forum.forum_views),
+            'comment_count': str(forum.comment_set.count())
         } 
         return JsonResponse(forum_data)
     except Forum.DoesNotExist:
@@ -57,3 +63,17 @@ def show_json_comment(request, id):
         } for comment in comment_list
     ]
     return JsonResponse(comment_data, safe=False)
+
+@csrf_exempt
+@require_POST
+def create_forum_ajax(request):
+    title = strip_tags(request.POST.get("title"))
+    content = strip_tags(request.POST.get("content"))
+    author = request.user
+    new_forum = Forum(
+        title=title,
+        content=content,
+        author=author,
+    )
+    new_forum.save()
+    return HttpResponse(b"CREATED", status=201)

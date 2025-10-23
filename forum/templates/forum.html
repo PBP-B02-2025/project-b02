@@ -3,7 +3,7 @@
 <!-- Toolbar -->
 <section class="bg-white py-4">
   <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center">
-      <button class="mb-3 sm:mb-0 bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-[#333] transition">
+      <button onclick="showForumModal()" class="mb-3 sm:mb-0 bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-[#333] transition">
           + Tambah Topik Baru
       </button>
 
@@ -20,9 +20,10 @@
 
 <!-- Forum section -->
 <main class="flex-grow pt-4 bg-white">
-  <div id="forumGrid" class="max-w-6xl mx-auto px-6 mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="forumGrid" class="max-w-6xl mx-auto px-6 mb-10 grid grid-cols-1 gap-6"></div>
 </main>
-
+{% include 'toast.html' %}
+{% include 'modal_create_forum.html' %}
 <script>
 // Configuration
 const FORUM_API_ENDPOINT = "{% url 'forum:show_json' %}";
@@ -48,7 +49,9 @@ function buildForumCardElement(item) {
     const updatedAt = DOMPurify.sanitize(new Date(item.updated_at).toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'short', 
-        day: 'numeric' 
+        day: 'numeric' ,
+        hour: '2-digit',
+        minute: '2-digit'
     }));
     const views = DOMPurify.sanitize(item.views);
     const comment_count = DOMPurify.sanitize(item.comment_count);
@@ -64,14 +67,25 @@ function buildForumCardElement(item) {
                 </p>
             </div>
 
-            <div class="flex justify-between items-center text-sm text-gray-500 border-t border-gray-100 pt-3">
+            <div class="flex flex-col justify-between items-start  text-sm text-gray-500 border-t border-gray-100 pt-3">
                 <span>By <strong>${author}</strong></span>
-                <span>Update: ${updatedAt}</span>
+                <span class="mt-1 sm:mt-0 truncate">Last activity: ${updatedAt}</span>
             </div>
 
             <div class="flex justify-end gap-3 text-gray-400 text-sm mt-1">
-                <span>💬 ${comment_count}</span>
-                <span>👀 ${views}</span>
+                <div class="relative group">
+                    <span>💬 ${comment_count}</span>
+                    <span class="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        Comments
+                    </span>
+                </div>
+
+                <div class="relative group">
+                    <span>👀 ${views}</span>
+                    <span class="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        Views
+                    </span>
+                </div>
             </div>
         </a>
     `;
@@ -105,6 +119,11 @@ async function fetchForumFromServer() {
     console.error('Error loading forum:', error);
   }
 }
+
+document.addEventListener('forumAdded', function() {
+    // Refresh data without page reload
+    fetchForumFromServer();
+});
 
 // Initialize page
 function initializeForumPage() {
