@@ -1,6 +1,6 @@
 # Di file shop/views.py
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Product 
 from django.core.paginator import Paginator
 from django.http import JsonResponse                 # <-- 1. Import JsonResponse
@@ -8,23 +8,35 @@ from django.contrib.auth.decorators import login_required # <-- 2. Import login_
 from .forms import ProductForm                       # <-- 3. Import ProductForm baru kita
 
 def shop_main_view(request):
-    all_products_list = Product.objects.all().order_by('name')
     
-    paginator = Paginator(all_products_list, 9) # <-- (Anda ganti jadi 9)
+    # --- 1. Ambil Kategori dari URL ---
+    selected_category = request.GET.get('category')
+    current_filter_params = "" # Ini untuk pagination
+    
+    # --- 2. Filter Queryset ---
+    if selected_category:
+        # Jika ada parameter 'category', filter produknya
+        all_products_list = Product.objects.filter(category=selected_category).order_by('name')
+        # Siapkan string untuk pagination
+        current_filter_params = f"&category={selected_category}"
+    else:
+        # Jika tidak ada, tampilkan semua produk
+        all_products_list = Product.objects.all().order_by('name')
+
+    # --- 3. Pagination (setelah di-filter) ---
+    paginator = Paginator(all_products_list, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     all_categories = Product.CATEGORY_CHOICES
-    
-    # --- 4. TAMBAHKAN INI ---
-    # Buat instance form kosong untuk modal
     add_product_form = ProductForm()
-    # -----------------------
     
     context = {
         'products': page_obj,
         'all_categories': all_categories,
-        'add_product_form': add_product_form, # <-- 5. Kirim form ke template
+        'add_product_form': add_product_form,
+        'selected_category': selected_category,       # <-- Kirim kategori yg aktif
+        'current_filter_params': current_filter_params, # <-- Kirim string filter
     }
     
     return render(request, 'shop/shop.html', context)
@@ -54,3 +66,21 @@ def add_product_ajax_view(request):
     
     # Jika bukan POST, kirim error
     return JsonResponse({'status': 'error', 'message': 'Metode request tidak valid'}, status=405)
+
+def product_detail_view(request, product_id):
+    """
+    View untuk menampilkan halaman detail dari satu produk.
+    """
+    # Ambil 1 produk berdasarkan ID, atau tampilkan halaman 404 jika tidak ada
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Di sini Anda nanti bisa menambahkan logic untuk mengambil review
+    # reviews = Review.objects.filter(product=product)
+    
+    context = {
+        'product': product,
+        # 'reviews': reviews, # Uncomment ini jika Anda sudah punya model Review
+    }
+    
+    # Kita akan membuat template baru bernama 'product_detail.html'
+    return render(request, 'shop/product_detail.html', context)

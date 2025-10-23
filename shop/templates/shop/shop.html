@@ -19,13 +19,23 @@
     <aside class="shop-sidebar">
         
         <div class="sidebar-widget">
-            <h3>Product Categories</h3>
-            <ul class="category-list">
-                {% for value, display_name in all_categories %}
-                    <li><a href="#">{{ display_name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
+    <h3>Product Categories</h3>
+    <ul class="category-list">
+        <li>
+            <a href="{% url 'shop:shop-main' %}" class="{% if not selected_category %}active{% endif %}">
+                All Products
+            </a>
+        </li>
+        
+        {% for value, display_name in all_categories %}
+        <li>
+            <a href="?category={{ value }}" class="{% if selected_category == value %}active{% endif %}">
+                {{ display_name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 
     </aside>
 
@@ -34,13 +44,17 @@
         <div class="product-grid">
             
             {% for product in products %}
-            <div class="product-card">
+            <div class="product-card {% if product.is_featured %}featured-product{% endif %}">
+                
+                {% if product.is_featured %}
+                    <span class="featured-badge">FEATURED</span>
+                {% endif %}
                 <div class="product-image">
                     <img src="{{ product.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ product.name }}">
                 </div>
                 <div class="product-info">
                     <span class="product-category">{{ product.get_category_display }}</span>
-                    <a href="#">
+                    <a href="{% url 'shop:product-detail' product.id %}">
                         <h4 class="product-name">{{ product.name }}</h4>
                     </a>
                     <span class="product-size">Size: {{ product.size }}</span>
@@ -56,21 +70,21 @@
         <nav class="pagination">
             <ul>
                 {% if products.has_previous %}
-                    <li><a href="?page=1">&laquo; First</a></li>
-                    <li><a href="?page={{ products.previous_page_number }}">Previous</a></li>
+                    <li><a href="?page=1{{ current_filter_params }}">&laquo; First</a></li>
+                    <li><a href="?page={{ products.previous_page_number }}{{ current_filter_params }}">Previous</a></li>
                 {% endif %}
 
                 {% for num in products.paginator.page_range %}
                     {% if products.number == num %}
-                        <li><a href="?page={{ num }}" class="active">{{ num }}</a></li>
+                        <li><a href="?page={{ num }}{{ current_filter_params }}" class="active">{{ num }}</a></li>
                     {% else %}
-                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                        <li><a href="?page={{ num }}{{ current_filter_params }}">{{ num }}</a></li>
                     {% endif %}
                 {% endfor %}
 
                 {% if products.has_next %}
-                    <li><a href="?page={{ products.next_page_number }}">Next</a></li>
-                    <li><a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a></li>
+                    <li><a href="?page={{ products.next_page_number }}{{ current_filter_params }}">Next</a></li>
+                    <li><a href="?page={{ products.paginator.num_pages }}{{ current_filter_params }}">Last &raquo;</a></li>
                 {% endif %}
             </ul>
         </nav>
