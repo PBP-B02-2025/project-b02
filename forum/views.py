@@ -15,7 +15,8 @@ def show_forum(request, id):
     forum = get_object_or_404(Forum, pk=id)
     forum.increment_views()
     context = {
-        'id': id
+        'id': id,
+        'author_id': str(forum.author_id),
     }
     return render(request, "forum_detail.html", context)
 
@@ -107,6 +108,17 @@ def delete_forum_ajax(request):
         'success': True,
         'message': 'Forum deleted succesful!',
         'redirect_url': '/forum/'
+    })
+    return response
+
+@csrf_exempt
+@require_POST
+def delete_comment_ajax(request):
+    comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
+    comment.delete()
+    response = JsonResponse({
+        'success': True,
+        'message': 'Comment deleted succesful!',
     })
     return response
 

@@ -13,4 +13,5 @@ urlpatterns = [
     path('create-comment-ajax/', create_comment_ajax, name='create_comment_ajax'),
     path('delete-forum-ajax/', delete_forum_ajax, name='delete_forum_ajax'),
     path('edit-forum-ajax/', edit_forum_ajax, name='edit_forum_ajax'),
+     path('delete-comment-ajax/', delete_comment_ajax, name='delete_comment_ajax'),
 ]
