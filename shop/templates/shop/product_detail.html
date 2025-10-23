@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Shop{% endblock %}
+
+{% block content %}
+
+<section class="shop-header-bar">
+    <div class="shop-header-content">
+        <h1>{{ product.name }}</h1>
+        <div class="breadcrumb">
+            <a href="{% url 'main:main-view' %}">Home</a> / 
+            <a href="{% url 'shop:shop-main' %}">Shop</a> / 
+            <span>{{ product.name }}</span>
+        </div>
+    </div>
+</section>
+
+<div class="product-detail-container" style="width: 80%; max-width: 1200px; margin: 3rem auto;">
+    
+    <div class="product-detail-body">
+        
+        <div class="product-detail-image">
+            <img src="{{ product.thumbnail|default:'https://via.placeholder.com/400x500?text=No+Image' }}" alt="{{ product.name }}">
+        </div>
+        
+        <div class="product-detail-info">
+            <h2>
+                {{ product.name }}
+                {% if product.is_featured %}
+                    <span class="product-detail-featured-tag">FEATURED</span>
+                {% endif %}
+            </h2>
+            <div class="product-detail-price">Rp {{ product.price }}</div>
+            
+            <div class="product-detail-meta">
+                <ul>
+                    <li><strong>Brand</strong> <span>{{ product.brand|default:'N/A' }}</span></li>
+                    <li><strong>Size</strong> <span>{{ product.size }}</span></li>
+                    <li><strong>Category</strong> <span>{{ product.get_category_display }}</span></li>
+                </ul>
+            </div>
+
+            <div class="product-detail-description">
+                <h3>Product Description</h3>
+                <p>{{ product.description|linebreaksbr }}</p> 
+            </div>
+
+            <div class="product-buy-action">
+                <button type="button" class="buy-button">Beli Sekarang</button>
+            </div>
+
+            {% if product.user == request.user %}
+                <div class="product-owner-actions">
+                    <a href="{% url 'shop:edit-product' product.id %}" class="edit-button">
+                        Edit Product
+                    </a>
+                    
+                    <form action="{% url 'shop:delete-product' product.id %}" method="POST" 
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">
+                            Delete Product
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+        </div> </div> <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+
+    <div class="product-reviews-section">
+        <h2>Product Reviews</h2>
+        
+        <p>Belum ada review untuk produk ini.</p>
+    </div>
+
+</div> {% endblock %}

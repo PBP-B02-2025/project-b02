@@ -1,0 +1,36 @@
+<div id="voucherModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Buat Voucher Baru</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="voucherForm">
+                {% csrf_token %}
+                <input type="hidden" id="voucher_id" name="voucher_id" value="">
+                <div class="form-group">
+                    <label for="kode">Kode Voucher *</label>
+                    <input type="text" id="kode" name="kode" class="form-input" placeholder="Contoh: PROMOHEMAT20" required>
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi</label>
+                    <textarea id="deskripsi" name="deskripsi" class="form-input" rows="3" placeholder="Deskripsi voucher..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="persentase_diskon">Persentase Diskon (%) *</label>
+                    <input type="number" id="persentase_diskon" name="persentase_diskon" class="form-input" step="0.01" min="0.01" max="100" placeholder="0.00" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="is_active" name="is_active" checked>
+                        <span>Voucher Aktif</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
+                    <button type="submit" class="btn btn-primary">Buat Voucher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
