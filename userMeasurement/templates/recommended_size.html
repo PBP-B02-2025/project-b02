@@ -6,84 +6,179 @@
 {% block content %}
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-  <!-- Header User -->
+  <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Hai, {{ request.user.username }} 👋</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Size Recommendation</h1>
     <p class="text-gray-600">Berikut data ukuran badanmu saat ini.</p>
   </div>
 
   <!-- Card User Measurement -->
   <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8 mb-10">
-    {% if data %}
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Data Ukuran Badan</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
-        <div>
-          <p><span class="font-medium">Tinggi:</span> {{ data.height }} cm</p>
-          <p><span class="font-medium">Berat:</span> {{ data.weight }} kg</p>
+    <div id="user-data">
+      {% if data %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
+          <div>
+            <p><span class="font-medium">Tinggi:</span> {{ data.height }} cm</p>
+            <p><span class="font-medium">Berat:</span> {{ data.weight }} kg</p>
+          </div>
+          <div>
+            {% if data.waist %}<p><span class="font-medium">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
+            {% if data.hip %}<p><span class="font-medium">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
+            {% if data.chest %}<p><span class="font-medium">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
+            {% if data.head_circumference %}<p><span class="font-medium">Lingkar Kepala:</span> {{ data.head_circumference }} cm</p>{% endif %}
+          </div>
         </div>
-        <div>
-          {% if data.waist %}<p><span class="font-medium">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
-          {% if data.hip %}<p><span class="font-medium">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
-          {% if data.chest %}<p><span class="font-medium">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
+
+        <div class="mt-6">
+          <p class="text-lg font-semibold text-gray-900">
+            Rekomendasi Ukuran Pakaian: 
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md">
+              {{ data.clothes_size|default_if_none:"Belum dihitung" }}
+            </span>
+          </p>
+          <p class="text-lg font-semibold text-gray-900 mt-2">
+            Rekomendasi Ukuran Helm: 
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md">
+              {{ data.helmet_size|default_if_none:"Belum dihitung" }}
+            </span>
+          </p>
         </div>
-      </div>
 
-      <div class="mt-6">
-        <p class="text-lg font-semibold text-gray-900">
-          Rekomendasi Ukuran: 
-          <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md">
-            {{ data.recommended_size|default_if_none:"Belum dihitung" }}
-          </span>
-        </p>
-      </div>
+        <!-- Tombol Update & Delete -->
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors text-center">
+            Update Data Ukuran
+          </a>
 
-      <div class="mt-8 flex flex-col sm:flex-row gap-4">
-    <!-- Tombol Update -->
-        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors text-center">
-          Update Data Ukuran
-        </a>
+          <a href="{% url 'userMeasurement:delete_measurement' %}" class="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors text-center">
+            Hapus Data
+          </a>
+        </div>
 
-    <!-- Tombol Hapus -->
-        <form action="{% url 'userMeasurement:delete_measurement' %}" method="POST" class="inline">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors">
-                Hapus Data
-            </button>
-        </form>
+      {% else %}
+        <div class="text-center py-10">
+          <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
+          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+            Isi Sekarang
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Pilihan Kategori Produk -->
+  {% if data %}
+  <div class="flex gap-4 mb-6">
+    <button class="product-type-btn px-4 py-2 rounded-md font-medium {% if selected_type == 'clothes' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="clothes">Shirt</button>
+    <button class="product-type-btn px-4 py-2 rounded-md font-medium {% if selected_type == 'helmet' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="helmet">Helmet</button>
+  </div>
+  {% endif %}
+
+  <!-- Grid Produk -->
+  <div id="ajax-products-container">
+    {% if products %}
+      <div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {% for p in products %}
+          <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ p.get_category_display }}</span>
+                    <a href="#">
+                        <h4 class="product-name">{{ p.name }}</h4>
+                    </a>
+                    <span class="product-size">Size: {{ p.size }}</span>
+                    <h5 class="product-price">Rp {{ p.price }}</h5>
+                </div>
+            </div>
+        {% endfor %}
       </div>
     {% else %}
-      <div class="text-center py-10">
-        <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
-        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
-          Isi Sekarang
-        </a>
+      <div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+        <p>Tidak ada produk yang sesuai ukuranmu.</p>
       </div>
     {% endif %}
   </div>
 
-  <!-- Grid Produk -->
-  {% if product %}
-  <h2 class="text-2xl font-bold mb-4">Produk Rekomendasi</h2>
-  <div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    {% for p in product %}
-      <div class="product-card bg-white rounded-lg border p-4 shadow-sm">
-        <div class="product-image">
-          <img src="{{ p.thumbnail.url|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-48 object-cover rounded">
-        </div>
-        <div class="product-info mt-2">
-          <span class="product-category text-gray-500 text-sm">{{ p.get_category_display }}</span>
-          <h4 class="product-name font-semibold">{{ p.name }}</h4>
-          <span class="product-size">Size: {{ p.size }}</span>
-          <h5 class="product-price font-bold">Rp {{ p.price }}</h5>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  {% else %}
-    <div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-      <p>Tidak ada produk yang sesuai ukuranmu.</p>
-    </div>
-  {% endif %}
-
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".product-type-btn");
+  const container = document.getElementById("ajax-products-container");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const type = btn.dataset.type;
+
+      // ubah gaya tombol aktif
+      buttons.forEach(b => b.classList.remove("bg-black", "text-white"));
+      buttons.forEach(b => b.classList.add("bg-gray-200"));
+      btn.classList.remove("bg-gray-200");
+      btn.classList.add("bg-black", "text-white");
+
+      // tampilkan loading
+      container.innerHTML = `<div class="text-gray-500 text-center mt-4">Loading...</div>`;
+
+      try {
+        const response = await fetch(`/measurement/get-products-json/?type=${type}`, {
+          credentials: 'same-origin' // 👈 WAJIB: kirim session cookie
+        });
+
+        if (!response.ok) {
+          // kalau error (403, 500, dll)
+          container.innerHTML = `<div class="text-red-600 text-center mt-4">
+            Gagal memuat produk (Status ${response.status})
+          </div>`;
+          return;
+        }
+
+        const data = await response.json();
+
+        // cek error dari Django
+        if (data.error) {
+          container.innerHTML = `<div class="bg-white border border-dashed border-gray-300 p-8 text-center text-gray-500">
+            <p>${data.error}</p>
+          </div>`;
+          return;
+        }
+
+        // render produk
+        let html = '';
+        if (data.products && data.products.length > 0) {
+          html += `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
+          data.products.forEach(p => {
+            html += `
+              <div class="product-card bg-white rounded-lg border p-4 shadow-sm">
+                <img src="${p.thumbnail}" alt="${p.name}" class="w-full h-48 object-cover rounded">
+                <div class="mt-2">
+                  <span class="product-category text-gray-500 text-sm">${p.category}</span>
+                  <h4 class="product-name font-semibold">${p.name}</h4>
+                  <span class="product-size">Size: ${p.size}</span>
+                  <h5 class="product-price font-bold">Rp ${p.price}</h5>
+                </div>
+              </div>
+            `;
+          });
+          html += `</div>`;
+        } else {
+          html = `<div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+            <p>Tidak ada produk yang sesuai ukuranmu.</p>
+          </div>`;
+        }
+
+        container.innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="text-red-600 text-center mt-4">
+          Gagal memuat produk.
+        </div>`;
+      }
+    });
+  });
+});
+</script>
+
 {% endblock %}
