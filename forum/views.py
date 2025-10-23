@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+from django.utils import timezone
 # Create your views here.
 
 def show_forum_list(request):
@@ -93,6 +94,8 @@ def create_comment_ajax(request):
         author=author,
     )
     new_comment.save()
+    forum.updated_at = timezone.now()
+    forum.save(update_fields=["updated_at"])
     return HttpResponse(b"CREATED", status=201)
 
 @csrf_exempt
@@ -106,3 +109,17 @@ def delete_forum_ajax(request):
         'redirect_url': '/forum/'
     })
     return response
+
+@csrf_exempt
+@require_POST
+def edit_forum_ajax(request):
+    forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
+    forum.title = strip_tags(request.POST.get("title"))
+    forum.content = strip_tags(request.POST.get("content"))
+    forum.updated_at = timezone.now()
+    forum.save()
+    return JsonResponse({
+        "success": True,
+        "message": "Forum updated successfully!",
+        "forum_id": forum.id
+    })

@@ -7,7 +7,7 @@
         <h3 class="text-xl font-semibold text-gray-900">
           Create New Forum
         </h3>
-        <p class="text-sm text-gray-600 mt-1">Share your football news and stories with the community</p>
+        <p class="text-sm text-gray-600 mt-1">Start a new forum thread and share your thoughts</p>
       </div>
       <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="hideForumModal()">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -62,21 +62,31 @@
   }
 
   async function addForumEntry() {
-    await fetch("{% url 'forum:create_forum_ajax' %}", {
+  try {
+    const response = await fetch("{% url 'forum:create_forum_ajax' %}", {
       method: "POST",
       body: new FormData(document.querySelector('#forumForm')),
-    })
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || 'Failed to add forum');
+    }
 
     document.getElementById("forumForm").reset();
     hideForumModal();
-    // Show toast notification
     showToast('Forum added successfully!', '', 'success');
 
-    // Dispatch custom event to notify main.html about new data
     document.dispatchEvent(new CustomEvent('forumAdded'));
 
-    return false;
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to add forum', err.message, 'error');
   }
+
+  return false;
+}
+
   
   document.getElementById("forumForm").addEventListener("submit", function(e) {
     e.preventDefault();

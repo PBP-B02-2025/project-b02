@@ -32,29 +32,21 @@
 
         <!-- Meta info -->
         <div id="forum-meta" class="flex flex-wrap items-center text-sm text-gray-500 gap-4 mb-6">
-            <span id="forum-author" class="flex items-center gap-1">
-            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-2.667 0-8 1.333-8 4v2h16v-2c0-2.667-5.333-4-8-4z"/></svg>
-            </span>
-            <span id="forum-created" class="flex items-center gap-1">
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>
-            </span>
-            <span id="forum-updated" class="flex items-center gap-1">
-            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4v12h12V4H4zm2 2h8v8H6V6z"/></svg>
-            </span>
-            <span id="forum-views" class="flex items-center gap-1">
-            👁️
-            </span>
+            <span id="forum-author" class="flex items-center gap-1"></span>
+            <span id="forum-created" class="flex items-center gap-1"></span>
+            <span id="forum-updated" class="flex items-center gap-1"></span>
+            <span id="forum-views" class="flex items-center gap-1"></span>
         </div>
 
         <!-- Content -->
         <div id="forum-content" class="text-gray-700 leading-relaxed mb-6 prose prose-sm"></div>
 
-        <!-- Actions (optional) -->
+        <!-- Actions -->
         <div id="forum-actions" class="flex gap-3">
             <button id="add-comment-btn" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-[#333] transition">
                 💬 Add Comment
             </button>
-            <button id="editForumBtn" onclick="" class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+            <button id="editForumBtn" onclick="showEditForumModal()" class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
                 ✏️ Edit
             </button>
             <button id="deleteForumBtn" onclick="openDeleteForumModal()" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2">
@@ -80,12 +72,14 @@
     </section>
 </div>
 {% include 'toast.html' %}
+{% include 'modal_edit_forum.html' %}
 <script>
 // Configuration
 const FORUM_ID = "{{ id }}";
 const CURRENT_USER_ID = "{{ user.id|default_if_none:'' }}";
 const FORUM_DETAIL_ENDPOINT = `{% url 'forum:show_json_forum_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
 const FORUM_COMMENT_ENDPOINT =  `{% url 'forum:show_json_comment' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
+const EDIT_FORUM_ENDPOINT = `{% url 'forum:edit_forum_ajax' %}`;
 
 // DOM Elements
 const forumContent = document.getElementById('forum-content');
@@ -99,6 +93,9 @@ const commentCount = document.getElementById('comment-count');
 const addCommentBtn = document.getElementById('add-comment-btn');
 const commentForm = document.getElementById('comment-form');
 const forumIdForm = document.getElementById('forumId');
+const forumEditIdForm = document.getElementById('forumEditId');
+const editModal = document.getElementById('forumEditModal');
+const editModalContent = document.getElementById('forumEditModalContent');
 
 let forum_comment = [];
 
@@ -114,6 +111,55 @@ function openDeleteForumModal() {
 function closeDeleteForumModal() {
   document.getElementById('deleteForumModal').classList.add('hidden');
 }
+
+function showEditForumModal() {
+    editModal.classList.remove('hidden'); 
+    setTimeout(() => {
+    editModalContent.classList.remove('opacity-0', 'scale-95');
+    editModalContent.classList.add('opacity-100', 'scale-100');
+    }, 50); 
+}
+
+function hideEditForumModal() {
+    editModalContent.classList.remove('opacity-100', 'scale-100');
+    editModalContent.classList.add('opacity-0', 'scale-95');
+
+    setTimeout(() => {
+    editModal.classList.add('hidden');
+    }, 150); 
+}
+
+async function editForumEntry() {
+  try {
+    const response = await fetch(EDIT_FORUM_ENDPOINT, {
+      method: "POST",
+      body: new FormData(document.querySelector('#forumEditForm')),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || 'Failed to edit forum');
+    }
+
+    document.getElementById("forumEditForm").reset();
+    hideEditForumModal();
+    showToast('Forum edited successfully!', '', 'success');
+
+    // Dispatch event ke main.html
+    document.dispatchEvent(new CustomEvent('forumEdited'));
+
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to edit forum', err.message, 'error');
+  }
+
+  return false;
+}
+  
+document.getElementById("forumEditForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    editForumEntry();
+})
 
 document.getElementById('confirmDeleteForumBtn').addEventListener('click', async () => {
   try {
@@ -153,7 +199,7 @@ function renderForum(item) {
         hour: '2-digit',
         minute: '2-digit'
     });
-    forumCreated.textContent = formattedDateCreate;
+    forumCreated.innerHTML = `<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/></svg>${formattedDateCreate}`;
 
     // Set date and views
     const formattedDateUpdate = new Date(item.updated_at).toLocaleDateString('en-US', { 
@@ -163,20 +209,23 @@ function renderForum(item) {
         hour: '2-digit',
         minute: '2-digit'
     });
-    forumUpdated.textContent = formattedDateUpdate;
-    forumViews.textContent = `${item.views} views`;
+    forumUpdated.innerHTML = `<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4v12h12V4H4zm2 2h8v8H6V6z"/></svg>${formattedDateUpdate} `;
+    forumViews.textContent = `👁️ ${item.views} views`;
     
     // Set content
     forumContent.textContent = item.content;
     
     // Set author
     const authorName = item.author || 'Anonymous';
-    forumAuthor.textContent = `Author:  ${authorName}`;
+    forumAuthor.innerHTML = `<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-2.667 0-8 1.333-8 4v2h16v-2c0-2.667-5.333-4-8-4z"/></svg>${authorName}`;
 
     // Set comment count
     commentCount.textContent = `Comment (${item.comment_count})`;
 
-    forumIdForm.value = `${item.id}`
+    forumIdForm.value = `${item.id}`;
+    forumEditIdForm.value = `${item.id}`;
+    document.getElementById('titleEdit').value = `${item.title}`;
+    document.getElementById('contentEdit').value = `${item.content}`;
 
     if (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) {
         document.getElementById("deleteForumBtn").classList.remove("hidden");
@@ -287,6 +336,11 @@ commentForm.addEventListener("submit", function(e) {
 })
 
 document.addEventListener("commentAdded", function(e) {
+    loadForumDetail();
+    loadComment();
+})
+
+document.addEventListener("forumEdited", function(e) {
     loadForumDetail();
     loadComment();
 })
