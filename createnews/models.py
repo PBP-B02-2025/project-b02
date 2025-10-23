@@ -3,8 +3,6 @@ from django.db import models
 
 class News(models.Model):
     CATEGORY_CHOICES = [
-        ('promo', 'Promo'),
-        ('product_update', 'Product Update'),
         ('event', 'Event'),
         ('training_tips', 'Training Tips'),
         ('sports_news', 'Sports News'),

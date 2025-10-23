@@ -9,6 +9,4 @@ urlpatterns = [
     path('create/', views.create_news_ajax, name='create_news_ajax'),
     path('edit/<uuid:id>/', views.edit_news_ajax, name='edit_news_ajax'),
     path('delete/<uuid:id>/', views.delete_news_ajax, name='delete_news_ajax'),
-    path('json/', views.show_json, name='show_json'),
-    path('xml/', views.show_xml, name='show_xml'),
 ]
