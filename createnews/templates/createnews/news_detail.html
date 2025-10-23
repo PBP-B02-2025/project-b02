@@ -1,14 +1,54 @@
-{% extends 'base.html' %}
+{% extends 'createnews/base.html' %}
 {% block title %}{{ news.title }} - Ballistic{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2>{{ news.title }}</h2>
-  <p class="text-muted">Oleh: {{ news.author }} | {{ news.category }} | Dilihat: {{ news.news_views }}</p>
-  {% if news.thumbnail %}
-    <img src="{{ news.thumbnail }}" class="img-fluid rounded mb-3">
-  {% endif %}
-  <p>{{ news.content }}</p>
-  <a href="{% url 'createnews:show_news_list' %}" class="btn btn-outline-secondary">Kembali ke daftar</a>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container py-5" style="max-width: 900px;">
+  <!-- Tombol kembali -->
+  <div class="mb-4">
+    <a href="{% url 'createnews:show_news_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+      ← Kembali ke daftar
+    </a>
+  </div>
+
+  <!-- Konten utama -->
+  <div class="text-center">
+    <!-- Badge kategori & populer -->
+    <div class="mb-3">
+      <span class="badge bg-light text-dark border px-3 py-2 me-2">
+        {{ news.get_category_display }}
+      </span>
+      {% if news.is_featured %}
+      <span class="badge bg-warning text-dark px-3 py-2">Populer</span>
+      {% endif %}
+    </div>
+
+    <!-- Judul -->
+    <h2 class="fw-bold mb-2">{{ news.title }}</h2>
+
+    <!-- Info penulis -->
+    <p class="text-muted mb-4">
+      Oleh: {{ news.author }} | {{ news.category }} | Dilihat: {{ news.news_views }}
+    </p>
+
+    <!-- Gambar -->
+    {% if news.thumbnail %}
+    <div class="d-flex justify-content-center mb-4">
+      <div class="card shadow-sm border-0" style="width: 80%; max-width: 600px;">
+        <img src="{{ news.thumbnail }}" alt="{{ news.title }}" 
+             class="card-img-top rounded" 
+             style="max-height:400px; object-fit:cover;">
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Deskripsi -->
+    <div class="mx-auto text-center" style="max-width: 700px;">
+      <p class="fs-5" style="white-space: pre-line;">{{ news.content }}</p>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

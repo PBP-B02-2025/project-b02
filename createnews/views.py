@@ -36,11 +36,12 @@ def _is_admin(request):
 def create_news_ajax(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
+
     if not _is_admin(request):
-        return HttpResponseForbidden("Not allowed")
+        return JsonResponse({"error": "Not allowed"}, status=403)
 
     title = strip_tags(request.POST.get("title", ""))
-    author = strip_tags(request.POST.get("author", "Admin"))
+    author = request.user.username if request.user.is_authenticated else "Anonymous"
     content = strip_tags(request.POST.get("content", ""))
     category = request.POST.get("category", "sports_news")
     thumbnail = request.POST.get("thumbnail", "")
@@ -50,12 +51,13 @@ def create_news_ajax(request):
         title=title, author=author, content=content,
         category=category, thumbnail=thumbnail, is_featured=is_featured
     )
+
     return JsonResponse({
-        "id": str(news.id),
+        "id": news.id,
         "title": news.title,
         "author": news.author,
-        "content": news.short_content(),
-        "category": news.category,
+        "content": news.content[:100],
+        "category": news.get_category_display(),
         "thumbnail": news.thumbnail,
         "is_featured": news.is_featured,
     })
@@ -75,14 +77,16 @@ def edit_news_ajax(request, id):
     news.is_featured = request.POST.get("is_featured") in ("true", "on", "1")
     news.save()
     return JsonResponse({
-        "id": str(news.id),
-        "title": news.title,
-        "author": news.author,
-        "content": news.short_content(),
-        "category": news.category,
-        "thumbnail": news.thumbnail,
-        "is_featured": news.is_featured,
-    })
+    "id": str(news.id),
+    "title": news.title,
+    "author": news.author,
+    "content": news.content,  # ✅ kirim konten penuh
+    "category": news.category,
+    "thumbnail": news.thumbnail,
+    "is_featured": news.is_featured,
+})
+
+    
 
 @csrf_exempt
 def delete_news_ajax(request, id):

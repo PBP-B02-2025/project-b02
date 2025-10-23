@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'createnews/base.html' %}
 {% block title %}News - Ballistic{% endblock %}
 
 {% block content %}
@@ -64,8 +64,9 @@
       <ul class="list-group list-group-flush">
         {% for p in popular_list %}
         <li class="list-group-item px-0 border-0 mb-2">
-          <a href="{% url 'createnews:show_news_detail' p.id %}" class="text-decoration-none text-dark">
-            <div class="d-flex align-items-center">
+          <a href="{% url 'createnews:show_news_detail' p.id %}" 
+          class="text-decoration-none text-dark">
+          <div class="d-flex align-items-center">
               {% if p.thumbnail %}
                 <img src="{{ p.thumbnail }}" class="me-2 rounded" width="50" height="50" style="object-fit:cover;">
               {% endif %}
@@ -147,58 +148,164 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+function showToast(type, message) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    background: "#fff",
+    color: "#333",
+  });
+  Toast.fire({ icon: type, title: message });
+}
+
 const csrftoken = document.cookie.split('=')[1];
 const createModal = new bootstrap.Modal(document.getElementById('createModal'));
 const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 
+// BUKA MODAL TAMBAH
 document.getElementById('openCreateBtn')?.addEventListener('click', () => createModal.show());
 
+// CREATE NEWS (tanpa reload)
 document.getElementById('create-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
   const res = await fetch("{% url 'createnews:create_news_ajax' %}", {
     method: 'POST',
+    credentials: 'same-origin', // ✅ penting biar session admin ikut
     headers: {'X-CSRFToken': csrftoken},
-    body: new FormData(e.target)
+    body: formData,
   });
-  if (res.ok) {
+
+  if (res.status === 403) {
+    showToast("error", "Hanya admin yang bisa menambah berita!");
+    return;
+  }
+
+  const data = await res.json();
+
+  if (res.ok && data.title) {
+    // ✅ Tambahkan berita baru langsung ke tampilan
+    const cardHTML = `
+      <div class="col-md-4 mb-4" id="news-${data.id}">
+        <div class="card h-100 shadow-sm border-0">
+          ${data.thumbnail ? `<img src="${data.thumbnail}" class="card-img-top" style="height:200px; object-fit:cover;">` : ""}
+          <div class="card-body">
+            ${data.is_featured ? '<span class="badge bg-warning text-dark mb-2">Populer</span>' : ''}
+            <h5 class="card-title fw-semibold">${data.title}</h5>
+            <p class="small text-muted mb-1">Oleh: ${data.author}</p>
+            <p class="text-truncate" style="max-height:60px;">${data.content}</p>
+          </div>
+          <div class="card-footer bg-white border-0 d-flex justify-content-between">
+            <a href="/news/detail/${data.id}/" class="btn btn-outline-primary btn-sm">Detail</a>
+            <div>
+              <button class="btn btn-sm btn-secondary me-1" onclick="openEditModal('${data.id}')">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteNews('${data.id}')">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    document.getElementById("news-grid").insertAdjacentHTML("afterbegin", cardHTML);
+
+    showToast("success", "Berita berhasil ditambahkan 🎉");
+    form.reset();
     createModal.hide();
-    location.reload();
-  } else alert('Gagal menambah berita (hanya admin).');
+  } else {
+    showToast("error", "Gagal menambah berita!");
+  }
 });
 
-function openEditModal(id) {
-  const card = document.getElementById('news-' + id);
-  document.getElementById('edit-id').value = id;
-  document.getElementById('edit-title').value = card.querySelector('.card-title').textContent.trim();
-  document.getElementById('edit-author').value = card.querySelector('.text-muted').textContent.replace('Oleh: ', '').trim();
-  document.getElementById('edit-content').value = card.querySelector('.text-truncate').textContent.trim();
-  document.getElementById('edit-thumbnail').value = card.querySelector('img')?.src || '';
-  document.getElementById('edit-featured').checked = !!card.querySelector('.badge');
-  editModal.show();
-}
-
+// EDIT NEWS
+// ✅ EDIT NEWS (versi fix)
 document.getElementById('edit-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('edit-id').value;
-  const res = await fetch(`/news/edit/${id}/`, {
-    method: 'POST',
-    headers: {'X-CSRFToken': csrftoken},
-    body: new FormData(e.target)
-  });
-  if (res.ok) {
-    editModal.hide();
-    location.reload();
-  } else alert('Gagal mengedit berita.');
+
+  try {
+    const res = await fetch(`/news/edit/${id}/`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'X-CSRFToken': csrftoken },
+      body: new FormData(e.target)
+    });
+
+    if (!res.ok) {
+      if (res.status === 403) {
+        showToast("error", "⚠️ Hanya admin yang bisa mengedit berita!");
+      } else if (res.status === 404) {
+        showToast("error", "❌ URL edit tidak ditemukan!");
+      } else {
+        showToast("error", `Gagal menyimpan perubahan (Error ${res.status})`);
+      }
+      return;
+    }
+
+    const data = await res.json();
+
+    // 🟢 Jika berhasil, update DOM langsung tanpa reload
+    if (data && data.title) {
+      const card = document.getElementById(`news-${id}`);
+      if (card) {
+        const img = card.querySelector("img");
+        if (img && data.thumbnail) img.src = data.thumbnail;
+
+        // update title, author, dan isi deskripsi
+        card.querySelector(".card-title").textContent = data.title;
+        card.querySelector(".text-muted").textContent = "Oleh: " + data.author;
+
+        const desc = card.querySelector(".text-truncate");
+        desc.innerHTML = data.content || "(tanpa konten)";
+        desc.style.display = "block"; // ✅ pastikan tampil lagi
+
+        // update badge populer
+        const badge = card.querySelector(".badge");
+        if (data.is_featured && !badge) {
+          card.querySelector(".card-body").insertAdjacentHTML(
+            "afterbegin",
+            '<span class="badge bg-warning text-dark mb-2">Populer</span>'
+          );
+        } else if (!data.is_featured && badge) {
+          badge.remove();
+        }
+      }
+
+      showToast("success", "✅ Berita berhasil diperbarui!");
+      editModal.hide();
+    } else {
+      showToast("error", "⚠️ Tidak ada data berita yang diterima dari server!");
+    }
+
+  } catch (err) {
+    console.error("Edit error:", err);
+    showToast("error", "Terjadi kesalahan koneksi dengan server!");
+  }
 });
 
+
+// DELETE NEWS
 async function deleteNews(id) {
   if (!confirm('Yakin ingin menghapus berita ini?')) return;
-  const res = await fetch(`/news/delete/${id}/`, {method:'POST', headers:{'X-CSRFToken': csrftoken}});
-  if (res.ok) document.getElementById('news-' + id).remove();
-  else alert('Gagal menghapus berita.');
+  const res = await fetch(`/news/delete/${id}/`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {'X-CSRFToken': csrftoken},
+  });
+  if (res.status === 403) {
+    showToast("error", "Hanya admin yang bisa menghapus berita!");
+    return;
+  }
+  if (res.ok) {
+    document.getElementById('news-' + id).remove();
+    showToast("success", "Berita berhasil dihapus 🗑️");
+  } else showToast("error", "Gagal menghapus berita!");
 }
-
 document.getElementById('categoryFilter').addEventListener('change', (e) => {
   const value = e.target.value;
   const url = new URL(window.location.href);
@@ -206,5 +313,21 @@ document.getElementById('categoryFilter').addEventListener('change', (e) => {
   else url.searchParams.delete('category');
   window.location.href = url.toString();
 });
+function openEditModal(id) {
+  try {
+    const card = document.getElementById('news-' + id);
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-title').value = card.querySelector('.card-title').textContent.trim();
+    document.getElementById('edit-author').value = card.querySelector('.card-body .text-muted').textContent.replace('Oleh: ', '').trim();
+    document.getElementById('edit-content').value = card.querySelector('.text-truncate').textContent.trim();
+    document.getElementById('edit-thumbnail').value = card.querySelector('img')?.src || '';
+    document.getElementById('edit-featured').checked = !!card.querySelector('.badge');
+    editModal.show();
+  } catch (err) {
+    console.error("Gagal membuka modal edit:", err);
+    Swal.fire("Error", "Gagal membuka modal edit berita.", "error");
+  }
+}
+
 </script>
 {% endblock %}
