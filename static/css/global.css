@@ -72,11 +72,13 @@ nav a {
     color: #555; /* Warna abu-abu */
     padding-bottom: 5px;
     letter-spacing: 0.5px;
+    transition: color 0.3s ease; /* Transisi warna yang halus */
 }
 
 /* Link yang aktif (seperti 'HOME' di gambar) */
 nav a.active {
     color: #cda34f; /* Warna gold/mustard */
+    border-bottom: 2px solid #cda34f; /* Garis bawah untuk penanda aktif */
 }
 
 nav a:hover {
