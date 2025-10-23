@@ -15,6 +15,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.PositiveIntegerField(default=0)
     size = models.CharField(max_length=10)
+    brand = models.CharField(max_length=255, null=True)
     description = models.TextField()
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='lainnya')
     thumbnail = models.URLField(blank=True, null=True)
