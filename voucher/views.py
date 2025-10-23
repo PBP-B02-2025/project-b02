@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from .models import Voucher
 from .forms import VoucherForm
 import json
 
+@ensure_csrf_cookie
 @login_required(login_url='/login/')
 def voucher_view(request):
     vouchers = Voucher.objects.all().order_by('-id')
