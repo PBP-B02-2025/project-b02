@@ -1,0 +1,13 @@
+<div>
+    {% for review in reviews %}
+    <div id="review-{{ review.id }}">
+        <p>{{ review.content }}</p>
+        <button class="delete-btn" data-id="{{ review.id }}">Hapus</button>
+    </div>
+    {% endfor %}
+</div>
+
+
+<script>
+    
+</script>
