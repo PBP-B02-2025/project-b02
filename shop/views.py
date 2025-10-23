@@ -1,11 +1,12 @@
 # Di file shop/views.py
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect # Tambahkan redirect
+from django.contrib import messages # Tambahkan messages
 from .models import Product 
 from django.core.paginator import Paginator
-from django.http import JsonResponse                 # <-- 1. Import JsonResponse
-from django.contrib.auth.decorators import login_required # <-- 2. Import login_required
-from .forms import ProductForm                       # <-- 3. Import ProductForm baru kita
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .forms import ProductForm
 
 def shop_main_view(request):
     
@@ -84,3 +85,49 @@ def product_detail_view(request, product_id):
     
     # Kita akan membuat template baru bernama 'product_detail.html'
     return render(request, 'shop/product_detail.html', context)
+
+@login_required
+def edit_product_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Keamanan: Pastikan hanya pemilik produk yang bisa mengedit
+    if product.user != request.user:
+        messages.error(request, "Anda tidak diizinkan mengedit produk ini.")
+        return redirect('shop:product-detail', product_id=product.id)
+
+    if request.method == 'POST':
+        # Isi form dengan data baru (request.POST) dan data lama (instance=product)
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Produk berhasil diperbarui!")
+            return redirect('shop:product-detail', product_id=product.id)
+    else:
+        # Tampilkan form yang sudah terisi data lama
+        form = ProductForm(instance=product)
+        
+    context = {
+        'form': form,
+        'product': product
+    }
+    return render(request, 'shop/edit_product.html', context)
+
+
+@login_required
+def delete_product_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Keamanan: Pastikan hanya pemilik produk yang bisa menghapus
+    if product.user != request.user:
+        messages.error(request, "Anda tidak diizinkan menghapus produk ini.")
+        return redirect('shop:product-detail', product_id=product.id)
+
+    # Kita hanya proses jika method-nya POST
+    if request.method == 'POST':
+        product_name = product.name
+        product.delete()
+        messages.success(request, f"Produk '{product_name}' telah berhasil dihapus.")
+        return redirect('shop:shop-main') # Redirect ke halaman shop utama
+    
+    # Jika user akses via GET, redirect kembali ke halaman detail
+    return redirect('shop:product-detail', product_id=product.id)

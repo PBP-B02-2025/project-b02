@@ -701,3 +701,77 @@ nav a:hover {
     color: #444; /* Samakan dengan font deskripsi */
     font-style: italic; /* Buat miring agar jelas ini adalah pesan status */
 }
+.form-control-ajax {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    box-sizing: border-box; /* Penting agar padding tidak merusak lebar */
+}
+.form-control-ajax:focus {
+    border-color: #000;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Django merender form.as_p sebagai <p>
+  Kita perlu atur agar labelnya rapi
+*/
+.edit-product-form p {
+    margin-bottom: 1rem;
+}
+.edit-product-form p label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+
+/* === Styling untuk Tombol Edit/Delete di Halaman Detail === */
+.product-owner-actions {
+    margin-top: 1rem;
+    display: flex; /* Buat tombol bersebelahan */
+    gap: 1rem; /* Jarak antar tombol */
+}
+
+/* Base style untuk tombol baru */
+.edit-button,
+.delete-button {
+    flex: 1; /* Bagi rata lebar tombol */
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Tombol Edit (Secondary) */
+.edit-button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+.edit-button:hover {
+    background-color: #e5e5e5;
+    border-color: #ccc;
+}
+
+/* Tombol Delete (Warning) */
+.delete-button {
+    background-color: #e53e3e; /* Merah */
+    color: #fff;
+    border: 1px solid #e53e3e;
+}
+.delete-button:hover {
+    background-color: #c53030;
+    border-color: #c53030;
+}
