@@ -58,7 +58,6 @@
 </button>
 {% endif %}
 
-<!-- Modal Form -->
 {% include 'voucher_modal.html' %}
 
 <!-- Toast Notification -->
@@ -538,7 +537,7 @@
         }
         return cookieValue;
     }
-    // Prefer csrf token from hidden input if present, fallback to cookie
+    
     function getCsrfToken() {
         const el = document.querySelector('input[name="csrfmiddlewaretoken"]');
         if (el && el.value) return el.value;
@@ -548,7 +547,7 @@
     const csrftoken = getCsrfToken();
     const isAdmin = "{{ is_admin|yesno:'true,false' }}" === "true";
     
-    // Modal elements
+    // Elemen modal
     const modal = document.getElementById('voucherModal');
     const addBtn = document.getElementById('add-voucher-btn');
     const closeBtn = document.querySelector('.close');
@@ -557,7 +556,6 @@
     const modalTitle = document.getElementById('modalTitle');
     let isEditMode = false;
     
-    // Open modal for create (only if button exists - admin only)
     if (addBtn) {
         addBtn.addEventListener('click', () => {
             isEditMode = false;
@@ -568,7 +566,6 @@
         });
     }
     
-    // Close modal
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
         form.reset();
@@ -581,7 +578,6 @@
         isEditMode = false;
     });
     
-    // Close modal when clicking outside
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.style.display = 'none';
@@ -590,7 +586,7 @@
         }
     });
     
-    // Toast function
+    // Toast 
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         toast.textContent = message;
@@ -601,7 +597,7 @@
         }, 3000);
     }
     
-    // Submit form with AJAX
+    // Submit form AJAX
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         // Build FormData from the form so it includes csrfmiddlewaretoken
@@ -638,7 +634,6 @@
                 form.reset();
                 isEditMode = false;
                 
-                // Reload vouchers
                 await refreshVouchers();
             } else {
                 showToast(data.message, 'error');
@@ -649,7 +644,7 @@
         }
     });
     
-    // Edit voucher function
+    // Edit voucher 
     function editVoucher(id, kode, deskripsi, persentase, isActive) {
         isEditMode = true;
         modalTitle.textContent = 'Edit Voucher';
@@ -663,19 +658,17 @@
         modal.style.display = 'block';
     }
     
-    // Delete voucher function
+    // Delete voucher 
     async function deleteVoucher(id, kode) {
         if (!confirm(`Apakah Anda yakin ingin menghapus voucher ${kode}?`)) {
             return;
         }
         
-        // Find the voucher card and add deleting animation
         const voucherCard = document.querySelector(`[data-voucher-id="${id}"]`);
         if (voucherCard) {
             voucherCard.classList.add('deleting');
         }
         
-        // Wait for black hole animation to complete before making the delete request
         await new Promise(resolve => setTimeout(resolve, 600));
         
         try {
@@ -693,7 +686,6 @@
                 await refreshVouchers();
             } else {
                 showToast(data.message, 'error');
-                // Remove deleting class if deletion failed
                 if (voucherCard) {
                     voucherCard.classList.remove('deleting');
                 }
@@ -701,14 +693,12 @@
         } catch (error) {
             showToast('Terjadi kesalahan saat menghapus voucher', 'error');
             console.error('Error:', error);
-            // Remove deleting class on error
             if (voucherCard) {
                 voucherCard.classList.remove('deleting');
             }
         }
     }
     
-    // Refresh vouchers
     async function refreshVouchers() {
         try {
             const response = await fetch("{% url 'voucher:get-vouchers-json' %}");

@@ -106,7 +106,8 @@
         </div>
         {% endif %}
         
-        <!-- Section Produk yang Dimiliki User -->
+        <!-- Section Produk yang Dimiliki User (sembunyikan untuk admin) -->
+        {% if not user.is_staff and not user.is_superuser %}
         <div class="profile-info">
             <div class="section-header">
                 <h2>Produk Saya</h2>
@@ -143,7 +144,8 @@
                 <a href="{% url 'shop:shop-main' %}" class="btn btn-primary">Jelajahi Produk</a>
             </div>
             {% endif %}
-        </div>
+    </div>
+    {% endif %}
         
         <div class="profile-actions">
             <a href="{% url 'main:logout' %}" class="btn btn-secondary">Logout</a>
