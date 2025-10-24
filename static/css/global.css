@@ -105,8 +105,57 @@ nav a:hover {
 }
 
 .hero-content {
-    max-width: 550px; /* Batas lebar teks */
-    color: #000; /* Warna teks hitam */
+    max-width: 650px; /* Batas lebar teks */
+    color: #ffffff; /* Warna teks hitam */
+    padding:2.5rem; 
+
+}
+
+.container-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('/static/images/img-hero.jpg');
+  background-size: 100% 100%; /* stretch total */
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding-left: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #fff;
+}
+
+.container-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* overlay gelap tipis */
+}
+
+.hero-content {
+  position: relative; /* biar teks di atas overlay */
+  z-index: 1;
+}
+
+
+.hero-image{
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding:2.5rem;
+}
+
+.hero-p{
+    width: 100%;
+    height: fit-content;
+    color: #ffffff !important;
+    font-weight: bolder;
+}
+
+.span{
+    color: #CDA34F !important;
 }
 
 .hero-content h1 {
@@ -126,7 +175,7 @@ nav a:hover {
 /* Tombol 'See Collection' */
 .cta-button {
     display: inline-block; /* Agar bisa di-style padding-nya */
-    background-color: #000; /* Latar hitam */
+    background-color: #CDA34F; /* Latar gold */
     color: #fff; /* Teks putih */
     padding: 0.9rem 2rem; /* Padding atas/bawah & kiri/kanan */
     font-size: 0.9rem;
