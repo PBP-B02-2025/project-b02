@@ -5,7 +5,11 @@
 {% block content %}
 <div class="voucher-container">
     <h1>Voucher Diskon</h1>
+    {% if is_admin %}
     <p class="subtitle">Kelola voucher diskon untuk pelanggan Anda</p>
+    {% else %}
+    <p class="subtitle">Temukan berbagai voucher diskon menarik untuk berbelanja Anda</p>
+    {% endif %}
     
     <!-- Container untuk voucher cards -->
     <div id="voucher-cards-container" class="voucher-grid">
