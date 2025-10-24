@@ -1,13 +1,15 @@
 {% load static %}
+{% include 'toast.html' %}
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>{% block title %}Modern Shop{% endblock %}</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -85,8 +87,22 @@
 
     <nav>
         <ul>
-<li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
-            <li><a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop' %}active{% endif %}">SHOP</a></li>
+            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
+            <li class="dropdown">
+                <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop-classic' %}active{% endif %}">
+                            Shop Classic
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">
+                            Shop Size Recommendation
+                        </a>
+                    </li>
+                </ul>
+            </li>
             
             <li class="dropdown">
                 <a href="#" class="{% if active_page == 'products' %}active{% endif %}">PRODUCTS ▾</a>
@@ -100,10 +116,23 @@
                     <li><a href="#">Contoh: Sepatu</a></li>
                 </ul>
             </li>
-            <li><a href="#" class="{% if active_page == 'forum' %}active{% endif %}">FORUM</a></li>
-            <li><a href="#" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
-            <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
-            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
+
+            <li>
+                <a href="{% url 'shop:shop-main' %}" 
+                   {% if request.resolver_match.app_name == 'shop' %}class="active"{% endif %}>
+                   SHOP
+                </a>
+            </li>
+            
+            <li><a href="{% url 'forum:show_forum' %}"  {% if request.resolver_match.app_name == 'forum' %}class="active"{% endif %}>FORUM</a></li>
+            <li><a href="{% url 'createnews:show_news_list' %}" {% if request.resolver_match.app_name == 'createnews' %}class="active"{% endif %}>NEWS</a></li>
+            <li>
+                <a href="{% url 'voucher:voucher-view' %}" 
+                   {% if request.resolver_match.app_name == 'voucher' %}class="active"{% endif %}>
+                   VOUCHER
+                </a>
+            </li>
+            <li><a href="#">ABOUT</a></li>
         </ul>
     </nav>
 

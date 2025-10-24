@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rekomendasi Produk - Modern Shop{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Header -->
+  <div class="mb-10 text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">Size Recommendation</h1>
+    <p class="text-gray-600 text-lg">Berikut data ukuran badanmu saat ini.</p>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 sm:p-10 mb-12">
+  <!-- Data Pengukuran-->
+    <div id="user-data">
+    {% if data %}
+    
+    <h2 class="text-2xl font-bold text-gray-900 border-b border-gray-300 pb-3 mb-6 text-center sm:text-left">
+        Data Pengukuran Tubuh
+    </h2>
+
+    <div class="w-full max-w-3xl mx-auto">
+        
+        <h3 class="text-lg font-semibold text-gray-700 mb-3">Ukuran Dasar</h3>
+        <div id="core-measurement-info" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+            
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Tinggi:</span> {{ data.height }} cm</p>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Berat:</span> {{ data.weight }} kg</p>
+            </div>
+
+            {% if data.head_circumference %}
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Kepala:</span> {{ data.head_circumference }} cm</p>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <hr class="my-6 border-gray-200">
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Ukuran Tambahan</h3>
+        <div id="additional-measurement-info" class="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700">
+            
+            {% if data.waist %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Pinggang</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.waist }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
+            
+            {% if data.hip %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Pinggul</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.hip }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
+            
+            {% if data.chest %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Dada</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.chest }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
+
+            </div>
+
+        <hr class="my-6 border-gray-200">
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Rekomendasi Ukuran</h3>
+        <div id="measurement-recommendation" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+                <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Pakaian</span>
+                <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg transition duration-300 hover:scale-105">
+                    {{ data.clothes_size|default_if_none:"N/A" }}
+                </span>
+                <span class="text-xs text-gray-500 mt-2">
+                    {% if data.clothes_size %}(Dihitung berdasarkan data){% else %}Belum dihitung{% endif %}
+                </span>
+            </div>
+            
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+                <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Helm</span>
+                <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg transition duration-300 hover:scale-105">
+                    {{ data.helmet_size|default_if_none:"N/A" }}
+                </span>
+                <span class="text-xs text-gray-500 mt-2">
+                    {% if data.helmet_size %}(Dihitung berdasarkan data){% else %}Belum dihitung{% endif %}
+                </span>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <hr class="my-8 border-gray-200">
+    <div id="measurement-actions" class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="w-full sm:w-auto text-center bg-black text-white px-8 py-3 rounded-lg font-semibold tracking-wider hover:bg-gray-700 transition shadow-md">
+            Ubah Data Ukuran
+        </a>
+        <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="w-full sm:w-auto bg-white border border-red-600 text-red-600 px-8 py-3 rounded-lg font-medium hover:bg-red-50 hover:text-red-700 transition shadow-md">
+            Hapus Data
+        </button>
+    </div>
+
+    {% else %}
+    <div class="text-center py-12 border border-dashed border-gray-300 rounded-xl bg-gray-50">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        <p class="text-gray-600 mb-6 text-xl font-medium">Data ukuran badan belum ditemukan.</p>
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow-lg">
+            Isi Sekarang
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+  <!-- Judul Produk Yang Direkomendasikan-->
+  <div id="recommended-products-title" class="mt-10">
+        <hr class="border-gray-300 mb-6"> 
+        <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">
+            Produk yang Direkomendasikan
+        </h1>
+    </div>
+
+  <!-- Pilihan Kategori Produk -->
+  {% if data %}
+        <div class="flex gap-4 mb-8 justify-center">
+            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+                {% if selected_type == 'clothes' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
+                data-type="clothes">
+                Pakaian
+            </button>
+            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+                {% if selected_type == 'helmet' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
+                data-type="helmet">
+                Helm
+            </button>
+        </div>
+    {% endif %}
+
+  <!-- Grid Produk -->
+  <div id="ajax-products-container">
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                {% for p in products %}
+                    <div class="bg-white rounded-xl border border-gray-100 shadow-xl overflow-hidden transform hover:shadow-2xl transition duration-300">
+                        <div class="h-64 overflow-hidden">
+                            <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-60 object-cover">
+                        </div>
+                        
+                        <div class="p-5">
+                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">{{ p.get_category_display }}</span>
+                            
+                            <h4 class="font-bold text-xl mt-1 leading-tight">
+                                <a href="{% url 'shop:product-detail' p.id %}" class="text-gray-900 hover:text-black hover:underline transition">
+                                    {{ p.name }}
+                                </a>
+                            </h4>
+                            
+                            <div class="flex items-center mt-3 mb-3">
+                                <span class="text-gray-700 font-semibold mr-2">Ukuran:</span>
+                                <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ p.size|default:"N/A" }}
+                                </span>
+                            </div>
+                            
+                            <h5 class="font-extrabold text-gray-900 text-2xl mt-4">
+                                Rp {{ p.price|default:"-" }}
+                            </h5>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-600">
+                <p class="text-lg font-medium">✨ Tidak ada produk yang sesuai dengan ukuran **{{ selected_type|default:"Anda" }}** saat ini.</p>
+                <p class="text-sm mt-2">Coba periksa kembali data pengukuran Anda atau kategori produk lain.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Modal Konfirmasi Delete -->
+<div id="delete-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-sm">
+    <h2 class="text-lg font-semibold mb-4">Konfirmasi Hapus</h2>
+    <p class="mb-6">Apakah kamu yakin ingin menghapus data ukuranmu? Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="flex justify-end gap-3">
+      <button id="cancel-delete" class="bg-gray-200 px-4 py-2 rounded-md">Batal</button>
+      <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-md">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Update Measurement -->
+<div id="measurement-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <h2 class="text-xl font-semibold mb-4">Update Data Ukuran</h2>
+    <form id="measurement-form" class="space-y-3">
+      <div><label class="block text-sm font-medium">Tinggi (cm)</label><input type="number" name="height" id="form-height" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Berat (kg)</label><input type="number" name="weight" id="form-weight" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Pinggang (Optional) (cm)</label><input type="number" name="waist" id="form-waist" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Pinggul (Optional) (cm)</label><input type="number" name="hip" id="form-hip" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Dada (Optional) (cm)</label><input type="number" name="chest" id="form-chest" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Kepala (cm)</label><input type="number" name="head_circumference" id="form-head" class="w-full border rounded-md p-2"></div>
+      <div class="flex justify-end gap-3 pt-3">
+        <button type="button" id="cancel-modal" class="bg-gray-200 px-4 py-2 rounded-md">Batal</button>
+        <button type="submit" class="bg-black text-white px-4 py-2 rounded-md">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ===== Get CSRF token =====
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      document.cookie.split(";").forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + "=")) cookieValue = decodeURIComponent(c.substring(name.length + 1));
+      });
+    }
+    return cookieValue;
+  }
+
+  // ===== DOM Elements =====
+  const container = document.getElementById("ajax-products-container");
+  const deleteBtn = document.getElementById("delete-measurement-btn");
+  const updateBtn = document.getElementById("update-measurement-btn");
+  const userDataContainer = document.getElementById("user-data");
+  const measurementInfo = document.getElementById("measurement-info");
+  const measurementRecommendation = document.getElementById("measurement-recommendation");
+
+  const deleteModal = document.getElementById("delete-modal");
+  const cancelDelete = document.getElementById("cancel-delete");
+  const confirmDelete = document.getElementById("confirm-delete");
+
+  const modal = document.getElementById("measurement-modal");
+  const form = document.getElementById("measurement-form");
+  const cancelModal = document.getElementById("cancel-modal");
+
+  let activeFilter = 'clothes';
+
+  // ===== Fetch Products =====
+  async function fetchProducts(type) {
+    container.innerHTML = `<div class="text-gray-500 text-center mt-4">Loading...</div>`;
+    try {
+      const res = await fetch(`/measurement/get-products-json/?type=${type}`, { credentials: 'same-origin' });
+      const data = await res.json();
+      if (data.error) {
+        container.innerHTML = `<div class="bg-white border border-dashed border-gray-300 p-8 text-center text-gray-500"><p>${data.error}</p></div>`;
+        return;
+      }
+
+      let html = '';
+      if (data.products?.length) {
+        html += `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
+        data.products.forEach(p => {
+          html += `
+            <a href="/shop/product/${p.id}/" class="group">
+              <div class="product-card bg-white rounded-lg border p-4 shadow-sm hover:shadow-lg transition">
+                <img src="${p.thumbnail || 'https://via.placeholder.com/300x400?text=No+Image'}" alt="${p.name}" class="w-full h-48 object-cover rounded">
+                <div class="mt-2">
+                  <span class="product-category text-gray-500 text-sm">${p.category}</span>
+                  <h4 class="product-name font-semibold">${p.name}</h4>
+                  <span class="product-size">Size: ${p.size}</span>
+                  <h5 class="product-price font-bold">Rp ${p.price}</h5>
+                </div>
+              </div>
+            </a>
+          `;
+        });
+        html += `</div>`;
+      } else {
+        html = `<div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+                  <p>Tidak ada produk yang sesuai ukuranmu.</p>
+                </div>`;
+      }
+
+      container.innerHTML = html;
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<div class="text-red-600 text-center mt-4">Gagal memuat produk.</div>`;
+    }
+  }
+  // ===== Product Filter =====
+  document.addEventListener("click", e => {
+    if (e.target.classList.contains("product-type-btn")) {
+      activeFilter = e.target.dataset.type;
+      document.querySelectorAll(".product-type-btn").forEach(b => {
+        b.classList.remove("bg-black", "text-white");
+        b.classList.add("bg-gray-200");
+      });
+      e.target.classList.remove("bg-gray-200");
+      e.target.classList.add("bg-black", "text-white");
+      fetchProducts(activeFilter);
+    }
+  });
+
+  // ===== Delete Measurement =====
+  deleteBtn?.addEventListener("click", e => {
+    e.preventDefault();
+    deleteModal.classList.remove("hidden");
+  });
+
+  cancelDelete.addEventListener("click", () => deleteModal.classList.add("hidden"));
+
+  confirmDelete.addEventListener("click", async () => {
+    try {
+      const res = await fetch(deleteBtn.dataset.url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        userDataContainer.innerHTML = `
+          <div class="text-center py-10">
+            <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
+            <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+              Isi Sekarang
+            </a>
+          </div>
+        `;
+        deleteModal.classList.add("hidden");
+        fetchProducts(activeFilter);
+        showToast("Berhasil", data.message, "success");
+      } else {
+        showToast("Gagal", data.message || "Gagal menghapus data", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Terjadi error saat menghapus data", "error");
+    }
+  });
+
+  // ===== Update Measurement Modal =====
+  updateBtn?.addEventListener("click", async () => {
+    modal.classList.remove("hidden");
+    try {
+      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        const m = data.measurement;
+        document.getElementById("form-height").value = m.height || "";
+        document.getElementById("form-weight").value = m.weight || "";
+        document.getElementById("form-waist").value = m.waist || "";
+        document.getElementById("form-hip").value = m.hip || "";
+        document.getElementById("form-chest").value = m.chest || "";
+        document.getElementById("form-head").value = m.head_circumference || "";
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  cancelModal.addEventListener("click", () => modal.classList.add("hidden"));
+
+  // ===== Submit Update Measurement =====
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    try {
+      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        const m = data.measurement;
+
+        // ==== Update only ====
+        measurementInfo.innerHTML = `
+          <div class="space-y-2">
+            <p><span class="font-semibold">Tinggi:</span> ${m.height} cm</p>
+            <p><span class="font-semibold">Berat:</span> ${m.weight} kg</p>
+          </div>
+          <div class="space-y-2">
+            ${m.waist ? `<p><span class="font-semibold">Lingkar Pinggang:</span> ${m.waist} cm</p>` : ''}
+            ${m.hip ? `<p><span class="font-semibold">Lingkar Pinggul:</span> ${m.hip} cm</p>` : ''}
+            ${m.chest ? `<p><span class="font-semibold">Lingkar Dada:</span> ${m.chest} cm</p>` : ''}
+            ${m.head_circumference ? `<p><span class="font-semibold">Lingkar Kepala:</span> ${m.head_circumference} cm</p>` : ''}
+          </div>
+        `;
+
+        measurementRecommendation.innerHTML = `
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Pakaian</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.clothes_size || "Belum dihitung"}</span>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Helm</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.helmet_size || "Belum dihitung"}</span>
+          </div>
+        `;
+
+        modal.classList.add("hidden");
+        showToast("Berhasil", data.message, "success");
+      } else {
+        showToast("Gagal", data.message || "Periksa input form", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Terjadi error saat update", "error");
+    }
+  });
+
+  // ===== Load Products =====
+  fetchProducts(activeFilter);
+
+});
+</script>
+
+
+{% endblock %}
