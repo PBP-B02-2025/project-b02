@@ -265,6 +265,56 @@ function initializeForumPage() {
   fetchForumFromServer();
 }
 
+// Modal functions
+function showModal() {
+  const modal = document.getElementById('forumModal');
+  const modalContent = document.getElementById('forumModalContent');
+  modal.classList.remove('hidden'); 
+  setTimeout(() => {
+    modalContent.classList.remove('opacity-0', 'scale-95');
+    modalContent.classList.add('opacity-100', 'scale-100');
+  }, 50); 
+}
+
+function hideModal() {
+  const modal = document.getElementById('forumModal');
+  const modalContent = document.getElementById('forumModalContent');
+  modalContent.classList.remove('opacity-100', 'scale-100');
+  modalContent.classList.add('opacity-0', 'scale-95');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 150); 
+  document.getElementById('forumForm').reset();
+}
+
+// Handle form submission
+document.getElementById('forumForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  
+  try {
+    const response = await fetch("{% url 'forum:create_forum_ajax' %}", {
+      method: 'POST',
+      body: formData,
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      hideModal();
+      // Refresh forum list
+      await fetchForumFromServer();
+      alert('Forum berhasil dibuat!');
+    } else {
+      alert(data.message || 'Gagal membuat forum');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan saat membuat forum');
+  }
+});
+
 // Start application
 initializeForumPage();
 </script>

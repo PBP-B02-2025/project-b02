@@ -1,18 +1,64 @@
 {% load static %}
+{% include 'toast.html' %}
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>{% block title %}Modern Shop{% endblock %}</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
+        .user-dropdown {
+            position: relative; /* Diperlukan agar menu 'absolute' di bawahnya */
+        }
+
+        /* Menu dropdown, disalin dari gaya 'nav' Anda */
+        .user-dropdown .dropdown-menu {
+            display: none; /* Sembunyikan by default */
+            position: absolute; /* Posisikan 'melayang' di bawah ikon */
+            top: 100%; /* Tepat di bawah ikon */
+            right: 0;  /* Rata kanan */
+            background-color: #fff;
+            border: 1px solid #f0f0f0;
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+            min-width: 150px; /* Atur lebar dropdown */
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Tampilkan dropdown saat ikon di-hover */
+        .user-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .user-dropdown .dropdown-menu li {
+            width: 100%;
+        }
+
+        /* Tautan di dalam dropdown */
+        .user-dropdown .dropdown-menu li a {
+            display: block;
+            padding: 8px 20px;
+            color: #555;
+            font-size: 0.8rem;
+            text-transform: none;
+            font-weight: 400;
+        }
+
+        .user-dropdown .dropdown-menu li a:hover {
+            background-color: #f9f9f9;
+            color: #000;
+        }
+
         nav ul li.dropdown {
             position: relative; /* Diperlukan agar menu 'absolute' di bawahnya */
         }
@@ -71,22 +117,35 @@
             </a>
             
             <div class="user-icons">
-                <a href="#">🔍</a>
-                <li class="dropdown" style="list-style:none;">
-                    <a href="#" id="user-icon" style="padding:0 1rem;">👤</a>
-                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:120px;">
-                        <li><a href="{% url 'main:logout' %}">Log Out</a></li>
-                    </ul>
-                </li>
-                <a href="#">🛒</a>
+                <a href="#">👤</a>
+                <a href="#">🕧</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'main:logout' %}">
+                    <img src="{% static 'images/logout.png' %}" alt="Logout" style="width: 20px; height: 20px; vertical-align: middle;">
+                </a>
+                {% endif %}
             </div>
         </div>
     </header>
 
     <nav>
         <ul>
-<li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
-            <li><a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop' %}active{% endif %}">SHOP</a></li>
+            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
+            <li class="dropdown">
+                <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop-classic' %}active{% endif %}">
+                            Shop Classic
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">
+                            Shop Size Recommendation
+                        </a>
+                    </li>
+                </ul>
+            </li>
             
             <li class="dropdown">
                 <a href="#" class="{% if active_page == 'products' %}active{% endif %}">PRODUCTS ▾</a>
