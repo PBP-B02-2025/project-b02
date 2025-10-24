@@ -457,28 +457,47 @@ nav a:hover {
 
 
 .ajax-modal {
-    display: none; 
+    /* display: none; <-- DIHAPUS */
     position: fixed;
     z-index: 1001; 
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow-y: auto; /* Izinkan scroll jika konten panjang */
     background-color: rgba(0,0,0,0.5); 
-}
+    
+    /* --- TAMBAHAN UNTUK ANIMASI --- */
+    display: flex; /* Gunakan flexbox untuk memusatkan */
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1rem; /* Jarak aman dari tepi layar */
 
+    opacity: 0; /* Sembunyi by default */
+    pointer-events: none; /* Tidak bisa diklik saat tersembunyi */
+    transition: opacity 0.3s ease-in-out; /* Transisi untuk background */
+}
+.ajax-modal.modal-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
 .ajax-modal-content {
     background-color: #fff;
-    margin: 10% auto; 
+    /* margin: 10% auto; <-- DIHAPUS (sudah diatur flexbox) */
     padding: 25px;
     border: 1px solid #888;
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
     position: relative;
-}
 
+    /* --- TAMBAHAN UNTUK ANIMASI --- */
+    transform: translateY(20px); /* Mulai dari 20px ke bawah */
+    transition: transform 0.3s ease-in-out;
+}
+.ajax-modal.modal-visible .ajax-modal-content {
+    transform: translateY(0); /* Kembali ke posisi normal saat visible */
+}
 .modal-close-btn {
     color: #aaa;
     position: absolute;
