@@ -28,12 +28,21 @@
                 </div>
                 {% if is_admin %}
                 <div class="voucher-actions">
-                        <button class="btn-action btn-edit" onclick="editVoucher('{{ voucher.id }}', '{{ voucher.kode }}', '{{ voucher.deskripsi }}', '{{ voucher.persentase_diskon }}', {{ voucher.is_active|lower }})" title="Edit">
+                        <button class="btn-action btn-edit" 
+                                data-voucher-id="{{ voucher.id }}"
+                                data-voucher-kode="{{ voucher.kode }}"
+                                data-voucher-deskripsi="{{ voucher.deskripsi }}"
+                                data-voucher-persentase="{{ voucher.persentase_diskon }}"
+                                data-voucher-active="{{ voucher.is_active|lower }}"
+                                title="Edit">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
                         </svg>
                     </button>
-                        <button class="btn-action btn-delete" onclick="deleteVoucher('{{ voucher.id }}', '{{ voucher.kode }}')" title="Delete">
+                        <button class="btn-action btn-delete" 
+                                data-voucher-id="{{ voucher.id }}"
+                                data-voucher-kode="{{ voucher.kode }}"
+                                title="Delete">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -547,6 +556,28 @@
     const csrftoken = getCsrfToken();
     const isAdmin = "{{ is_admin|yesno:'true,false' }}" === "true";
     
+    // Event delegation for edit and delete buttons
+    document.addEventListener('click', (e) => {
+        // Handle edit button clicks
+        if (e.target.closest('.btn-edit')) {
+            const btn = e.target.closest('.btn-edit');
+            const id = btn.dataset.voucherId;
+            const kode = btn.dataset.voucherKode;
+            const deskripsi = btn.dataset.voucherDeskripsi;
+            const persentase = btn.dataset.voucherPersentase;
+            const isActive = btn.dataset.voucherActive === 'true';
+            editVoucher(id, kode, deskripsi, persentase, isActive);
+        }
+        
+        // Handle delete button clicks
+        if (e.target.closest('.btn-delete')) {
+            const btn = e.target.closest('.btn-delete');
+            const id = btn.dataset.voucherId;
+            const kode = btn.dataset.voucherKode;
+            deleteVoucher(id, kode);
+        }
+    });
+    
     // Elemen modal
     const modal = document.getElementById('voucherModal');
     const addBtn = document.getElementById('add-voucher-btn');
@@ -717,14 +748,30 @@
                 `;
             } else {
                 container.innerHTML = data.vouchers.map(voucher => {
+                    // Escape strings for safe HTML attribute injection
+                    const escapeHtml = (str) => {
+                        const div = document.createElement('div');
+                        div.textContent = str || '';
+                        return div.innerHTML.replace(/'/g, '&#39;');
+                    };
+                    
                     const actionsHtml = isAdmin ? `
                         <div class="voucher-actions">
-                                <button class="btn-action btn-edit" onclick="editVoucher('${voucher.id}', '${voucher.kode}', '${voucher.deskripsi}', '${voucher.persentase_diskon}', ${voucher.is_active})" title="Edit">
+                                <button class="btn-action btn-edit" 
+                                        data-voucher-id="${voucher.id}"
+                                        data-voucher-kode="${escapeHtml(voucher.kode)}"
+                                        data-voucher-deskripsi="${escapeHtml(voucher.deskripsi)}"
+                                        data-voucher-persentase="${voucher.persentase_diskon}"
+                                        data-voucher-active="${voucher.is_active}"
+                                        title="Edit">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
                                 </svg>
                             </button>
-                                <button class="btn-action btn-delete" onclick="deleteVoucher('${voucher.id}', '${voucher.kode}')" title="Delete">
+                                <button class="btn-action btn-delete" 
+                                        data-voucher-id="${voucher.id}"
+                                        data-voucher-kode="${escapeHtml(voucher.kode)}"
+                                        title="Delete">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
