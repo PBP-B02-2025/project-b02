@@ -91,25 +91,25 @@
                 <p>{{ product.description|linebreaksbr }}</p> 
             </div>
 
-            <div class="product-buy-action">
-                <button type="button" class="buy-button" id="open-buy-modal-btn">
-                    Beli Sekarang
-                </button>
-            </div>
-
             {% if product.user == request.user %}
                 <div class="product-owner-actions">
                     <a href="{% url 'shop:edit-product' product.id %}" class="edit-button">
                         Edit Product
                     </a>
                     
-                    <form action="{% url 'shop:delete-product' product.id %}" method="POST" 
-                        class="delete-form" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
+                    <form id="delete-product-form" action="{% url 'shop:delete-product' product.id %}" method="POST" class="delete-form">
                         {% csrf_token %}
-                        <button type="submit" class="delete-button">
+                        <button type="button" id="open-delete-modal-btn" class="delete-button">
                             Delete Product
                         </button>
                     </form>
+                </div>
+            
+            {% else %}
+                <div class="product-buy-action">
+                    <button type="button" class="buy-button" id="open-buy-modal-btn">
+                        Beli Sekarang
+                    </button>
                 </div>
             {% endif %}
 
@@ -123,7 +123,7 @@
 
 </div> 
 
-<div id="buy-product-modal" class="ajax-modal" style="display: none;">
+<div id="buy-product-modal" class="ajax-modal">
     <div class="ajax-modal-content">
         <span class="modal-close-btn" id="buy-modal-close-btn">&times;</span>
         
@@ -155,7 +155,28 @@
         </form>
     </div>
 </div>
+<div id="delete-confirm-modal" class="ajax-modal">
+    <div class="ajax-modal-content" style="max-width: 450px;">
+        <span class="modal-close-btn" id="delete-modal-close-btn">&times;</span>
+        
+        <h3 style="text-align: center; color: #e53e3e;">Konfirmasi Penghapusan</h3>
+        <p style="text-align: center; margin: 1.5rem 0; font-size: 1.05rem;">
+            Apakah Anda yakin ingin menghapus produk ini?
+            <br>
+            <strong style="display: block; margin-top: 0.5rem;">{{ product.name }}</strong>
+        </p>
+        <p style="text-align: center; font-size: 0.9rem; color: #555;">Tindakan ini tidak dapat dibatalkan.</p>
 
+        <div class="product-owner-actions" style="margin-top: 2rem;">
+            <button type="button" id="delete-modal-cancel-btn" class="edit-button">
+                Batal
+            </button>
+            <button type="button" id="delete-modal-confirm-btn" class="delete-button">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
 <script>
 $(document).ready(function() {
     
@@ -173,9 +194,14 @@ $(document).ready(function() {
     var originalPrice = parseFloat("{{ product.price|default:0 }}");
     var priceDisplay = $('#modal-original-price');
     var anyVouchers = "{{ any_vouchers_exist|yesno:'true,false' }}" === "true";
-
+    var deleteModal = $('#delete-confirm-modal');
+    var openDeleteBtn = $('#open-delete-modal-btn');
+    var closeDeleteBtn = $('#delete-modal-close-btn');
+    var cancelDeleteBtn = $('#delete-modal-cancel-btn');
+    var confirmDeleteBtn = $('#delete-modal-confirm-btn');
+    var deleteForm = $('#delete-product-form');
     openBtn.on('click', function() {
-        modal.css('display', 'block');
+        modal.addClass('modal-visible');
 
         // Gunakan variabel JavaScript yang sudah kita buat
         if (anyVouchers === false) {
@@ -185,12 +211,37 @@ $(document).ready(function() {
     });
 
     closeBtn.on('click', function() {
-        modal.css('display', 'none');
+        modal.removeClass('modal-visible');
     });
 
+    openDeleteBtn.on('click', function() {
+        deleteModal.addClass('modal-visible');
+    });
+
+    // Sembunyikan modal saat tombol 'x' diklik
+    closeDeleteBtn.on('click', function() {
+        deleteModal.removeClass('modal-visible');
+    });
+
+    // Sembunyikan modal saat tombol "Batal" diklik
+    cancelDeleteBtn.on('click', function() {
+        deleteModal.removeClass('modal-visible');
+    });
+
+    // Saat tombol "Ya, Hapus" diklik, submit form-nya
+    confirmDeleteBtn.on('click', function() {
+        // Tampilkan loading state (opsional tapi bagus)
+        $(this).prop('disabled', true).text('Menghapus...');
+        
+        // Submit form delete yang asli
+        deleteForm.submit();
+    });
     $(window).on('click', function(event) {
         if (event.target == modal[0]) {
-            modal.css('display', 'none');
+            modal.removeClass('modal-visible');
+        }
+        if (event.target == deleteModal[0]) {
+            deleteModal.removeClass('modal-visible');
         }
     });
 
