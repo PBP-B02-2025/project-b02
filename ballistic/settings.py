@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'forum',
     'main',
+    'review',
 'voucher',
     'shop',
 ]
