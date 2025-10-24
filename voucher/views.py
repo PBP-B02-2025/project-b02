@@ -61,7 +61,7 @@ def create_voucher_ajax(request):
             'status': 'success',
             'message': 'Voucher berhasil dibuat!',
             'voucher': {
-                'id': voucher.id,
+                    'id': str(voucher.id),
                 'kode': voucher.kode,
                 'deskripsi': voucher.deskripsi,
                 'persentase_diskon': str(voucher.persentase_diskon),
@@ -118,7 +118,7 @@ def update_voucher_ajax(request, voucher_id):
             'status': 'success',
             'message': 'Voucher berhasil diupdate!',
             'voucher': {
-                'id': voucher.id,
+                    'id': str(voucher.id),
                 'kode': voucher.kode,
                 'deskripsi': voucher.deskripsi,
                 'persentase_diskon': str(voucher.persentase_diskon),
@@ -163,7 +163,7 @@ def get_vouchers_json(request):
     vouchers_list = []
     for voucher in vouchers:
         vouchers_list.append({
-            'id': voucher.id,
+                'id': str(voucher.id),
             'kode': voucher.kode,
             'deskripsi': voucher.deskripsi,
             'persentase_diskon': str(voucher.persentase_diskon),
