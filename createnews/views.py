@@ -3,7 +3,9 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import strip_tags
 from createnews.models import News
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='/login/')
 def show_news_list(request): 
     # Filter kategori dari dropdown (?category=event)
     category = request.GET.get('category')
@@ -39,6 +41,7 @@ def show_news_list(request):
     return render(request, "createnews/news_list.html", context)
 
 
+@login_required(login_url='/login/')
 def show_news_detail(request, id):
     news = get_object_or_404(News, pk=id)
     news.news_views += 1

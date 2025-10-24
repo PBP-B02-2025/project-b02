@@ -9,6 +9,7 @@ from django.utils import timezone
 # Create your views here.
 
 def show_forum_list(request):
+    # Forum list bisa dilihat tanpa login
     context = {
         'active_page': 'forum',
     }

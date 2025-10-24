@@ -168,7 +168,7 @@ def login_ajax(request):
 
 def logout_user(request):
     logout(request)
-    response = redirect('main:login')
+    response = redirect('/')
     response.delete_cookie('last_login')
     return response
 
@@ -176,6 +176,7 @@ def logout_user(request):
 def profil_view(request):
     # Import userMeasurement model
     from userMeasurement.models import userMeasurement
+    from shop.models import Product
     
     # Coba ambil data measurement user
     try:
@@ -183,8 +184,19 @@ def profil_view(request):
     except userMeasurement.DoesNotExist:
         measurement = None
     
+    # Ambil produk yang dimiliki user (produk yang dia upload)
+    user_products = Product.objects.filter(user=request.user).order_by('-id')
+    
     context = {
         'active_page': 'profil',
-        'measurement': measurement
+        'measurement': measurement,
+        'user_products': user_products,
+        'total_products': user_products.count()
     }
     return render(request, 'profil.html', context)
+
+def about_view(request):
+    context = {
+        'active_page': 'about'
+    }
+    return render(request, 'about.html', context)

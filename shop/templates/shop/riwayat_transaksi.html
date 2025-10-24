@@ -16,7 +16,11 @@
 
 <div class="history-container" style="width: 80%; max-width: 1000px; margin: 3rem auto;">
 
-    {% if transactions %}
+    {% if admin_blocked %}
+        <div style="text-align:center; padding: 2rem; background:#fff3cd; border:1px solid #ffeeba; color:#856404; border-radius:8px;">
+            {{ admin_message }}
+        </div>
+    {% elif transactions %}
         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
             
             <thead style="background-color: #f8f8f8;">

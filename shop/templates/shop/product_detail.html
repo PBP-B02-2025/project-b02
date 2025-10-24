@@ -104,7 +104,14 @@
                         </button>
                     </form>
                 </div>
-            
+            {% elif request.user.is_staff or request.user.is_superuser %}
+                <!-- Admin tidak bisa beli produk, tapi boleh hapus produk -->
+                <form id="delete-product-form" action="{% url 'shop:delete-product' product.id %}" method="POST" class="delete-form">
+                    {% csrf_token %}
+                    <button type="button" id="open-delete-modal-btn" class="delete-button">
+                        Delete Product (Admin)
+                    </button>
+                </form>
             {% else %}
                 <div class="product-buy-action">
                     <button type="button" class="buy-button" id="open-buy-modal-btn">

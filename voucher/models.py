@@ -4,7 +4,7 @@ import uuid
 
 class Voucher(models.Model):
     
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     kode = models.CharField(
         max_length=50, 

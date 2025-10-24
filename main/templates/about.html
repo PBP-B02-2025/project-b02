@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Ballistic{% endblock %}
+
+{% block content %}
+<!-- Hero Section dengan Background Image -->
+<div class="about-hero" id="heroSection">
+    <div class="hero-overlay"></div>
+    <div class="hero-content" id="heroContent">
+        <h1>About Us</h1>
+        <p>Kami kelompok PBP B02 di bawah bimbingan asisten dosen Fiona Ratu Maheswari. </p>
+        <p> Ballistic adalah sebuah website e-commerce peralatan olahraga yang dirancang untuk mempermudah pengguna dalam membeli dan menjual perlengkapan olahraga dengan cara yang praktis, personal, dan interaktif. Website ini ditujukan untuk para pecinta olahraga maupun penjual perlengkapan olahraga yang ingin memiliki satu tempat untuk melakukan digital transaksi, rekomendasi produk, serta pengelolaan akun yang efisien. Kategori utama produk yang dijual meliputi baju olahraga, celana, botol minum, bola, dan kaus kaki. Setiap produk dapat ditampilkan lengkap dengan ukuran, harga, stok, serta ulasan pengguna lainnya.</p>
+        <div class="scroll-indicator">
+            <span>Scroll Down</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section" id="teamSection">
+    <div class="container">
+        <h2 class="section-title">Meet The Team</h2>
+        <!-- Baris Pertama (3 orang) -->
+        <div class="features-grid">
+            <!-- Team Member 1 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/alexius.jpg' %}" alt="Alexius">
+                    </div>
+                </div>
+                <h3>Alexius Christhoper Wijaya</h3>
+                <p>Sistem Informasi'24</p>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/jovian-felix-rustan.jpg' %}" alt="Jovian Felix Rustan">
+                    </div>
+                </div>
+                <h3>Jovian Felix Rustan</h3>
+                <p>Ilmu Komputer'24</p>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/mirza-radithya-ramadhana-harjono-hadiwiardjo.jpg' %}" alt="Mirza Radithya Ramadhana Harjono Hadiwiardjo">
+                    </div>
+                </div>
+                <h3>Mirza Radithya Ramadhana Harjono Hadiwiardjo</h3>
+                <p>Ilmu Komputer'24</p>
+            </div>
+        </div>
+        
+        <!-- Baris Kedua (3 orang) -->
+        <div class="features-grid">
+            <!-- Team Member 4 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/johans.jpg' %}" alt="Johans">
+                    </div>
+                </div>
+                <h3>Jonathan Hans Emanuelle</h3>
+                <p>Sistem Informasi'24</p>
+            </div>
+
+            <!-- Team Member 5 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/jovanus.jpg' %}" alt="Jovanus">
+                    </div>
+                </div>
+                <h3>Jovanus Irwan Susanto</h3>
+                <p>Ilmu Komputer'24</p>
+            </div>
+
+            <!-- Team Member 6 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-circle photo-circle">
+                        <img src="{% static 'images/aufa-daffa-satriatama.jpg' %}" alt="Aufa Daffa Satriatama">
+                    </div>
+                </div>
+                <h3>Aufa Daffa Satriatama</h3>
+                <p>Ilmu Komputer'24</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero Section */
+    .about-hero {
+        position: relative;
+        height: 100vh;
+        background-image: url('{% static "images/img-hero.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: opacity 0.5s ease;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.85);
+        transition: background 0.5s ease;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 800px;
+        padding: 0 20px;
+        transition: all 0.5s ease;
+    }
+    
+    .hero-content.fade-out {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    
+    .hero-content h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #000;
+        letter-spacing: -1px;
+    }
+    
+    .hero-content p {
+        font-size: 1.1rem;
+        color: #666;
+        line-height: 1.8;
+        max-width: 700px;
+        margin: 0 auto 30px;
+    }
+    
+    .scroll-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 80px 20px;
+        background: #fff;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 60px;
+        color: #000;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+    }
+    
+    .section-title.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 50px;
+        max-width: 1000px;
+        margin: 0 auto 60px auto;
+    }
+    
+    .features-grid:last-child {
+        margin-bottom: 0;
+    }
+    
+    .feature-card {
+        text-align: center;
+        padding: 20px;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.6s ease;
+    }
+    
+    .feature-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .feature-card:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+    
+    .feature-card:nth-child(2) {
+        transition-delay: 0.2s;
+    }
+    
+    .feature-card:nth-child(3) {
+        transition-delay: 0.3s;
+    }
+    
+    .feature-icon {
+        margin-bottom: 20px;
+    }
+    
+    .icon-circle {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, #cda34f 0%, #d4af37 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        color: #000;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        border: 4px solid #cda34f;
+    }
+    
+    .photo-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .feature-card:hover .icon-circle {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(205, 163, 79, 0.4);
+        border-color: #d4af37;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #000;
+        line-height: 1.4;
+    }
+    
+    .feature-card p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .about-hero {
+            height: 100vh;
+        }
+        
+        .hero-content h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-content p {
+            font-size: 1rem;
+        }
+        
+        .scroll-indicator {
+            font-size: 0.85rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+        
+        .features-section {
+            padding: 60px 20px;
+        }
+        
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .icon-circle {
+            width: 130px;
+            height: 130px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1rem;
+        }
+        
+        .feature-card p {
+            font-size: 0.85rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .about-hero {
+            height: 100vh;
+        }
+        
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+        
+        .hero-content p {
+            font-size: 0.9rem;
+        }
+        
+        .scroll-indicator {
+            font-size: 0.8rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        
+        .hero-content p br {
+            display: none;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .icon-circle {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.1rem;
+        }
+        
+        .feature-card p {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<script>
+    // Scroll Animation
+    window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        const heroContent = document.getElementById('heroContent');
+        const teamSection = document.getElementById('teamSection');
+        const sectionTitle = document.querySelector('.section-title');
+        const featureCards = document.querySelectorAll('.feature-card');
+        const windowHeight = window.innerHeight;
+        
+        // Fade out hero content on scroll
+        if (scrollY > 100) {
+            heroContent.classList.add('fade-out');
+        } else {
+            heroContent.classList.remove('fade-out');
+        }
+        
+        // Show/hide team section title based on viewport
+        if (teamSection) {
+            const teamSectionTop = teamSection.getBoundingClientRect().top;
+            
+            // Show title when section enters viewport
+            if (teamSectionTop < windowHeight - 100 && teamSectionTop > -100) {
+                if (sectionTitle) {
+                    sectionTitle.classList.add('visible');
+                }
+            } else {
+                // Hide title when section leaves viewport
+                if (sectionTitle) {
+                    sectionTitle.classList.remove('visible');
+                }
+            }
+            
+            // Animate feature cards - dapat muncul berkali-kali
+            featureCards.forEach((card, index) => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardBottom = card.getBoundingClientRect().bottom;
+                
+                // Show card when it's in viewport
+                if (cardTop < windowHeight - 50 && cardBottom > 0) {
+                    card.classList.add('visible');
+                } else {
+                    // Hide card when it's out of viewport
+                    card.classList.remove('visible');
+                }
+            });
+        }
+    });
+    
+    // Smooth scroll on page load
+    window.addEventListener('load', function() {
+        window.scrollTo(0, 0);
+    });
+</script>
+{% endblock %}

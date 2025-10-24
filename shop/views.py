@@ -10,6 +10,7 @@ from .forms import ProductForm
 from voucher.models import Voucher
 from decimal import Decimal
 
+@login_required(login_url='/login/')
 def shop_main_view(request):
     
     # --- 1. Ambil Kategori dari URL ---
@@ -52,6 +53,9 @@ def shop_main_view(request):
 def add_product_ajax_view(request):
     # Hanya izinkan request POST
     if request.method == 'POST':
+        # Larang admin menambah produk
+        if request.user.is_staff or request.user.is_superuser:
+            return JsonResponse({'status': 'error', 'message': 'Admin tidak diperbolehkan menambahkan produk.'}, status=403)
         # 'request.POST' berisi data dari form
         form = ProductForm(request.POST) 
         
@@ -71,6 +75,8 @@ def add_product_ajax_view(request):
     # Jika bukan POST, kirim error
     return JsonResponse({'status': 'error', 'message': 'Metode request tidak valid'}, status=405)
 
+@login_required(login_url='/login/')
+@login_required(login_url='/login/')
 def product_detail_view(request, product_id):
     """
     View untuk menampilkan halaman detail dari satu produk.
@@ -98,6 +104,9 @@ def edit_product_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # Keamanan: Pastikan hanya pemilik produk yang bisa mengedit
+    if request.user.is_staff or request.user.is_superuser:
+        messages.error(request, "Admin tidak diperbolehkan mengedit produk.")
+        return redirect('shop:product-detail', product_id=product.id)
     if product.user != request.user:
         messages.error(request, "Anda tidak diizinkan mengedit produk ini.")
         return redirect('shop:product-detail', product_id=product.id)
@@ -125,7 +134,7 @@ def delete_product_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # Keamanan: Pastikan hanya pemilik produk yang bisa menghapus
-    if product.user != request.user:
+    if not (product.user == request.user or request.user.is_staff or request.user.is_superuser):
         messages.error(request, "Anda tidak diizinkan menghapus produk ini.")
         return redirect('shop:product-detail', product_id=product.id)
 
@@ -147,10 +156,19 @@ def transaction_history_view(request):
     # 1. Ambil semua transaksi milik user, urutkan dari yang paling baru
     #    Kita pakai .select_related('product') agar lebih efisien
     #    (Model Transaction sudah di-order by '-purchase_timestamp' di Meta)
-    user_transactions = Transaction.objects.filter(user=request.user).select_related('product')
+    admin_blocked = False
+    admin_message = None
+    if request.user.is_staff or request.user.is_superuser:
+        admin_blocked = True
+        admin_message = "Admin tidak memiliki riwayat transaksi. Fitur transaksi tidak tersedia untuk admin."
+        user_transactions = Transaction.objects.none()
+    else:
+        user_transactions = Transaction.objects.filter(user=request.user).select_related('product')
     
     context = {
         'transactions': user_transactions,
+        'admin_blocked': admin_blocked,
+        'admin_message': admin_message,
         'active_page': 'shop-history', # Untuk menandai link nav
     }
     
@@ -163,6 +181,9 @@ def create_transaction_ajax_view(request):
         return JsonResponse({'status': 'error', 'message': 'Metode request tidak valid'}, status=405)
 
     try:
+        # Blokir admin melakukan transaksi
+        if request.user.is_staff or request.user.is_superuser:
+            return JsonResponse({'status': 'error', 'message': 'Admin tidak diperbolehkan melakukan transaksi.'}, status=403)
         # 1. Ambil data dari request POST
         product_id = request.POST.get('product_id')
         quantity = int(request.POST.get('quantity', 1))
