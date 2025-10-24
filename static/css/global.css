@@ -775,3 +775,64 @@ nav a:hover {
     background-color: #c53030;
     border-color: #c53030;
 }
+
+/* Pastikan struktur HTML-nya punya .top-bar, .social-icons, dan .logout-container */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 2.5rem;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Bagian kiri: ikon sosial media */
+.top-bar .social-icons {
+    display: flex;
+    gap: 1.2rem;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Bagian kanan: tombol logout/login */
+.top-bar .logout-container {
+    margin-left: auto;
+}
+
+.top-bar .logout-btn {
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.top-bar .logout-btn:hover {
+    color: #cda34f; /* warna emas saat hover */
+}
+.ballistic-title {
+  font-family: 'Montserrat', sans-serif; /* atau ganti ke font lain seperti 'Poppins' */
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #000; /* hitam elegan */
+  text-align: center; /* posisi tengah */
+}
+
+.btn-create {
+  width: 45px;
+  height: 45px;
+  background-color: #000;      /* Hitam elegan */
+  color: #fff;                 /* Plus putih */
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-create:hover {
+  background-color: #333;
+  transform: scale(1.1);
+}
