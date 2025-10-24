@@ -194,3 +194,9 @@ def profil_view(request):
         'total_products': user_products.count()
     }
     return render(request, 'profil.html', context)
+
+def about_view(request):
+    context = {
+        'active_page': 'about'
+    }
+    return render(request, 'about.html', context)

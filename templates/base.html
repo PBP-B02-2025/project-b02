@@ -205,7 +205,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" {% if active_page == 'home' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
                 <a href="{% url 'shop:shop-main' %}" 
                    class="{% if request.resolver_match.app_name == 'shop' or request.resolver_match.app_name == 'userMeasurement' %}active{% endif %}">
@@ -234,7 +234,7 @@
                    VOUCHER
                 </a>
             </li>
-            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
+            <li><a href="{% url 'main:about' %}" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
         </ul>
     </nav>
 
