@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from forum.models import Forum, Comment
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.utils import timezone
@@ -93,7 +93,7 @@ def show_json_comment(request, id):
     ]
     return JsonResponse(comment_data, safe=False)
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def create_forum_ajax(request):
     title = strip_tags(request.POST.get("title"))
@@ -105,9 +105,12 @@ def create_forum_ajax(request):
         author=author,
     )
     new_forum.save()
-    return HttpResponse(b"CREATED", status=201)
+    return JsonResponse({
+        "success": True,
+        "message": "Forum created successfully!"
+    }, status=201)
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def create_comment_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
@@ -121,9 +124,13 @@ def create_comment_ajax(request):
     new_comment.save()
     forum.updated_at = timezone.now()
     forum.save(update_fields=["updated_at"])
-    return HttpResponse(b"CREATED", status=201)
+    return JsonResponse({
+        'success': True,
+        'message': 'Comment created successfully!',
+        'comment_id': new_comment.id
+    }, status=201)
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def delete_forum_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
@@ -135,7 +142,7 @@ def delete_forum_ajax(request):
     })
     return response
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def delete_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
@@ -146,7 +153,7 @@ def delete_comment_ajax(request):
     })
     return response
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def edit_forum_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
@@ -160,7 +167,7 @@ def edit_forum_ajax(request):
         "forum_id": forum.id
     })
 
-@csrf_exempt
+@login_required(login_url='/login')
 @require_POST
 def edit_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))

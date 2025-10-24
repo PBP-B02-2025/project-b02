@@ -59,16 +59,21 @@
     </div>
 
     <!-- Empty State -->
-    <div id="empty-state-forum" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
-        <div class="w-32 h-32 mx-auto mb-4">
-            <img src="" alt="No products available" class="w-full h-full object-contain">
-        </div>
-        <h3 class="text-lg font-medium text-gray-800 mb-2">No forum available</h3>
-        <p class="text-gray-600 mb-6">Add your forum!</p>
-        <a href="" class="inline-flex items-center px-4 py-2 bg-[#2563eb] text-white rounded-md hover:bg-[#1e40af] transition-colors">
-            Add Forum
-        </a>
+    <div id="empty-state-forum" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden flex flex-col items-center justify-center mx-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8m-8 4h6m-6 8h10a2 2 0 002-2V8a2 2 0 00-2-2h-4l-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        No discussions yet
+      </h3>
+      <p class="text-gray-500 mb-6 max-w-md">
+        Start a new topic and share your thoughts with the community!
+      </p>
+      <button onclick="showForumModal()" class="inline-flex items-center px-5 py-2.5 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
+        + Add Forum
+      </button>
     </div>
+
 
     <div id="forumGrid"></div>
   </div>
@@ -124,8 +129,7 @@ function filterAndDisplayForum() {
   const filteredForums = active_filter === 'all' 
     ? forum_data 
     : forum_data.filter(forum => Number(forum.author_id) === Number(CURRENT_USER_ID));
-  
-  if (forum_data.length === 0) {
+  if (filteredForums.length === 0) {
     displayPageSection({ showEmpty: true });
   } else {
     renderAllForumCards(filteredForums);

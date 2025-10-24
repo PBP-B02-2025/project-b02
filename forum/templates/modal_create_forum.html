@@ -19,6 +19,7 @@
     <!-- Modal body -->
     <div class="px-6 py-4 space-y-6 form-style">
       <form id="forumForm">
+        {% csrf_token %}
         <div class="mb-4">
           <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
           <input type="text" id="title" name="title" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Enter forum title" required>
@@ -63,14 +64,29 @@
 
   async function addForumEntry() {
   try {
+    const form = document.querySelector('#forumForm');
+    const csrftoken = form.querySelector('[name=csrfmiddlewaretoken]').value;
     const response = await fetch("{% url 'forum:create_forum_ajax' %}", {
       method: "POST",
-      body: new FormData(document.querySelector('#forumForm')),
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+      body: new FormData(form),
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text || 'Failed to add forum');
+        let message = 'Request failed';
+        try {
+            const data = await response.json();
+            message = data.message || message;
+        } catch {
+            if (response.status === 403) {
+                message = 'CSRF verification failed or missing token.';
+            } else {
+                message = `Error ${response.status}`;
+            }
+        }
+        throw new Error(message);
     }
 
     document.getElementById("forumForm").reset();
