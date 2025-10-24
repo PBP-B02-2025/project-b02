@@ -146,12 +146,17 @@
     </p>
 
     <!-- Image -->
-    {% if news.thumbnail %}
-    <div class="news-detail-image-wrapper">
-      <div class="news-detail-image-card">
-        <img src="{{ news.thumbnail }}" alt="{{ news.title }}" class="news-detail-image">
-      </div>
-    </div>
+{% if news.thumbnail %}
+<div class="d-flex justify-content-center my-4">
+  <div class="card shadow-sm border-0 mx-auto"
+       style="width: 80%; max-width: 600px; display: flex; justify-content: center; align-items: center;">
+    <img src="{{ news.thumbnail }}" alt="{{ news.title }}"
+         class="card-img-top rounded"
+         style="max-height:400px; object-fit:cover; width:100%; display:block; margin:auto;">
+  </div>
+</div>
+
+
     {% endif %}
 
     <!-- Content -->
