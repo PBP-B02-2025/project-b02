@@ -168,7 +168,7 @@ def login_ajax(request):
 
 def logout_user(request):
     logout(request)
-    response = redirect('main:login')
+    response = redirect('/')
     response.delete_cookie('last_login')
     return response
 

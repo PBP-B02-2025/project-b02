@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Produk untuk Guest - Modern Shop{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Header -->
+  <div class="mb-10 text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">Size Recommendation</h1>
+    <p class="text-gray-600 text-lg">Untuk rekomendasi ukuran, silakan login atau buat akun terlebih dahulu.</p>
+    <div class="mt-4 flex justify-center gap-4">
+      <a href="{% url 'main:login' %}" class="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
+        Login
+      </a>
+      <a href="{% url 'main:register' %}" class="bg-white border border-black text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+        Register
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

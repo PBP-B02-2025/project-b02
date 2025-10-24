@@ -8,17 +8,18 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 # Create your views here.
-@login_required(login_url='/login')
 def show_measurement(request):
+    if not request.user.is_authenticated:
+        return render(request, 'recommended_size_guest.html', {'active_page': 'shop-size'})
+    
     user = request.user
     data = userMeasurement.objects.filter(user=user).first()
     products = []
 
     if not data:
-        return render(request, 'recommended_size.html', {'data': None, 'active_page': 'shop-size'})  # <-- tambahkan sini
+        return render(request, 'recommended_size.html', {'data': None, 'active_page': 'shop-size'})
 
-    # Ambil tipe produk dari query param
-    product_type = request.GET.get('type', 'clothes')  # default: clothes
+    product_type = request.GET.get('type', 'clothes')
 
     if product_type == 'clothes' and data.clothes_size:
         products = Product.objects.filter(category='Shirt', size=data.clothes_size)
@@ -29,7 +30,7 @@ def show_measurement(request):
         'data': data,
         'products': products,
         'selected_type': product_type,
-        'active_page': 'shop-size'  # <-- tambahkan sini
+        'active_page': 'shop-size'
     })
 
 @login_required(login_url='/login')
