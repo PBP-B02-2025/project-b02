@@ -631,6 +631,8 @@ nav a:hover {
 
 .buy-button:hover {
     background-color: #333;
+}
+
 .form-style form input, form textarea, form select {
     width: 100%;
     padding: 0.5rem;
@@ -677,7 +679,6 @@ nav a:hover {
     outline: none;
     border-color: black;
     box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-}
 }
 
 .product-reviews-section {
@@ -835,4 +836,9 @@ nav a:hover {
 .btn-create:hover {
   background-color: #333;
   transform: scale(1.1);
+}
+
+.dropdown-menu li a.active {
+    color: #cda34f;  /* warna gold */
+    border-bottom: 2px solid #cda34f;
 }

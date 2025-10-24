@@ -118,7 +118,7 @@ def login_ajax(request):
             return JsonResponse({
                 'success': True,
                 'message': 'Login successful!',
-                'redirect_url': '/voucher/'  # Redirect ke halaman voucher
+                'redirect_url': '/'  # Redirect ke halaman home
             })
         else:
             return JsonResponse({
