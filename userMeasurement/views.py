@@ -71,11 +71,53 @@ def update_measurement(request):
             obj.calculate_clothes_size()
             obj.calculate_helmet_size()
             obj.save()
-            return redirect('userMeasurement:show_measurement')
-    else:
-        form = UserMeasurementForm(instance=data)
 
-    return render(request, 'form.html', {'form': form})
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                # kirim data yang diperbarui supaya JS bisa update DOM
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Data ukuran berhasil diperbarui!',
+                    'measurement': {
+                        'height': obj.height,
+                        'weight': obj.weight,
+                        'waist': obj.waist,
+                        'hip': obj.hip,
+                        'chest': obj.chest,
+                        'head_circumference': obj.head_circumference,
+                        'clothes_size': obj.clothes_size,
+                        'helmet_size': obj.helmet_size,
+                    }
+                })
+            # Non-AJAX
+            return redirect('userMeasurement:show_measurement')
+
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                # kirim error form
+                errors = {field: [str(e) for e in errs] for field, errs in form.errors.items()}
+                return JsonResponse({'status': 'error', 'errors': errors}, status=400)
+
+    else:
+        # GET request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # kirim data awal untuk preload form
+            return JsonResponse({
+                'status': 'ok',
+                'measurement': {
+                    'height': data.height,
+                    'weight': data.weight,
+                    'waist': data.waist,
+                    'hip': data.hip,
+                    'chest': data.chest,
+                    'head_circumference': data.head_circumference,
+                    'clothes_size': data.clothes_size,
+                    'helmet_size': data.helmet_size,
+                }
+            })
+        else:
+            form = UserMeasurementForm(instance=data)
+            return render(request, 'form.html', {'form': form})
+
 
 @login_required(login_url='/login')
 def delete_measurement(request):

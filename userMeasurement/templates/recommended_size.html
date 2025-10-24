@@ -4,94 +4,87 @@
 {% block title %}Rekomendasi Produk - Modern Shop{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
   <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Size Recommendation</h1>
-    <p class="text-gray-600">Berikut data ukuran badanmu saat ini.</p>
+  <div class="mb-10 text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">Size Recommendation</h1>
+    <p class="text-gray-600 text-lg">Berikut data ukuran badanmu saat ini.</p>
   </div>
 
   <!-- Card User Measurement -->
-  <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8 mb-10">
+  <div class="bg-white rounded-xl border border-gray-200 shadow-md p-8 mb-12">
     <div id="user-data">
       {% if data %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
-          <div>
-            <p><span class="font-medium">Tinggi:</span> {{ data.height }} cm</p>
-            <p><span class="font-medium">Berat:</span> {{ data.weight }} kg</p>
+        <!-- Measurement Info -->
+        <div id="measurement-info" class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-gray-700">
+          <div class="space-y-2">
+            <p><span class="font-semibold">Tinggi:</span> {{ data.height }} cm</p>
+            <p><span class="font-semibold">Berat:</span> {{ data.weight }} kg</p>
           </div>
-          <div>
-            {% if data.waist %}<p><span class="font-medium">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
-            {% if data.hip %}<p><span class="font-medium">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
-            {% if data.chest %}<p><span class="font-medium">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
-            {% if data.head_circumference %}<p><span class="font-medium">Lingkar Kepala:</span> {{ data.head_circumference }} cm</p>{% endif %}
+          <div class="space-y-2">
+            {% if data.waist %}<p><span class="font-semibold">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
+            {% if data.hip %}<p><span class="font-semibold">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
+            {% if data.chest %}<p><span class="font-semibold">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
+            {% if data.head_circumference %}<p><span class="font-semibold">Lingkar Kepala:</span> {{ data.head_circumference }} cm</p>{% endif %}
           </div>
         </div>
 
-        <div class="mt-6">
-          <p class="text-lg font-semibold text-gray-900">
-            Rekomendasi Ukuran Pakaian: 
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md">
-              {{ data.clothes_size|default_if_none:"Belum dihitung" }}
-            </span>
-          </p>
-          <p class="text-lg font-semibold text-gray-900 mt-2">
-            Rekomendasi Ukuran Helm: 
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md">
-              {{ data.helmet_size|default_if_none:"Belum dihitung" }}
-            </span>
-          </p>
+        <!-- Recommendation -->
+        <div id="measurement-recommendation" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Pakaian</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">{{ data.clothes_size|default_if_none:"Belum dihitung" }}</span>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Helm</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">{{ data.helmet_size|default_if_none:"Belum dihitung" }}</span>
+          </div>
         </div>
 
         <!-- Tombol Update & Delete -->
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors text-center">
-            Update Data Ukuran
-          </a>
-
-          <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors">
-            Hapus Data
-          </button>
+        <div id="measurement-actions" class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <button id="update-measurement-btn" class="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">Update Data Ukuran</button>
+          <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition">Hapus Data</button>
         </div>
 
       {% else %}
-        <div class="text-center py-10">
-          <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
-          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
-            Isi Sekarang
-          </a>
+        <div class="text-center py-12">
+          <p class="text-gray-500 mb-6 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
+          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">Isi Sekarang</a>
         </div>
       {% endif %}
     </div>
   </div>
 
+  <!-- Judul Produk Yang Direkomendasikan-->
+  <div id="recommended-products-title" class="mt-8">
+    <hr class="border-t-2 border-gray-400 mb-4">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">Produk yang Direkomendasikan</h1>
+  </div>
+
   <!-- Pilihan Kategori Produk -->
   {% if data %}
-  <div class="flex gap-4 mb-6">
-    <button class="product-type-btn px-4 py-2 rounded-md font-medium {% if selected_type == 'clothes' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="clothes">Shirt</button>
-    <button class="product-type-btn px-4 py-2 rounded-md font-medium {% if selected_type == 'helmet' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="helmet">Helmet</button>
-  </div>
+    <div class="flex gap-4 mb-6 justify-center">
+      <button class="product-type-btn px-5 py-2 rounded-lg font-medium {% if selected_type == 'clothes' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="clothes">Shirt</button>
+      <button class="product-type-btn px-5 py-2 rounded-lg font-medium {% if selected_type == 'helmet' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="helmet">Helmet</button>
+    </div>
   {% endif %}
 
   <!-- Grid Produk -->
   <div id="ajax-products-container">
     {% if products %}
-      <div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {% for p in products %}
-          <div class="product-card">
-                <div class="product-image">
-                    <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ product.name }}">
-                </div>
-                <div class="product-info">
-                    <span class="product-category">{{ p.get_category_display }}</span>
-                    <a href="#">
-                        <h4 class="product-name">{{ p.name }}</h4>
-                    </a>
-                    <span class="product-size">Size: {{ p.size }}</span>
-                    <h5 class="product-price">Rp {{ p.price }}</h5>
-                </div>
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition">
+            <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-60 object-cover">
+            <div class="p-4">
+              <span class="text-gray-500 text-sm">{{ p.get_category_display }}</span>
+              <h4 class="font-semibold text-lg mt-1">{{ p.name }}</h4>
+              <span class="block text-gray-700 mt-1">Size: {{ p.size }}</span>
+              <h5 class="font-bold text-blue-800 mt-2">Rp {{ p.price }}</h5>
             </div>
+          </div>
         {% endfor %}
       </div>
     {% else %}
@@ -103,46 +96,88 @@
 
 </div>
 
+<!-- Modal Konfirmasi Delete -->
+<div id="delete-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-sm">
+    <h2 class="text-lg font-semibold mb-4">Konfirmasi Hapus</h2>
+    <p class="mb-6">Apakah kamu yakin ingin menghapus data ukuranmu? Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="flex justify-end gap-3">
+      <button id="cancel-delete" class="bg-gray-200 px-4 py-2 rounded-md">Batal</button>
+      <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-md">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Update Measurement -->
+<div id="measurement-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <h2 class="text-xl font-semibold mb-4">Update Data Ukuran</h2>
+    <form id="measurement-form" class="space-y-3">
+      <div><label class="block text-sm font-medium">Tinggi (cm)</label><input type="number" name="height" id="form-height" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Berat (kg)</label><input type="number" name="weight" id="form-weight" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Pinggang (Optional) (cm)</label><input type="number" name="waist" id="form-waist" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Pinggul (Optional) (cm)</label><input type="number" name="hip" id="form-hip" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Dada (Optional) (cm)</label><input type="number" name="chest" id="form-chest" class="w-full border rounded-md p-2"></div>
+      <div><label class="block text-sm font-medium">Lingkar Kepala (cm)</label><input type="number" name="head_circumference" id="form-head" class="w-full border rounded-md p-2"></div>
+      <div class="flex justify-end gap-3 pt-3">
+        <button type="button" id="cancel-modal" class="bg-gray-200 px-4 py-2 rounded-md">Batal</button>
+        <button type="submit" class="bg-black text-white px-4 py-2 rounded-md">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // ===== Helper =====
+
+  // ===== Utility: get CSRF token =====
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
       document.cookie.split(";").forEach(c => {
         c = c.trim();
-        if (c.startsWith(name + "=")) cookieValue = decodeURIComponent(c.substring(name.length+1));
+        if (c.startsWith(name + "=")) cookieValue = decodeURIComponent(c.substring(name.length + 1));
       });
     }
     return cookieValue;
   }
 
-  // ===== Elements =====
+  // ===== DOM Elements =====
   const container = document.getElementById("ajax-products-container");
   const deleteBtn = document.getElementById("delete-measurement-btn");
+  const updateBtn = document.getElementById("update-measurement-btn");
   const userDataContainer = document.getElementById("user-data");
+  const measurementInfo = document.getElementById("measurement-info");
+  const measurementRecommendation = document.getElementById("measurement-recommendation");
 
-  let activeFilter = 'clothes'; // default
+  const deleteModal = document.getElementById("delete-modal");
+  const cancelDelete = document.getElementById("cancel-delete");
+  const confirmDelete = document.getElementById("confirm-delete");
 
-  // ===== Fetch & Render Produk =====
+  const modal = document.getElementById("measurement-modal");
+  const form = document.getElementById("measurement-form");
+  const cancelModal = document.getElementById("cancel-modal");
+
+  let activeFilter = 'clothes';
+
+  // ===== Fetch Products =====
   async function fetchProducts(type) {
     container.innerHTML = `<div class="text-gray-500 text-center mt-4">Loading...</div>`;
     try {
-      const res = await fetch(`/measurement/get-products-json/?type=${type}`, {credentials:'same-origin'});
+      const res = await fetch(`/measurement/get-products-json/?type=${type}`, { credentials: 'same-origin' });
       const data = await res.json();
-
-      if(data.error){
+      if (data.error) {
         container.innerHTML = `<div class="bg-white border border-dashed border-gray-300 p-8 text-center text-gray-500"><p>${data.error}</p></div>`;
         return;
       }
 
       let html = '';
-      if(data.products?.length){
+      if (data.products?.length) {
         html += `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
-        data.products.forEach(p=>{
+        data.products.forEach(p => {
           html += `
             <div class="product-card bg-white rounded-lg border p-4 shadow-sm">
-              <img src="${p.thumbnail||'https://via.placeholder.com/300x400?text=No+Image'}" alt="${p.name}" class="w-full h-48 object-cover rounded">
+              <img src="${p.thumbnail || 'https://via.placeholder.com/300x400?text=No+Image'}" alt="${p.name}" class="w-full h-48 object-cover rounded">
               <div class="mt-2">
                 <span class="product-category text-gray-500 text-sm">${p.category}</span>
                 <h4 class="product-name font-semibold">${p.name}</h4>
@@ -155,85 +190,152 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `</div>`;
       } else {
         html = `<div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-          <p>Tidak ada produk yang sesuai ukuranmu.</p>
-        </div>`;
+                  <p>Tidak ada produk yang sesuai ukuranmu.</p>
+                </div>`;
       }
 
       container.innerHTML = html;
-    } catch(err){
+    } catch (err) {
       console.error(err);
       container.innerHTML = `<div class="text-red-600 text-center mt-4">Gagal memuat produk.</div>`;
     }
   }
 
-  // ===== Event Delegation untuk Filter =====
+  // ===== Product Filter =====
   document.addEventListener("click", e => {
-    if(e.target.classList.contains("product-type-btn")){
+    if (e.target.classList.contains("product-type-btn")) {
       activeFilter = e.target.dataset.type;
-
-      // ubah style tombol aktif
-      document.querySelectorAll(".product-type-btn").forEach(b=>{
-        b.classList.remove("bg-black","text-white");
+      document.querySelectorAll(".product-type-btn").forEach(b => {
+        b.classList.remove("bg-black", "text-white");
         b.classList.add("bg-gray-200");
       });
       e.target.classList.remove("bg-gray-200");
-      e.target.classList.add("bg-black","text-white");
-
+      e.target.classList.add("bg-black", "text-white");
       fetchProducts(activeFilter);
     }
   });
 
   // ===== Delete Measurement =====
-  if(deleteBtn){
-    deleteBtn.addEventListener("click", async e => {
-      e.preventDefault();
-      if(!confirm("Yakin mau hapus data ukuranmu?")) return;
+  deleteBtn?.addEventListener("click", e => {
+    e.preventDefault();
+    deleteModal.classList.remove("hidden");
+  });
 
-      try{
-        const res = await fetch(deleteBtn.dataset.url, {
-          method:"POST",
-          headers:{
-            "X-CSRFToken": getCookie("csrftoken"),
-            "X-Requested-With":"XMLHttpRequest"
-          },
-        });
+  cancelDelete.addEventListener("click", () => deleteModal.classList.add("hidden"));
 
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-
-        if(data.status === "success"){
-          // Update DOM
-          userDataContainer.innerHTML = `
-            <div class="text-center py-10">
-              <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
-              <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
-                Isi Sekarang
-              </a>
-            </div>
-          `;
-          // Show toast sukses
-          showToast("Berhasil", data.message, "success");
-
-          // Refresh produk (kosongkan)
-          fetchProducts(activeFilter);
-        } else {
-          showToast("Gagal", data.message||"Gagal menghapus data","error");
+  confirmDelete.addEventListener("click", async () => {
+    try {
+      const res = await fetch(deleteBtn.dataset.url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "X-Requested-With": "XMLHttpRequest"
         }
-      } catch(err){
-        console.error(err);
-        showToast("Error", "Terjadi error saat menghapus data", "error");
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        userDataContainer.innerHTML = `
+          <div class="text-center py-10">
+            <p class="text-gray-500 mb-4 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
+            <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+              Isi Sekarang
+            </a>
+          </div>
+        `;
+        deleteModal.classList.add("hidden");
+        fetchProducts(activeFilter);
+        showToast("Berhasil", data.message, "success");
+      } else {
+        showToast("Gagal", data.message || "Gagal menghapus data", "error");
       }
-    });
-  }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Terjadi error saat menghapus data", "error");
+    }
+  });
 
-  // ===== Load default =====
+  // ===== Update Measurement Modal =====
+  updateBtn?.addEventListener("click", async () => {
+    modal.classList.remove("hidden");
+    try {
+      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        const m = data.measurement;
+        document.getElementById("form-height").value = m.height || "";
+        document.getElementById("form-weight").value = m.weight || "";
+        document.getElementById("form-waist").value = m.waist || "";
+        document.getElementById("form-hip").value = m.hip || "";
+        document.getElementById("form-chest").value = m.chest || "";
+        document.getElementById("form-head").value = m.head_circumference || "";
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  cancelModal.addEventListener("click", () => modal.classList.add("hidden"));
+
+  // ===== Submit Update Measurement =====
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    try {
+      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        const m = data.measurement;
+
+        // ==== Update only info and recommendation, leave buttons intact ====
+        measurementInfo.innerHTML = `
+          <div class="space-y-2">
+            <p><span class="font-semibold">Tinggi:</span> ${m.height} cm</p>
+            <p><span class="font-semibold">Berat:</span> ${m.weight} kg</p>
+          </div>
+          <div class="space-y-2">
+            ${m.waist ? `<p><span class="font-semibold">Lingkar Pinggang:</span> ${m.waist} cm</p>` : ''}
+            ${m.hip ? `<p><span class="font-semibold">Lingkar Pinggul:</span> ${m.hip} cm</p>` : ''}
+            ${m.chest ? `<p><span class="font-semibold">Lingkar Dada:</span> ${m.chest} cm</p>` : ''}
+            ${m.head_circumference ? `<p><span class="font-semibold">Lingkar Kepala:</span> ${m.head_circumference} cm</p>` : ''}
+          </div>
+        `;
+
+        measurementRecommendation.innerHTML = `
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Pakaian</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.clothes_size || "Belum dihitung"}</span>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
+            <span class="font-semibold text-gray-800">Ukuran Helm</span>
+            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.helmet_size || "Belum dihitung"}</span>
+          </div>
+        `;
+
+        modal.classList.add("hidden");
+        showToast("Berhasil", data.message, "success");
+      } else {
+        showToast("Gagal", data.message || "Periksa input form", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Terjadi error saat update", "error");
+    }
+  });
+
+  // ===== Load Default Products =====
   fetchProducts(activeFilter);
+
 });
 </script>
-
-
-
-
 
 
 {% endblock %}
