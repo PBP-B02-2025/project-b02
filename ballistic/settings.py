@@ -43,11 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'forum',
     'main',
-    'createnews',
-
+    'voucher',
     'review',
-'voucher',
     'shop',
+    'createnews',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +70,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -151,4 +149,3 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
