@@ -89,12 +89,18 @@
         <ul>
             <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
             <li class="dropdown">
-                <a href="#">SHOP ▾</a>
+                <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
                 <ul class="dropdown-menu">
-                    <!-- Level 1: Shop Options -->
-                    <li><a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop' %}active{% endif %}">Shop Classic</a></li>
-                    <li><a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">Shop Size Recommendation</a></li>
-                    <hr class="my-1 border-gray-200">
+                    <li>
+                        <a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop-classic' %}active{% endif %}">
+                            Shop Classic
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">
+                            Shop Size Recommendation
+                        </a>
+                    </li>
                 </ul>
             </li>
             

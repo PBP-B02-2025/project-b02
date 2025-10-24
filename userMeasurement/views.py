@@ -15,7 +15,7 @@ def show_measurement(request):
     products = []
 
     if not data:
-        return render(request, 'recommended_size.html', {'data': None})
+        return render(request, 'recommended_size.html', {'data': None, 'active_page': 'shop-size'})  # <-- tambahkan sini
 
     # Ambil tipe produk dari query param
     product_type = request.GET.get('type', 'clothes')  # default: clothes
@@ -28,7 +28,8 @@ def show_measurement(request):
     return render(request, 'recommended_size.html', {
         'data': data,
         'products': products,
-        'selected_type': product_type
+        'selected_type': product_type,
+        'active_page': 'shop-size'  # <-- tambahkan sini
     })
 
 @login_required(login_url='/login')

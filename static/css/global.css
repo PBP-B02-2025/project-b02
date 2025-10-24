@@ -837,3 +837,8 @@ nav a:hover {
   background-color: #333;
   transform: scale(1.1);
 }
+
+.dropdown-menu li a.active {
+    color: #cda34f;  /* warna gold */
+    border-bottom: 2px solid #cda34f;
+}
