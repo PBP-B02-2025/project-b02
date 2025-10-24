@@ -10,4 +10,5 @@ urlpatterns = [
     path('measurement/', include('userMeasurement.urls')),
     path('forum/', include('forum.urls')),
     path('shop/', include('shop.urls')), # <-- TAMBAHKAN BARIS INI
+    path('voucher/', include('voucher.urls')),
 ]

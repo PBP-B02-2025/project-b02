@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
+
+app_name = 'main'  # <-- TAMBAHKAN BARIS INI. INI ADALAH KUNCINYA.
 from main.views import *
 # Beri nama 'main' agar bisa dipanggil pakai {% url 'main:nama_url' %}
-app_name = 'main' 
 
 urlpatterns = [
     # Ini adalah view untuk homepage Anda

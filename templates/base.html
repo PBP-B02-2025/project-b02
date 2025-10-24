@@ -1,4 +1,6 @@
 {% load static %}
+{% include 'toast.html' %}
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -72,7 +74,12 @@
             
             <div class="user-icons">
                 <a href="#">🔍</a>
-                <a href="#">👤</a>
+                <li class="dropdown" style="list-style:none;">
+                    <a href="#" id="user-icon" style="padding:0 1rem;">👤</a>
+                    <ul class="dropdown-menu" style="right:0; left:auto; min-width:120px;">
+                        <li><a href="{% url 'main:logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
                 <a href="#">🛒</a>
             </div>
         </div>
@@ -85,15 +92,15 @@
                 <a href="#">SHOP ▾</a>
                 <ul class="dropdown-menu">
                     <!-- Level 1: Shop Options -->
-                    <li><a href="{% url 'shop:shop-main' %}">Shop Classic</a></li>
-                    <li><a href="{% url 'userMeasurement:show_measurement' %}">Shop Size Recommendation</a></li>
+                    <li><a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop' %}active{% endif %}">Shop Classic</a></li>
+                    <li><a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">Shop Size Recommendation</a></li>
                     <hr class="my-1 border-gray-200">
                 </ul>
             </li>
             
             <li class="dropdown">
-                <a href="#">PRODUCTS ▾</a> <ul class="dropdown-menu">
-                    
+                <a href="#" class="{% if active_page == 'products' %}active{% endif %}">PRODUCTS ▾</a>
+                <ul class="dropdown-menu">
                     {% for category in all_categories %}
                         <li><a href="#">{{ category.name }}</a></li>
                     {% endfor %}
@@ -103,9 +110,10 @@
                     <li><a href="#">Contoh: Sepatu</a></li>
                 </ul>
             </li>
-            <li><a href="#">FORUM</a></li>
-            <li><a href="#">NEWS</a></li>
-            <li><a href="#">ABOUT</a></li>
+            <li><a href="#" class="{% if active_page == 'forum' %}active{% endif %}">FORUM</a></li>
+            <li><a href="#" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
+            <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
+            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
         </ul>
     </nav>
 

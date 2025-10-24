@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from shop.models import Product
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 # Create your views here.
 @login_required(login_url='/login')
 def show_measurement(request):
@@ -78,17 +79,15 @@ def update_measurement(request):
 
 @login_required(login_url='/login')
 def delete_measurement(request):
-    user = request.user
-    data = userMeasurement.objects.filter(user=user).first()
+    if request.method != "POST":
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-    if data:
-        data.delete()
-        messages.success(request, "Data ukuran berhasil dihapus.")
-    else:
-        messages.warning(request, "Tidak ada data untuk dihapus.")
+    data = userMeasurement.objects.filter(user=request.user).first()
+    if not data:
+        return JsonResponse({'status': 'error', 'message': 'Tidak ada data untuk dihapus'})
 
-    return redirect('userMeasurement:show_measurement')
-
+    data.delete()
+    return JsonResponse({'status': 'success', 'message': 'Data ukuran berhasil dihapus'})
 
 
 
