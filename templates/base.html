@@ -140,7 +140,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
                 <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
                 <ul class="dropdown-menu">
@@ -156,8 +156,8 @@
                     </li>
                 </ul>
             </li>
-            <li><a href="{% url 'forum:show_forum' %}" class="{% if active_page == 'forum' %}active{% endif %}">FORUM</a></li>
-            <li><a href="{% url 'createnews:show_news_list' %}" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
+            <li><a href="{% url 'forum:show_forum_list' %}"  {% if request.resolver_match.app_name == 'forum' %}class="active"{% endif %}>FORUM</a></li>
+            <li><a href="{% url 'createnews:show_news_list' %}" {% if request.resolver_match.app_name == 'createnews' %}class="active"{% endif %}>NEWS</a></li>
             <li>
                 <a href="{% url 'voucher:voucher-view' %}" 
                    class="{% if active_page == 'voucher' %}active{% endif %}">
