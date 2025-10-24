@@ -408,6 +408,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="flex items-center space-x-3">
             <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Berat:</span> ${m.weight} kg</p>
           </div>
+          ${m.head_circumference ? `
+          <div class="flex items-center space-x-3">
+            <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Kepala:</span> ${m.head_circumference} cm</p>
+          </div>` : ''}
         `;
 
         // ==== Update Additional Info ====
@@ -415,7 +419,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (m.waist) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Pinggang</p><p class="font-bold text-gray-900 text-xl mt-1">${m.waist} cm</p></div>`);
         if (m.hip) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Pinggul</p><p class="font-bold text-gray-900 text-xl mt-1">${m.hip} cm</p></div>`);
         if (m.chest) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Dada</p><p class="font-bold text-gray-900 text-xl mt-1">${m.chest} cm</p></div>`);
-        if (m.head_circumference) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Kepala</p><p class="font-bold text-gray-900 text-xl mt-1">${m.head_circumference} cm</p></div>`);
 
         additionalInfo.innerHTML = addHTML.join("");
 
