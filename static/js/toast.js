@@ -28,6 +28,7 @@ function showToast(title, message, type = 'normal', duration = 3000) {
 
     toastTitle.textContent = title;
     toastMessage.textContent = message;
+    toastComponent.classList.remove('hidden');
 
     // --- Logika Animasi (SUDAH DI DALAM FUNGSI) ---
     toastComponent.classList.remove('opacity-0', 'translate-y-10');
@@ -36,6 +37,9 @@ function showToast(title, message, type = 'normal', duration = 3000) {
     setTimeout(() => {
         toastComponent.classList.remove('opacity-100', 'translate-y-0');
         toastComponent.classList.add('opacity-0', 'translate-y-10');
+        setTimeout(() => {
+            toastComponent.classList.add('hidden');
+        }, 500);
     }, duration);
     // -------------------------------------------
 
