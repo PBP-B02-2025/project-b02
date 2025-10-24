@@ -148,41 +148,41 @@ def delete_review(request, id):
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
     
-def average_star(product_id):
-    try:
-        product = Product.objects.get(id=product_id)
-        avg = 0
-        size = 0
+# def average_star(product_id):
+#     try:
+#         product = Product.objects.get(id=product_id)
+#         avg = 0
+#         size = 0
 
         
 
-        for review in product.review_set.all():
-            avg += review.star
-            size += 1
+#         for review in product.review_set.all():
+#             avg += review.star
+#             size += 1
 
-        if size == 0:
-            return JsonResponse(0)
+#         if size == 0:
+#             return JsonResponse(0)
         
-        return JsonResponse(avg / size)
-    except:
-        return JsonResponse({'detail': 'Not found'}, status=404)
+#         return JsonResponse(avg / size)
+#     except:
+#         return JsonResponse({'detail': 'Not found'}, status=404)
     
-def show_all_review_from_one_product(product_id):
-    try:
-        product = Product.objects.get(id=product_id)
+# def show_all_review_from_one_product(product_id):
+#     try:
+#         product = Product.objects.get(id=product_id)
 
-        review_list = []
+#         review_list = []
 
-        for review in product.review_set.all():
-            review_list.append(review)
+#         for review in product.review_set.all():
+#             review_list.append(review)
 
-        return JsonResponse(review_list)
-    except:
-        return JsonResponse({'detail': 'Not found'}, status=404)   
+#         return JsonResponse(review_list)
+#     except:
+#         return JsonResponse({'detail': 'Not found'}, status=404)   
     
 
-def base_page(request):
-    review_list = Review.objects.all()
+# def base_page(request):
+#     review_list = Review.objects.all()
     
-    return render(request, 'dasar.html', {'review_list': review_list})
+#     return render(request, 'dasar.html', {'review_list': review_list})
 
