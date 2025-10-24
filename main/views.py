@@ -176,6 +176,7 @@ def logout_user(request):
 def profil_view(request):
     # Import userMeasurement model
     from userMeasurement.models import userMeasurement
+    from shop.models import Product
     
     # Coba ambil data measurement user
     try:
@@ -183,8 +184,13 @@ def profil_view(request):
     except userMeasurement.DoesNotExist:
         measurement = None
     
+    # Ambil produk yang dimiliki user (produk yang dia upload)
+    user_products = Product.objects.filter(user=request.user).order_by('-id')
+    
     context = {
         'active_page': 'profil',
-        'measurement': measurement
+        'measurement': measurement,
+        'user_products': user_products,
+        'total_products': user_products.count()
     }
     return render(request, 'profil.html', context)

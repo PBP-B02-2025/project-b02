@@ -100,6 +100,66 @@
             background-color: #f9f9f9; /* Ganti warna background saat hover */
             color: #000;
         }
+        .social-icons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.social-icons a {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: scale(1.15);
+}
+
+.social-icons img.social-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-combo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* jarak kecil antara logo dan tulisan */
+}
+
+.logo-img {
+    height: 65px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.logo-text-img {
+    height: 40px; /* ukuran teks seimbang dengan tinggi logo */
+    width: auto;
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+/* efek hover biar dinamis */
+.logo:hover .logo-img {
+    transform: scale(1.05);
+}
+.logo:hover .logo-text-img {
+    opacity: 0.85;
+}
+
     </style>
 </head>
 <body>
@@ -107,14 +167,23 @@
     <header>
         <div class="top-bar">
             <div class="social-icons">
-                <a href="#">[f]</a>
-                <a href="#">[p]</a>
-                <a href="#">[in]</a>
+                <a href="https://www.instagram.com/" target="_blank">
+                    <img src="{% static 'images/icons8-instagram-24.png' %}" alt="Instagram" class="social-icon">
+                </a>
+                <a href="https://discord.com/" target="_blank">
+                    <img src="{% static 'images/icons8-discord-24.png' %}" alt="Discord" class="social-icon">
+                </a>
+                <a href="https://www.linkedin.com/" target="_blank">
+                    <img src="{% static 'images/icons8-linkedin.gif' %}" alt="LinkedIn" class="social-icon">
+                </a>
             </div>
-            
+
+
             <a href="{% url 'main:main-view' %}" class="logo">
-                <strong>B</strong> BALLISTIC
+                <img src="{% static 'images/logoballistic.jpg' %}" alt="Ballistic Logo" class="logo-img">
+                 <img src="{% static 'images/ballistic.jpg' %}" alt="Ballistic Text" class="logo-text-img">
             </a>
+
             
             <div class="user-icons">
                 {% if user.is_authenticated %}
