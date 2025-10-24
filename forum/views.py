@@ -134,6 +134,11 @@ def create_comment_ajax(request):
 @require_POST
 def delete_forum_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
+    if forum.author != request.user:
+        return JsonResponse({
+            'success': False,
+            'message': 'You are not authorized to delete this forum.'
+        }, status=403)
     forum.delete()
     response = JsonResponse({
         'success': True,
@@ -146,6 +151,11 @@ def delete_forum_ajax(request):
 @require_POST
 def delete_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
+    if comment.author != request.user and comment.forum.author != request.user:
+        return JsonResponse({
+            'success': False,
+            'message': 'You are not authorized to delete this comment.'
+        }, status=403)
     comment.delete()
     response = JsonResponse({
         'success': True,
@@ -157,6 +167,11 @@ def delete_comment_ajax(request):
 @require_POST
 def edit_forum_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
+    if forum.author != request.user:
+        return JsonResponse({
+            'success': False,
+            'message': 'You are not authorized to edit this forum.'
+        }, status=403)
     forum.title = strip_tags(request.POST.get("title"))
     forum.content = strip_tags(request.POST.get("content"))
     forum.updated_at = timezone.now()
@@ -171,6 +186,11 @@ def edit_forum_ajax(request):
 @require_POST
 def edit_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
+    if comment.author != request.user:
+        return JsonResponse({
+            'success': False,
+            'message': 'You are not authorized to edit this comment.'
+        }, status=403)
     forum = comment.forum
     forum.updated_at = timezone.now()
     forum.save()

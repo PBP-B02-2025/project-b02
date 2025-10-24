@@ -436,24 +436,24 @@ function buildCommentCardElement(item) {
     }));
     const updatedAtSpan = item.updated_at > item.created_at ? `<span class="text-gray-400 italic text-xs">• Edited: ${updatedAt}</span>` : '';
     const deleteComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) || (CURRENT_USER_ID && AUTHOR_FORUM_ID && Number(AUTHOR_FORUM_ID) === Number(CURRENT_USER_ID))
-    ? `<button onclick="openDeleteCommentModal('${item.id}')" class="delete-comment-btn w-6 h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600" title="Delete comment">🗑️</button>` : ''; 
+    ? `<button onclick="openDeleteCommentModal('${item.id}')" class="delete-comment-btn w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors duration-150" title="Delete comment">🗑️</button>` : ''; 
     const editComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id))
-    ? '<button class="edit-comment-btn w-6 h-6 flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 text-red-600" title="Edit comment">✏️</button>' : '';
+    ? `<button class="edit-comment-btn w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-150" title="Edit comment">✏️</button>` : '';
     const cardHtml = `
-            <div class="flex flex-col flex-1">
-                <div class="flex flex-wrap items-center text-sm text-gray-500 gap-1 mb-1">
-                    <span class="font-medium text-gray-700">${author}</span>
-                    <span>• Posted: ${createdAt}</span>
-                    ${updatedAtSpan}
+            <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-2 w-full">
+                <div class="flex-1 order-1">
+                    <div class="flex flex-wrap items-center text-sm text-gray-500 gap-1 mb-1">
+                        <span class="font-medium text-gray-700">${author}</span>
+                        <span>• Posted: ${createdAt}</span>
+                        ${updatedAtSpan}
+                    </div>
+                    <p class="text-gray-700 text-sm leading-relaxed break-words">${content}</p>
                 </div>
-                <p class="text-gray-700 text-sm leading-relaxed">${content}</p>
-            </div>
-            <div class="container-action flex gap-2 items-start">
-                ${editComment}
-                ${deleteComment}
-            </div>
-
-        `;
+                <div class="container-action flex gap-2 order-2 sm:ml-auto flex-wrap sm:flex-nowrap">
+                    ${editComment}
+                    ${deleteComment}
+                </div>
+            </div>`;
     
     card.innerHTML = cardHtml;
     card.dataset.commentId = item.id;
@@ -469,16 +469,14 @@ function buildCommentCardElement(item) {
             saveBtn.textContent = '💾 Save';
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent = '✖️ Cancel';
-            saveBtn.classList.add('save-comment-btn');
-            saveBtn.classList.add('text-green-600');
-            cancelBtn.classList.add('cancel-comment-btn');
-            cancelBtn.classList.add('text-gray-600');
+            saveBtn.className = `save-comment-btn px-3 py-1.5 text-sm rounded-lg bg-green-100 hover:bg-green-200 text-green-700 font-medium transition-colors duration-150 flex items-center justify-center`;
+            cancelBtn.className = `cancel-comment-btn px-3 py-1.5 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors duration-150 flex items-center justify-center`;
             const commentId = card.dataset.commentId;
             const contentP = card.querySelector('p');
             const originalContent = contentP.textContent;
             const editArea = document.createElement('textarea');
             editArea.value = originalContent;
-            editArea.className = 'w-full border rounded p-2';
+            editArea.className = 'focus:outline-none focus:border-black focus:ring-[3px] focus:ring-black w-full p-2 border-2 border-[#bcbcbc] rounded-md';
             contentP.replaceWith(editArea);
             const actionContainer = card.querySelector('.container-action');
             actionContainer.appendChild(saveBtn);
