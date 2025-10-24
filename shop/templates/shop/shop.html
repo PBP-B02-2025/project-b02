@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Shop - Modern Shop{% endblock %}
 
@@ -58,7 +59,7 @@
                         <h4 class="product-name">{{ product.name }}</h4>
                     </a>
                     <span class="product-size">Size: {{ product.size }}</span>
-                    <h5 class="product-price">Rp {{ product.price }}</h5>
+                    <h5 class="product-price">Rp {{ product.price |intcomma}}</h5>
                 </div>
             </div>
             {% empty %}
@@ -158,14 +159,18 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status === 'success') {
                     // Jika sukses:
-                    alert(response.message);
+                    showToast('Sukses!', response.message, 'success');
                     // Tutup modal
                     modal.css('display', 'none');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
                     // Muat ulang halaman untuk melihat produk baru
                     location.reload(); 
                 } else if (response.status === 'error') {
                     // Jika gagal (form tidak valid):
                     // Tampilkan error di dalam modal
+                    showToast('Gagal', 'Data tidak valid. Periksa kembali isian Anda.', 'error');
                     var errors = response.errors;
                     for (var field in errors) {
                         var errorList = $('<ul>').addClass('form-error-list');
@@ -179,7 +184,7 @@ $(document).ready(function() {
             },
             error: function(xhr, errmsg, err) {
                 console.log("AJAX error:", errmsg);
-                alert("Terjadi kesalahan pada server. Silakan coba lagi.");
+                showToast('Server Error', 'Gagal terhubung ke server. Coba lagi.', 'error');
             }
         });
     });

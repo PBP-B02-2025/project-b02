@@ -121,12 +121,8 @@
                 <a href="{% url 'main:profil' %}">
                     <img src="{% static 'images/profile.png' %}" alt="Profile" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
-                {% else %}
-                <a href="{% url 'main:login' %}">
-                    <img src="{% static 'images/profile.png' %}" alt="Login" style="width: 30px; height: 30px; vertical-align: middle;">
-                </a>
                 {% endif %}
-                <a href="#">
+                <a href="{% url 'shop:transaction-history' %}">
                     <img src="{% static 'images/clock.png' %}" alt="History" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
                 {% if user.is_authenticated %}
@@ -142,15 +138,20 @@
         <ul>
             <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
-                <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
+                <a href="{% url 'shop:shop-main' %}" 
+                   class="{% if request.resolver_match.app_name == 'shop' or request.resolver_match.app_name == 'userMeasurement' %}active{% endif %}">
+                   SHOP ▾
+                </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop-classic' %}active{% endif %}">
+                        <a href="{% url 'shop:shop-main' %}" 
+                           class="{% if request.resolver_match.app_name == 'shop' %}active{% endif %}">
                             Shop Classic
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'userMeasurement:show_measurement' %}" class="{% if active_page == 'shop-size' %}active{% endif %}">
+                        <a href="{% url 'userMeasurement:show_measurement' %}" 
+                           class="{% if request.resolver_match.app_name == 'userMeasurement' %}active{% endif %}">
                             Shop Size Recommendation
                         </a>
                     </li>

@@ -1,8 +1,10 @@
+// Di file: static/js/toast.js
+
 function showToast(title, message, type = 'normal', duration = 3000) {
     const toastComponent = document.getElementById('toast-component');
     const toastTitle = document.getElementById('toast-title');
     const toastMessage = document.getElementById('toast-message');
-    
+
     if (!toastComponent) return;
 
     // Remove all type classes first
@@ -28,14 +30,14 @@ function showToast(title, message, type = 'normal', duration = 3000) {
     toastMessage.textContent = message;
     toastComponent.classList.remove('hidden');
 
-    toastComponent.classList.remove('opacity-0', 'translate-y-64');
+    // --- Logika Animasi (SUDAH DI DALAM FUNGSI) ---
+    toastComponent.classList.remove('opacity-0', 'translate-y-10');
     toastComponent.classList.add('opacity-100', 'translate-y-0');
 
     setTimeout(() => {
         toastComponent.classList.remove('opacity-100', 'translate-y-0');
-        toastComponent.classList.add('opacity-0', 'translate-y-64');
-        setTimeout(() => {
-            toastComponent.classList.add('hidden');
-        }, 500);
+        toastComponent.classList.add('opacity-0', 'translate-y-10');
     }, duration);
-}
+    // -------------------------------------------
+
+} // <-- TIDAK ADA KURUNG KURAWAL LAGI SETELAH INI
