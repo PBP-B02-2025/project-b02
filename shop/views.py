@@ -36,8 +36,9 @@ def shop_main_view(request):
         'products': page_obj,
         'all_categories': all_categories,
         'add_product_form': add_product_form,
-        'selected_category': selected_category,       # <-- Kirim kategori yg aktif
-        'current_filter_params': current_filter_params, # <-- Kirim string filter
+        'selected_category': selected_category,       
+        'current_filter_params': current_filter_params,
+        'active_page': 'shop-classic',  # <-- ini yang bikin parent SHOP aktif
     }
     
     return render(request, 'shop/shop.html', context)
