@@ -2,14 +2,21 @@ from django.shortcuts import render
 from forum.models import Forum, Comment
 from django.http import JsonResponse
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def show_forum_list(request):
-    return render(request, "forum.html", {})
+    context = {
+        'active_page': 'forum'
+    }
+    return render(request, "forum.html", context)
 
 def show_forum(request, id):
     context = {
-        'id': id
+        'id': id,
+        'active_page': 'forum'
     }
     return render(request, "forum_detail.html", context)
 
@@ -57,3 +64,41 @@ def show_json_comment(request, id):
         } for comment in comment_list
     ]
     return JsonResponse(comment_data, safe=False)
+
+@login_required(login_url='/login/')
+@csrf_exempt
+@require_POST
+def create_forum_ajax(request):
+    try:
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        
+        if not title or not content:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Title and content are required!'
+            }, status=400)
+        
+        forum = Forum.objects.create(
+            title=title,
+            content=content,
+            author=request.user,
+            forum_views=0
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Forum created successfully!',
+            'forum': {
+                'id': str(forum.id),
+                'title': forum.title,
+                'content': forum.content,
+                'author': forum.author.username,
+                'created_at': forum.created_at.isoformat(),
+            }
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'An error occurred: {str(e)}'
+        }, status=500)
