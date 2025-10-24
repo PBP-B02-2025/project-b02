@@ -85,25 +85,29 @@
 
     <nav>
         <ul>
-<li><a href="{% url 'main:main-view' %}" class="{% if active_page == 'home' %}active{% endif %}">HOME</a></li>
-            <li><a href="{% url 'shop:shop-main' %}" class="{% if active_page == 'shop' %}active{% endif %}">SHOP</a></li>
-            
-            <li class="dropdown">
-                <a href="#" class="{% if active_page == 'products' %}active{% endif %}">PRODUCTS ▾</a>
-                <ul class="dropdown-menu">
-                    {% for category in all_categories %}
-                        <li><a href="#">{{ category.name }}</a></li>
-                    {% endfor %}
-
-                    <li><a href="#">Contoh: Baju</a></li>
-                    <li><a href="#">Contoh: Celana</a></li>
-                    <li><a href="#">Contoh: Sepatu</a></li>
-                </ul>
+            <li>
+                <a href="{% url 'main:main-view' %}" 
+                   {% if request.resolver_match.url_name == 'main-view' %}class="active"{% endif %}>
+                   HOME
+                </a>
             </li>
-            <li><a href="{% url 'createnews:show_news_list' %}">NEWS</a></li>
-            <li><a href="#" class="{% if active_page == 'forum' %}active{% endif %}">FORUM</a></li>
-            <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
-            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
+
+            <li>
+                <a href="{% url 'shop:shop-main' %}" 
+                   {% if request.resolver_match.app_name == 'shop' %}class="active"{% endif %}>
+                   SHOP
+                </a>
+            </li>
+            
+            <li><a href="{% url 'forum:show_forum' %}"  {% if request.resolver_match.app_name == 'forum' %}class="active"{% endif %}>FORUM</a></li>
+            <li><a href="{% url 'createnews:show_news_list' %}" {% if request.resolver_match.app_name == 'createnews' %}class="active"{% endif %}>NEWS</a></li>
+            <li>
+                <a href="{% url 'voucher:voucher-view' %}" 
+                   {% if request.resolver_match.app_name == 'voucher' %}class="active"{% endif %}>
+                   VOUCHER
+                </a>
+            </li>
+            <li><a href="#">ABOUT</a></li>
         </ul>
     </nav>
 
