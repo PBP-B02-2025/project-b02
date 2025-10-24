@@ -117,9 +117,15 @@
             </a>
             
             <div class="user-icons">
-                <a href="#">
-                    <img src="{% static 'images/profile.png' %}" alt="History" style="width: 30px; height: 30px; vertical-align: middle;">
+                {% if user.is_authenticated %}
+                <a href="{% url 'main:profil' %}">
+                    <img src="{% static 'images/profile.png' %}" alt="Profile" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
+                {% else %}
+                <a href="{% url 'main:login' %}">
+                    <img src="{% static 'images/profile.png' %}" alt="Login" style="width: 30px; height: 30px; vertical-align: middle;">
+                </a>
+                {% endif %}
                 <a href="#">
                     <img src="{% static 'images/clock.png' %}" alt="History" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
@@ -134,7 +140,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
                 <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
                 <ul class="dropdown-menu">
@@ -150,15 +156,15 @@
                     </li>
                 </ul>
             </li>
-            <li><a href="{% url 'forum:show_forum' %}"  {% if request.resolver_match.app_name == 'forum' %}class="active"{% endif %}>FORUM</a></li>
+            <li><a href="{% url 'forum:show_forum_list' %}"  {% if request.resolver_match.app_name == 'forum' %}class="active"{% endif %}>FORUM</a></li>
             <li><a href="{% url 'createnews:show_news_list' %}" {% if request.resolver_match.app_name == 'createnews' %}class="active"{% endif %}>NEWS</a></li>
             <li>
                 <a href="{% url 'voucher:voucher-view' %}" 
-                   {% if request.resolver_match.app_name == 'voucher' %}class="active"{% endif %}>
+                   class="{% if active_page == 'voucher' %}active{% endif %}">
                    VOUCHER
                 </a>
             </li>
-            <li><a href="#">ABOUT</a></li>
+            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
         </ul>
     </nav>
 

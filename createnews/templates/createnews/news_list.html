@@ -1,25 +1,408 @@
-{% extends 'createnews/base.html' %}
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}News - Ballistic{% endblock %}
 
 {% block content %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+/* News Container */
+.news-container {
+  max-width: 1400px;
+  margin: 3rem auto;
+  padding: 0 2.5rem;
+}
 
-<div class="container py-5">
-  <h2 class="fw-bold ballistic-title text-center">BALLISTIC NEWS</h2>
-    {% if request.user.is_authenticated and request.user.is_staff %}
-    <div class="d-flex justify-content-end mb-4">
-    <button class="btn-create rounded-circle" id="openCreateBtn">＋</button>
-</div>
-    {% endif %}
-  </div>
+.news-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #000;
+}
 
-  <div class="row">
-    <!-- main konten -->
-    <div class="col-lg-9">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <label class="fw-semibold me-2">Sort by category:</label>
-        <select id="categoryFilter" class="form-select" style="max-width: 220px;">
+.news-layout {
+  display: flex;
+  gap: 3rem;
+}
+
+/* Main Content */
+.news-main {
+  flex: 1;
+}
+
+.filter-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-section label {
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-section select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  min-width: 200px;
+}
+
+/* News Grid */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.news-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  background: #fff;
+}
+
+.news-card:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.news-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: #f9f9f9;
+}
+
+.news-card-body {
+  padding: 1.5rem;
+}
+
+.news-badge {
+  display: inline-block;
+  background: #cda34f;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.news-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0.5rem 0;
+  text-decoration: none;
+}
+
+.news-author {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.news-excerpt {
+  font-size: 0.9rem;
+  color: #444;
+  line-height: 1.6;
+  margin: 0.75rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.news-card-footer {
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.news-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid #333;
+  background: #fff;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.news-btn:hover {
+  background: #333;
+  color: #fff;
+}
+
+.news-btn-edit {
+  background: #f0f0f0;
+  border-color: #ddd;
+  color: #333;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.news-btn-edit:hover {
+  background: #e0e0e0;
+}
+
+.news-btn-delete {
+  background: #e53e3e;
+  border-color: #e53e3e;
+  color: #fff;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+
+.news-btn-delete:hover {
+  background: #c53030;
+}
+
+/* Sidebar */
+.news-sidebar {
+  flex-basis: 300px;
+  min-width: 250px;
+}
+
+.sidebar-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #111;
+}
+
+.popular-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.popular-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.2s ease;
+}
+
+.popular-item:hover {
+  background: #f9f9f9;
+}
+
+.popular-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.popular-info {
+  flex: 1;
+}
+
+.popular-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.25rem;
+}
+
+.popular-author {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Floating Button */
+.fab-news {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: 300;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+  z-index: 999;
+}
+
+.fab-news:hover {
+  transform: scale(1.1);
+  background: #333;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-check input {
+  width: auto;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: #333;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-submit {
+  background: #000;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background: #333;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-size: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .news-layout {
+    flex-direction: column;
+  }
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="news-container">
+  <h2 class="news-title">BALLISTIC NEWS</h2>
+  
+  <div class="news-layout">
+    <!-- Main Content -->
+    <div class="news-main">
+      <div class="filter-section">
+        <label>Sort by category:</label>
+        <select id="categoryFilter">
           <option value="">All</option>
           {% for code, label in categories %}
             <option value="{{ code }}" {% if request.GET.category == code %}selected{% endif %}>{{ label }}</option>
@@ -27,124 +410,143 @@
         </select>
       </div>
 
-      <div id="news-grid" class="row">
+      <div id="news-grid" class="news-grid">
         {% for news in news_list %}
-        <div class="col-md-4 mb-4" id="news-{{ news.id }}">
-          <div class="card h-100 shadow-sm border-0">
+        <div id="news-{{ news.id }}">
+          <div class="news-card">
             {% if news.thumbnail %}
-              <img src="{{ news.thumbnail }}" class="card-img-top" style="height:200px; object-fit:cover;">
+              <img src="{{ news.thumbnail }}" class="news-card-image" alt="{{ news.title }}">
             {% endif %}
-            <div class="card-body">
+            <div class="news-card-body">
               {% if news.is_featured %}
-                <span class="badge bg-warning text-dark mb-2">Populer</span>
+                <span class="news-badge">Populer</span>
               {% endif %}
-              <h5 class="card-title fw-semibold">{{ news.title }}</h5>
-              <p class="small text-muted mb-1">Dibuat oleh: {{ news.author }}</p>
-              <p class="text-truncate" style="max-height:60px;">{{ news.content }}</p>
+              <h5 class="news-card-title">{{ news.title }}</h5>
+              <p class="news-author">Dibuat oleh: {{ news.author }}</p>
+              <p class="news-excerpt">{{ news.content }}</p>
             </div>
-            <div class="card-footer bg-white border-0 d-flex justify-content-between">
-              <a href="{% url 'createnews:show_news_detail' news.id %}" class="btn btn-outline-dark btn-sm">Detail</a>
+            <div class="news-card-footer">
+              <a href="{% url 'createnews:show_news_detail' news.id %}" class="news-btn">Detail</a>
 
               {% if request.user.is_authenticated and request.user.is_staff %}
                 <div>
-                  <button class="btn btn-sm btn-secondary me-1" onclick="openEditModal('{{ news.id }}')">Edit</button>
-                  <button class="btn btn-sm btn-danger delete-btn" data-id="{{ news.id }}">Delete</button>
+                  <button class="news-btn news-btn-edit" onclick="openEditModal('{{ news.id }}')">Edit</button>
+                  <button class="news-btn news-btn-delete delete-btn" data-id="{{ news.id }}">Delete</button>
                 </div>
               {% endif %}
             </div>
           </div>
         </div>
         {% empty %}
-        <p class="text-muted">Belum ada berita.</p>
+        <p class="empty-state">Belum ada berita.</p>
         {% endfor %}
       </div>
     </div>
 
-    <!-- sidebar -->
-    <div class="col-lg-3">
-      <h5 class="fw-bold mb-3">Populer</h5>
-      <ul class="list-group list-group-flush">
+    <!-- Sidebar -->
+    <div class="news-sidebar">
+      <h5 class="sidebar-title">Populer</h5>
+      <ul class="popular-list">
         {% for p in popular_list %}
-        <li class="list-group-item px-0 border-0 mb-2">
-          <a href="{% url 'createnews:show_news_detail' p.id %}" 
-          class="text-decoration-none text-dark">
-          <div class="d-flex align-items-center">
-              {% if p.thumbnail %}
-                <img src="{{ p.thumbnail }}" class="me-2 rounded" width="50" height="50" style="object-fit:cover;">
-              {% endif %}
-              <div>
-                <small class="fw-semibold">{{ p.title }}</small><br>
-                <small class="text-muted">{{ p.author }}</small>
-              </div>
-            </div>
-          </a>
-        </li>
+        <a href="{% url 'createnews:show_news_detail' p.id %}" class="popular-item">
+          {% if p.thumbnail %}
+            <img src="{{ p.thumbnail }}" class="popular-image" alt="{{ p.title }}">
+          {% endif %}
+          <div class="popular-info">
+            <div class="popular-title">{{ p.title }}</div>
+            <div class="popular-author">{{ p.author }}</div>
+          </div>
+        </a>
         {% empty %}
-        <p class="text-muted">Belum ada berita populer.</p>
+        <p class="empty-state">Belum ada berita populer.</p>
         {% endfor %}
       </ul>
     </div>
   </div>
 </div>
 
-<!-- create modal -->
-<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <form id="create-form" class="modal-content shadow">
+{% if request.user.is_authenticated and request.user.is_staff %}
+<button class="fab-news" id="openCreateBtn">＋</button>
+{% endif %}
+
+<!-- Create Modal -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal-content">
+    <form id="create-form">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold">Create News</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Create News</h5>
+        <button type="button" class="modal-close" onclick="closeCreateModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <input name="title" class="form-control mb-3" placeholder="Title" required>
-        <input name="author" class="form-control mb-3" placeholder="Author" required>
-        <textarea name="content" class="form-control mb-3" placeholder="Content" rows="4" required></textarea>
-        <select name="category" class="form-select mb-3">
-          {% for code,label in categories %}
-            <option value="{{ code }}">{{ label }}</option>
-          {% endfor %}
-        </select>
-        <input name="thumbnail" class="form-control mb-3" placeholder="Thumbnail URL">
-        <div class="form-check mb-3">
-          <input type="checkbox" class="form-check-input" name="is_featured" id="create_featured">
-          <label for="create_featured" class="form-check-label">Populer</label>
+        <div class="form-group">
+          <input name="title" placeholder="Title" required>
+        </div>
+        <div class="form-group">
+          <input name="author" placeholder="Author" required>
+        </div>
+        <div class="form-group">
+          <textarea name="content" placeholder="Content" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <select name="category">
+            {% for code,label in categories %}
+              <option value="{{ code }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <input name="thumbnail" placeholder="Thumbnail URL">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" name="is_featured" id="create_featured">
+          <label for="create_featured">Populer</label>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-success">Publish</button>
+        <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
+        <button type="submit" class="btn-submit">Publish</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <form id="edit-form" class="modal-content shadow">
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-content">
+    <form id="edit-form">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold">Edit News</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Edit News</h5>
+        <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="edit-id" name="id">
-        <input name="title" id="edit-title" class="form-control mb-3" placeholder="Title" required>
-        <input name="author" id="edit-author" class="form-control mb-3" placeholder="Author" required>
-        <textarea name="content" id="edit-content" class="form-control mb-3" placeholder="Content" rows="4" required></textarea>
-        <select name="category" id="edit-category" class="form-select mb-3">
-          {% for code,label in categories %}
-            <option value="{{ code }}">{{ label }}</option>
-          {% endfor %}
-        </select>
-        <input name="thumbnail" id="edit-thumbnail" class="form-control mb-3" placeholder="Thumbnail URL">
-        <div class="form-check mb-3">
-          <input type="checkbox" class="form-check-input" id="edit-featured" name="is_featured">
-          <label for="edit-featured" class="form-check-label">Populer</label>
+        <div class="form-group">
+          <input name="title" id="edit-title" placeholder="Title" required>
+        </div>
+        <div class="form-group">
+          <input name="author" id="edit-author" placeholder="Author" required>
+        </div>
+        <div class="form-group">
+          <textarea name="content" id="edit-content" placeholder="Content" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <select name="category" id="edit-category">
+            {% for code,label in categories %}
+              <option value="{{ code }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <input name="thumbnail" id="edit-thumbnail" placeholder="Thumbnail URL">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="edit-featured" name="is_featured">
+          <label for="edit-featured">Populer</label>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-submit">Save</button>
       </div>
     </form>
   </div>
@@ -166,13 +568,53 @@ function showToast(type, message) {
 }
 
 const csrftoken = document.cookie.split('=')[1];
-const createModal = new bootstrap.Modal(document.getElementById('createModal'));
-const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 
-// buka modal create
-document.getElementById('openCreateBtn')?.addEventListener('click', () => createModal.show());
+// Modal Functions
+function openCreateModal() {
+  document.getElementById('createModal').style.display = 'block';
+}
 
-// create news (tanpa reload)
+function closeCreateModal() {
+  document.getElementById('createModal').style.display = 'none';
+  document.getElementById('create-form').reset();
+}
+
+function openEditModal(id) {
+  try {
+    const card = document.getElementById('news-' + id);
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-title').value = card.querySelector('.news-card-title').textContent.trim();
+    document.getElementById('edit-author').value = card.querySelector('.news-author').textContent.replace('Dibuat oleh: ', '').trim();
+    document.getElementById('edit-content').value = card.querySelector('.news-excerpt').textContent.trim();
+    document.getElementById('edit-thumbnail').value = card.querySelector('.news-card-image')?.src || '';
+    document.getElementById('edit-featured').checked = !!card.querySelector('.news-badge');
+    document.getElementById('editModal').style.display = 'block';
+  } catch (err) {
+    console.error("Gagal membuka modal edit:", err);
+    showToast("error", "Gagal membuka modal edit berita.");
+  }
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const createModal = document.getElementById('createModal');
+  const editModal = document.getElementById('editModal');
+  if (event.target == createModal) {
+    closeCreateModal();
+  }
+  if (event.target == editModal) {
+    closeEditModal();
+  }
+}
+
+// Open create modal button
+document.getElementById('openCreateBtn')?.addEventListener('click', openCreateModal);
+
+// Create news form submit
 document.getElementById('create-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -181,7 +623,7 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
 
   const res = await fetch("{% url 'createnews:create_news_ajax' %}", {
     method: 'POST',
-    credentials: 'same-origin', // penting biar session admin ikut
+    credentials: 'same-origin',
     headers: {'X-CSRFToken': csrftoken},
     body: formData,
   });
@@ -193,44 +635,42 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
 
   const data = await res.json();
 
-if (res.ok && data.title) {
-  // menambahkan berita baru langsung ke tampilan
-  const cardHTML = `
-      <div class="col-md-4 mb-4" id="news-${data.id}">
-        <div class="card h-100 shadow-sm border-0">
-          ${data.thumbnail ? `<img src="${data.thumbnail}" class="card-img-top" style="height:200px; object-fit:cover;">` : ""}
-          <div class="card-body">
-            ${data.is_featured ? '<span class="badge bg-warning text-dark mb-2">Populer</span>' : ''}
-            <h5 class="card-title fw-semibold">${data.title}</h5>
-            <p class="small text-muted mb-1">Dibuat oleh: ${data.author}</p>
-            <p class="text-truncate" style="max-height:60px;">${data.content}</p>
+  if (res.ok && data.title) {
+    const cardHTML = `
+      <div id="news-${data.id}">
+        <div class="news-card">
+          ${data.thumbnail ? `<img src="${data.thumbnail}" class="news-card-image" alt="${data.title}">` : ""}
+          <div class="news-card-body">
+            ${data.is_featured ? '<span class="news-badge">Populer</span>' : ''}
+            <h5 class="news-card-title">${data.title}</h5>
+            <p class="news-author">Dibuat oleh: ${data.author}</p>
+            <p class="news-excerpt">${data.content}</p>
           </div>
-          <div class="card-footer bg-white border-0 d-flex justify-content-between">
-            <a href="/news/detail/${data.id}/" class="btn btn-outline-dark btn-sm">Detail</a>
+          <div class="news-card-footer">
+            <a href="/news/detail/${data.id}/" class="news-btn">Detail</a>
             <div>
-              <button class="btn btn-sm btn-secondary me-1" onclick="openEditModal('${data.id}')">Edit</button>
-              <button class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Delete</button>
+              <button class="news-btn news-btn-edit" onclick="openEditModal('${data.id}')">Edit</button>
+              <button class="news-btn news-btn-delete delete-btn" data-id="${data.id}">Delete</button>
             </div>
           </div>
         </div>
       </div>`;
   
-  document.getElementById("news-grid").insertAdjacentHTML("afterbegin", cardHTML);
+    document.getElementById("news-grid").insertAdjacentHTML("afterbegin", cardHTML);
 
-  // menambahkan baris ini supaya sidebar populer ikut diperbarui:
-  if (data.is_featured) {
-    await updatePopularList();
-  }
+    if (data.is_featured) {
+      await updatePopularList();
+    }
 
-  showToast("success", "Berita berhasil ditambahkan 🎉");
-  form.reset();
-  createModal.hide();
+    showToast("success", "Berita berhasil ditambahkan 🎉");
+    form.reset();
+    closeCreateModal();
   } else {
     showToast("error", "Gagal menambah berita!");
   }
 });
 
-// edit news
+// Edit news form submit
 document.getElementById('edit-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('edit-id').value;
@@ -256,29 +696,24 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
 
     const data = await res.json();
 
-    // jika berhasil, update DOM langsung tanpa reload
     if (data && data.title) {
       const card = document.getElementById(`news-${id}`);
       if (card) {
-        // update gambar (kalau ada)
-        const img = card.querySelector("img");
+        const img = card.querySelector(".news-card-image");
         if (img && data.thumbnail) img.src = data.thumbnail;
 
-        // update judul, author, dan konten
-        card.querySelector(".card-title").textContent = data.title;
-        card.querySelector(".text-muted").textContent = "Dibuat oleh: " + data.author;
+        card.querySelector(".news-card-title").textContent = data.title;
+        card.querySelector(".news-author").textContent = "Dibuat oleh: " + data.author;
 
-        const desc = card.querySelector(".text-truncate");
-        desc.innerHTML = data.content || "(tanpa konten)";
-        desc.style.display = "block"; // pastikan muncul lagi kalau sempat hilang
+        const desc = card.querySelector(".news-excerpt");
+        desc.textContent = data.content || "(tanpa konten)";
 
-        // update badge Populer
-        const badge = card.querySelector(".badge");
+        const badge = card.querySelector(".news-badge");
         if (data.is_featured) {
           if (!badge) {
-            card.querySelector(".card-body").insertAdjacentHTML(
+            card.querySelector(".news-card-body").insertAdjacentHTML(
               "afterbegin",
-              '<span class="badge bg-warning text-dark mb-2">Populer</span>'
+              '<span class="news-badge">Populer</span>'
             );
           }
         } else if (badge) {
@@ -286,11 +721,9 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
         }
       }
 
-      // update sidebar Populer juga (tanpa reload)
       updatePopularList();
-
       showToast("success", "✅ Berita berhasil diperbarui!");
-      editModal.hide();
+      closeEditModal();
     } else {
       showToast("error", "⚠️ Tidak ada data berita yang diterima dari server!");
     }
@@ -301,29 +734,25 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
   }
 });
 
-//  Fungsi untuk memperbarui sidebar populer tanpa reload
+// Update popular list
 async function updatePopularList() {
   try {
     const res = await fetch("{% url 'createnews:show_news_list' %}?ajax=1");
     if (!res.ok) return;
     const data = await res.json();
 
-    const sidebar = document.querySelector(".list-group-flush");
-    sidebar.innerHTML = ""; // kosongkan dulu
+    const sidebar = document.querySelector(".popular-list");
+    sidebar.innerHTML = "";
 
     data.popular_list.forEach(p => {
       const itemHTML = `
-        <li class="list-group-item px-0 border-0 mb-2">
-          <a href="/news/detail/${p.id}/" class="text-decoration-none text-dark">
-            <div class="d-flex align-items-center">
-              ${p.thumbnail ? `<img src="${p.thumbnail}" class="me-2 rounded" width="50" height="50" style="object-fit:cover;">` : ""}
-              <div>
-                <small class="fw-semibold">${p.title}</small><br>
-                <small class="text-muted">${p.author}</small>
-              </div>
-            </div>
-          </a>
-        </li>`;
+        <a href="/news/detail/${p.id}/" class="popular-item">
+          ${p.thumbnail ? `<img src="${p.thumbnail}" class="popular-image" alt="${p.title}">` : ""}
+          <div class="popular-info">
+            <div class="popular-title">${p.title}</div>
+            <div class="popular-author">${p.author}</div>
+          </div>
+        </a>`;
       sidebar.insertAdjacentHTML("beforeend", itemHTML);
     });
   } catch (err) {
@@ -331,8 +760,7 @@ async function updatePopularList() {
   }
 }
 
-
-// event Delegation untuk tombol Delete (termasuk yang baru ditambahkan)
+// Delete news
 document.addEventListener("click", async (e) => {
   if (!e.target.classList.contains("delete-btn")) return;
 
@@ -340,19 +768,16 @@ document.addEventListener("click", async (e) => {
   if (!confirm("Yakin ingin menghapus berita ini?")) return;
 
   try {
-const res = await fetch(`/news/delete/${id}/`, {
-  method: "POST", // <-- bukan delete kalau view-nya pakai POST
-  headers: { "X-CSRFToken": csrftoken },
-});
+    const res = await fetch(`/news/delete/${id}/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrftoken },
+    });
 
     if (res.ok) {
-      // hapus card dari tampilan
       const card = document.getElementById(`news-${id}`);
       if (card) card.remove();
 
-      // melakukan update sidebar populer langsung tanpa reload
       updatePopularList();
-
       showToast("success", "🗑️ Berita berhasil dihapus!");
     } else {
       showToast("error", "Gagal menghapus berita!");
@@ -363,7 +788,7 @@ const res = await fetch(`/news/delete/${id}/`, {
   }
 });
 
-
+// Category filter
 document.getElementById('categoryFilter').addEventListener('change', (e) => {
   const value = e.target.value;
   const url = new URL(window.location.href);
@@ -371,21 +796,5 @@ document.getElementById('categoryFilter').addEventListener('change', (e) => {
   else url.searchParams.delete('category');
   window.location.href = url.toString();
 });
-function openEditModal(id) {
-  try {
-    const card = document.getElementById('news-' + id);
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-title').value = card.querySelector('.card-title').textContent.trim();
-    document.getElementById('edit-author').value = card.querySelector('.card-body .text-muted').textContent.replace('Dibuat oleh: ', '').trim();
-    document.getElementById('edit-content').value = card.querySelector('.text-truncate').textContent.trim();
-    document.getElementById('edit-thumbnail').value = card.querySelector('img')?.src || '';
-    document.getElementById('edit-featured').checked = !!card.querySelector('.badge');
-    editModal.show();
-  } catch (err) {
-    console.error("Gagal membuka modal edit:", err);
-    Swal.fire("Error", "Gagal membuka modal edit berita.", "error");
-  }
-}
-
 </script>
 {% endblock %}
