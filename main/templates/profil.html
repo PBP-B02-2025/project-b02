@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.username|slice:":2"|upper }}
+            </div>
+            <h1 class="profile-name">{{ user.username }}</h1>
+            {% if user.email %}
+            <p class="profile-email">{{ user.email }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="profile-info">
+            <h2>Informasi Akun</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Username:</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ user.email|default:"Belum diatur" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Nama Lengkap:</span>
+                    <span class="info-value">{{ user.get_full_name|default:"Belum diatur" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Tanggal Bergabung:</span>
+                    <span class="info-value">{{ user.date_joined|date:"d F Y" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value">
+                        {% if user.is_superuser %}
+                            <span class="badge badge-admin">Admin</span>
+                        {% else %}
+                            <span class="badge badge-user">User</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        {% if measurement %}
+        <div class="profile-info">
+            <h2>Data Pengukuran Tubuh</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Tinggi Badan:</span>
+                    <span class="info-value">{{ measurement.height }} cm</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Berat Badan:</span>
+                    <span class="info-value">{{ measurement.weight }} kg</span>
+                </div>
+                {% if measurement.waist %}
+                <div class="info-item">
+                    <span class="info-label">Lingkar Pinggang:</span>
+                    <span class="info-value">{{ measurement.waist }} cm</span>
+                </div>
+                {% endif %}
+                {% if measurement.hip %}
+                <div class="info-item">
+                    <span class="info-label">Lingkar Pinggul:</span>
+                    <span class="info-value">{{ measurement.hip }} cm</span>
+                </div>
+                {% endif %}
+                {% if measurement.chest %}
+                <div class="info-item">
+                    <span class="info-label">Lingkar Dada:</span>
+                    <span class="info-value">{{ measurement.chest }} cm</span>
+                </div>
+                {% endif %}
+                <div class="info-item">
+                    <span class="info-label">Lingkar Kepala:</span>
+                    <span class="info-value">{{ measurement.head_circumference }} cm</span>
+                </div>
+                {% if measurement.clothes_size %}
+                <div class="info-item">
+                    <span class="info-label">Ukuran Baju:</span>
+                    <span class="info-value"><span class="badge badge-size">{{ measurement.clothes_size }}</span></span>
+                </div>
+                {% endif %}
+                {% if measurement.helmet_size %}
+                <div class="info-item">
+                    <span class="info-label">Ukuran Helm:</span>
+                    <span class="info-value"><span class="badge badge-size">{{ measurement.helmet_size }}</span></span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="profile-info">
+            <h2>Data Pengukuran Tubuh</h2>
+            <div class="empty-measurement">
+                <p>Anda belum melakukan pengukuran tubuh.</p>
+                <a href="{% url 'userMeasurement:show_measurement' %}" class="btn btn-primary">Lakukan Pengukuran</a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="profile-actions">
+            <a href="{% url 'main:logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        padding: 40px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: 60vh;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 50px 30px;
+        text-align: center;
+        color: white;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        border: 4px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0 auto 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .profile-email {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .profile-info {
+        padding: 40px 30px;
+    }
+    
+    .profile-info h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    
+    .info-grid {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    .info-value {
+        font-weight: 500;
+        color: #333;
+        font-size: 0.95rem;
+    }
+    
+    .badge {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .badge-admin {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+    
+    .badge-user {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .badge-size {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        font-size: 0.9rem;
+        padding: 6px 18px;
+    }
+    
+    .empty-measurement {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+    
+    .empty-measurement p {
+        margin-bottom: 20px;
+        font-size: 1rem;
+    }
+    
+    .profile-actions {
+        padding: 30px;
+        background: #f9f9f9;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .btn-primary {
+        background: #000;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 20px 10px;
+        }
+        
+        .profile-header {
+            padding: 40px 20px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+        }
+        
+        .profile-info {
+            padding: 30px 20px;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .profile-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}

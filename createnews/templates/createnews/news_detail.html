@@ -1,52 +1,162 @@
-{% extends 'createnews/base.html' %}
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ news.title }} - Ballistic{% endblock %}
 
 {% block content %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+/* News Detail Container */
+.news-detail-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 2.5rem;
+}
 
-<div class="container py-5" style="max-width: 900px;">
-  <!-- tombol kembali -->
-  <div class="mb-4">
-    <a href="{% url 'createnews:show_news_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+.back-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #333;
+  background: #fff;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+
+.back-button:hover {
+  background: #333;
+  color: #fff;
+}
+
+.news-detail-content {
+  text-align: center;
+}
+
+.news-detail-badges {
+  margin-bottom: 1.5rem;
+}
+
+.news-detail-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+}
+
+.news-detail-badge.popular {
+  background: #cda34f;
+  color: #fff;
+  border-color: #cda34f;
+}
+
+.news-detail-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.news-detail-meta {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.news-detail-image-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.news-detail-image-card {
+  width: 80%;
+  max-width: 600px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.news-detail-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.news-detail-text {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.news-detail-text p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .news-detail-title {
+    font-size: 1.8rem;
+  }
+  
+  .news-detail-image-card {
+    width: 100%;
+  }
+}
+</style>
+
+<div class="news-detail-container">
+  <!-- Back Button -->
+  <div>
+    <a href="{% url 'createnews:show_news_list' %}" class="back-button">
       ← Kembali ke daftar
     </a>
   </div>
 
-  <!-- konten utama -->
-  <div class="text-center">
-    <!-- badge kategori & populer -->
-    <div class="mb-3">
-      <span class="badge bg-light text-dark border px-3 py-2 me-2">
+  <!-- Main Content -->
+  <div class="news-detail-content">
+    <!-- Badges -->
+    <div class="news-detail-badges">
+      <span class="news-detail-badge">
         {{ news.get_category_display }}
       </span>
       {% if news.is_featured %}
-      <span class="badge bg-warning text-dark px-3 py-2">Populer</span>
+      <span class="news-detail-badge popular">Populer</span>
       {% endif %}
     </div>
 
-    <!-- judul -->
-    <h2 class="fw-bold mb-2">{{ news.title }}</h2>
+    <!-- Title -->
+    <h2 class="news-detail-title">{{ news.title }}</h2>
 
-    <!-- info mengenai author -->
-    <p class="text-muted mb-4">
+    <!-- Meta Info -->
+    <p class="news-detail-meta">
       Dibuat oleh: {{ news.author }} | {{ news.category }} | Dilihat: {{ news.news_views }}
     </p>
 
-    <!-- gambar -->
+    <!-- Image -->
     {% if news.thumbnail %}
-    <div class="d-flex justify-content-center mb-4">
-      <div class="card shadow-sm border-0" style="width: 80%; max-width: 600px;">
-        <img src="{{ news.thumbnail }}" alt="{{ news.title }}" 
-             class="card-img-top rounded" 
-             style="max-height:400px; object-fit:cover;">
+    <div class="news-detail-image-wrapper">
+      <div class="news-detail-image-card">
+        <img src="{{ news.thumbnail }}" alt="{{ news.title }}" class="news-detail-image">
       </div>
     </div>
     {% endif %}
 
-    <!-- deskripsi -->
-    <div class="mx-auto text-center" style="max-width: 700px;">
-      <p class="fs-5" style="white-space: pre-line;">{{ news.content }}</p>
+    <!-- Content -->
+    <div class="news-detail-text">
+      <p>{{ news.content }}</p>
     </div>
   </div>
 </div>

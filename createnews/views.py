@@ -34,6 +34,7 @@ def show_news_list(request):
         'news_list': news_list,
         'popular_list': popular,
         'categories': News.CATEGORY_CHOICES,
+        'active_page': 'news',
     }
     return render(request, "createnews/news_list.html", context)
 
@@ -42,7 +43,11 @@ def show_news_detail(request, id):
     news = get_object_or_404(News, pk=id)
     news.news_views += 1
     news.save()
-    return render(request, "createnews/news_detail.html", {"news": news})
+    context = {
+        'news': news,
+        'active_page': 'news',
+    }
+    return render(request, "createnews/news_detail.html", context)
 
 # Helper check admin
 def _is_admin(request):
