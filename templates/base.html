@@ -100,8 +100,8 @@
                     <li><a href="#">Contoh: Sepatu</a></li>
                 </ul>
             </li>
+            <li><a href="{% url 'createnews:show_news_list' %}">NEWS</a></li>
             <li><a href="#" class="{% if active_page == 'forum' %}active{% endif %}">FORUM</a></li>
-            <li><a href="#" class="{% if active_page == 'news' %}active{% endif %}">NEWS</a></li>
             <li><a href="{% url 'voucher:voucher-view' %}" class="{% if active_page == 'voucher' %}active{% endif %}">VOUCHER</a></li>
             <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
         </ul>

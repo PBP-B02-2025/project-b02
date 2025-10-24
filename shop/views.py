@@ -75,15 +75,18 @@ def product_detail_view(request, product_id):
     # Ambil 1 produk berdasarkan ID, atau tampilkan halaman 404 jika tidak ada
     product = get_object_or_404(Product, id=product_id)
     
-    # Di sini Anda nanti bisa menambahkan logic untuk mengambil review
-    # reviews = Review.objects.filter(product=product)
+    # Import Review model and get reviews for this product
+    from review.models import Review
+    from review.forms import ReviewForm
+    reviews = Review.objects.filter(product=product).select_related('user').order_by('-id')
+    form = ReviewForm()
     
     context = {
         'product': product,
-        # 'reviews': reviews, # Uncomment ini jika Anda sudah punya model Review
+        'reviews': reviews,
+        'form': form,
     }
     
-    # Kita akan membuat template baru bernama 'product_detail.html'
     return render(request, 'shop/product_detail.html', context)
 
 @login_required
