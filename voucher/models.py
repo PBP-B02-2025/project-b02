@@ -1,12 +1,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+import uuid
 
 class Voucher(models.Model):
-    kode = models.CharField(max_length=50, unique=True)
-    deskripsi = models.TextField(blank=True, null=True)
-    persentase_diskon = models.DecimalField(max_digits=5, decimal_places=2)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
     kode = models.CharField(
         max_length=50, 
         unique=True, 
