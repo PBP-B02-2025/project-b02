@@ -742,7 +742,6 @@ nav a:hover {
 /* Base style untuk tombol baru */
 .edit-button,
 .delete-button {
-    flex: 1; /* Bagi rata lebar tombol */
     padding: 0.8rem 1.5rem;
     font-size: 0.9rem;
     font-weight: 600;
@@ -754,7 +753,17 @@ nav a:hover {
     border: none;
     font-family: 'Montserrat', sans-serif;
 }
+.product-owner-actions .edit-button {
+    flex: 1;
+}
+.product-owner-actions .delete-form {
+    flex: 1;      /* 1. Membuat <form> mengambil 50% ruang */
+    margin: 0;    /* 2. Menghapus margin default dari <form> */
+}
 
+.product-owner-actions .delete-button {
+    width: 100%;  /* 3. Membuat tombol <button> mengisi 100% form */
+}
 /* Tombol Edit (Secondary) */
 .edit-button {
     background-color: #f0f0f0;
