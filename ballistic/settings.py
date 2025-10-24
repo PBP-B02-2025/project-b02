@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'userMeasurement',
     'forum',
     'main',
+    'createnews',
+
+    'review',
 'voucher',
     'shop',
 ]
@@ -69,6 +72,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
         },

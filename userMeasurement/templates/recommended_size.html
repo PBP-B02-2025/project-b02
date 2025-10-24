@@ -12,87 +12,178 @@
     <p class="text-gray-600 text-lg">Berikut data ukuran badanmu saat ini.</p>
   </div>
 
-  <!-- Card User Measurement -->
-  <div class="bg-white rounded-xl border border-gray-200 shadow-md p-8 mb-12">
+  <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 sm:p-10 mb-12">
+  <!-- Data Pengukuran-->
     <div id="user-data">
-      {% if data %}
-        <!-- Measurement Info -->
-        <div id="measurement-info" class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-gray-700">
-          <div class="space-y-2">
-            <p><span class="font-semibold">Tinggi:</span> {{ data.height }} cm</p>
-            <p><span class="font-semibold">Berat:</span> {{ data.weight }} kg</p>
-          </div>
-          <div class="space-y-2">
-            {% if data.waist %}<p><span class="font-semibold">Lingkar Pinggang:</span> {{ data.waist }} cm</p>{% endif %}
-            {% if data.hip %}<p><span class="font-semibold">Lingkar Pinggul:</span> {{ data.hip }} cm</p>{% endif %}
-            {% if data.chest %}<p><span class="font-semibold">Lingkar Dada:</span> {{ data.chest }} cm</p>{% endif %}
-            {% if data.head_circumference %}<p><span class="font-semibold">Lingkar Kepala:</span> {{ data.head_circumference }} cm</p>{% endif %}
-          </div>
+    {% if data %}
+    
+    <h2 class="text-2xl font-bold text-gray-900 border-b border-gray-300 pb-3 mb-6 text-center sm:text-left">
+        Data Pengukuran Tubuh
+    </h2>
+
+    <div class="w-full max-w-3xl mx-auto">
+        
+        <h3 class="text-lg font-semibold text-gray-700 mb-3">Ukuran Dasar</h3>
+        <div id="core-measurement-info" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+            
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Tinggi:</span> {{ data.height }} cm</p>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Berat:</span> {{ data.weight }} kg</p>
+            </div>
+
+            {% if data.head_circumference %}
+            <div class="flex items-center space-x-3">
+                <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Kepala:</span> {{ data.head_circumference }} cm</p>
+            </div>
+            {% endif %}
+
         </div>
 
-        <!-- Recommendation -->
-        <div id="measurement-recommendation" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
-            <span class="font-semibold text-gray-800">Ukuran Pakaian</span>
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">{{ data.clothes_size|default_if_none:"Belum dihitung" }}</span>
-          </div>
-          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
-            <span class="font-semibold text-gray-800">Ukuran Helm</span>
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">{{ data.helmet_size|default_if_none:"Belum dihitung" }}</span>
-          </div>
-        </div>
+        <hr class="my-6 border-gray-200">
 
-        <!-- Tombol Update & Delete -->
-        <div id="measurement-actions" class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <button id="update-measurement-btn" class="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">Update Data Ukuran</button>
-          <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition">Hapus Data</button>
-        </div>
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Ukuran Tambahan</h3>
+        <div id="additional-measurement-info" class="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700">
+            
+            {% if data.waist %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Pinggang</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.waist }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
+            
+            {% if data.hip %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Pinggul</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.hip }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
+            
+            {% if data.chest %}
+            <div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">Dada</p>
+                <p class="font-bold text-gray-900 text-xl mt-1">{{ data.chest }} <span class="text-base font-normal">cm</span></p>
+            </div>
+            {% endif %}
 
-      {% else %}
-        <div class="text-center py-12">
-          <p class="text-gray-500 mb-6 text-lg">🧍‍♂️ Kamu belum mengisi data ukuran badanmu.</p>
-          <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">Isi Sekarang</a>
+            </div>
+
+        <hr class="my-6 border-gray-200">
+
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Rekomendasi Ukuran</h3>
+        <div id="measurement-recommendation" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+                <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Pakaian</span>
+                <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg transition duration-300 hover:scale-105">
+                    {{ data.clothes_size|default_if_none:"N/A" }}
+                </span>
+                <span class="text-xs text-gray-500 mt-2">
+                    {% if data.clothes_size %}(Dihitung berdasarkan data){% else %}Belum dihitung{% endif %}
+                </span>
+            </div>
+            
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+                <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Helm</span>
+                <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg transition duration-300 hover:scale-105">
+                    {{ data.helmet_size|default_if_none:"N/A" }}
+                </span>
+                <span class="text-xs text-gray-500 mt-2">
+                    {% if data.helmet_size %}(Dihitung berdasarkan data){% else %}Belum dihitung{% endif %}
+                </span>
+            </div>
+            
         </div>
-      {% endif %}
+        
     </div>
-  </div>
+
+    <hr class="my-8 border-gray-200">
+    <div id="measurement-actions" class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="w-full sm:w-auto text-center bg-black text-white px-8 py-3 rounded-lg font-semibold tracking-wider hover:bg-gray-700 transition shadow-md">
+            Ubah Data Ukuran
+        </a>
+        <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="w-full sm:w-auto bg-white border border-red-600 text-red-600 px-8 py-3 rounded-lg font-medium hover:bg-red-50 hover:text-red-700 transition shadow-md">
+            Hapus Data
+        </button>
+    </div>
+
+    {% else %}
+    <div class="text-center py-12 border border-dashed border-gray-300 rounded-xl bg-gray-50">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        <p class="text-gray-600 mb-6 text-xl font-medium">Data ukuran badan belum ditemukan.</p>
+        <a href="{% url 'userMeasurement:update_measurement' %}" class="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow-lg">
+            Isi Sekarang
+        </a>
+    </div>
+    {% endif %}
+</div>
 
   <!-- Judul Produk Yang Direkomendasikan-->
-  <div id="recommended-products-title" class="mt-8">
-    <hr class="border-t-2 border-gray-400 mb-4">
-    <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">Produk yang Direkomendasikan</h1>
-  </div>
+  <div id="recommended-products-title" class="mt-10">
+        <hr class="border-gray-300 mb-6"> 
+        <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">
+            Produk yang Direkomendasikan
+        </h1>
+    </div>
 
   <!-- Pilihan Kategori Produk -->
   {% if data %}
-    <div class="flex gap-4 mb-6 justify-center">
-      <button class="product-type-btn px-5 py-2 rounded-lg font-medium {% if selected_type == 'clothes' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="clothes">Shirt</button>
-      <button class="product-type-btn px-5 py-2 rounded-lg font-medium {% if selected_type == 'helmet' %}bg-black text-white{% else %}bg-gray-200{% endif %}" data-type="helmet">Helmet</button>
-    </div>
-  {% endif %}
+        <div class="flex gap-4 mb-8 justify-center">
+            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+                {% if selected_type == 'clothes' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
+                data-type="clothes">
+                Pakaian
+            </button>
+            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+                {% if selected_type == 'helmet' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
+                data-type="helmet">
+                Helm
+            </button>
+        </div>
+    {% endif %}
 
   <!-- Grid Produk -->
   <div id="ajax-products-container">
-    {% if products %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {% for p in products %}
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition">
-            <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-60 object-cover">
-            <div class="p-4">
-              <span class="text-gray-500 text-sm">{{ p.get_category_display }}</span>
-              <h4 class="font-semibold text-lg mt-1">{{ p.name }}</h4>
-              <span class="block text-gray-700 mt-1">Size: {{ p.size }}</span>
-              <h5 class="font-bold text-blue-800 mt-2">Rp {{ p.price }}</h5>
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                {% for p in products %}
+                    <div class="bg-white rounded-xl border border-gray-100 shadow-xl overflow-hidden transform hover:shadow-2xl transition duration-300">
+                        <div class="h-64 overflow-hidden">
+                            <img src="{{ p.thumbnail|default:'https://via.placeholder.com/300x400?text=No+Image' }}" alt="{{ p.name }}" class="w-full h-60 object-cover">
+                        </div>
+                        
+                        <div class="p-5">
+                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">{{ p.get_category_display }}</span>
+                            
+                            <h4 class="font-bold text-xl mt-1 leading-tight">
+                                <a href="{% url 'shop:product-detail' p.id %}" class="text-gray-900 hover:text-black hover:underline transition">
+                                    {{ p.name }}
+                                </a>
+                            </h4>
+                            
+                            <div class="flex items-center mt-3 mb-3">
+                                <span class="text-gray-700 font-semibold mr-2">Ukuran:</span>
+                                <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ p.size|default:"N/A" }}
+                                </span>
+                            </div>
+                            
+                            <h5 class="font-extrabold text-gray-900 text-2xl mt-4">
+                                Rp {{ p.price|default:"-" }}
+                            </h5>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-        <p>Tidak ada produk yang sesuai ukuranmu.</p>
-      </div>
-    {% endif %}
-  </div>
+        {% else %}
+            <div class="bg-gray-50 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-600">
+                <p class="text-lg font-medium">✨ Tidak ada produk yang sesuai dengan ukuran **{{ selected_type|default:"Anda" }}** saat ini.</p>
+                <p class="text-sm mt-2">Coba periksa kembali data pengukuran Anda atau kategori produk lain.</p>
+            </div>
+        {% endif %}
+    </div>
 
 </div>
 
@@ -130,7 +221,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ===== Utility: get CSRF token =====
+  // ===== Get CSRF token =====
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -176,15 +267,17 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
         data.products.forEach(p => {
           html += `
-            <div class="product-card bg-white rounded-lg border p-4 shadow-sm">
-              <img src="${p.thumbnail || 'https://via.placeholder.com/300x400?text=No+Image'}" alt="${p.name}" class="w-full h-48 object-cover rounded">
-              <div class="mt-2">
-                <span class="product-category text-gray-500 text-sm">${p.category}</span>
-                <h4 class="product-name font-semibold">${p.name}</h4>
-                <span class="product-size">Size: ${p.size}</span>
-                <h5 class="product-price font-bold">Rp ${p.price}</h5>
+            <a href="/shop/product/${p.id}/" class="group">
+              <div class="product-card bg-white rounded-lg border p-4 shadow-sm hover:shadow-lg transition">
+                <img src="${p.thumbnail || 'https://via.placeholder.com/300x400?text=No+Image'}" alt="${p.name}" class="w-full h-48 object-cover rounded">
+                <div class="mt-2">
+                  <span class="product-category text-gray-500 text-sm">${p.category}</span>
+                  <h4 class="product-name font-semibold">${p.name}</h4>
+                  <span class="product-size">Size: ${p.size}</span>
+                  <h5 class="product-price font-bold">Rp ${p.price}</h5>
+                </div>
               </div>
-            </div>
+            </a>
           `;
         });
         html += `</div>`;
@@ -200,7 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = `<div class="text-red-600 text-center mt-4">Gagal memuat produk.</div>`;
     }
   }
-
   // ===== Product Filter =====
   document.addEventListener("click", e => {
     if (e.target.classList.contains("product-type-btn")) {
@@ -295,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.status === "success") {
         const m = data.measurement;
 
-        // ==== Update only info and recommendation, leave buttons intact ====
+        // ==== Update only ====
         measurementInfo.innerHTML = `
           <div class="space-y-2">
             <p><span class="font-semibold">Tinggi:</span> ${m.height} cm</p>
@@ -331,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Load Default Products =====
+  // ===== Load Products =====
   fetchProducts(activeFilter);
 
 });

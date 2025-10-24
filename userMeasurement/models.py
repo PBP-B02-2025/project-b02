@@ -18,7 +18,7 @@ class userMeasurement(models.Model):
     def calculate_clothes_size(self):
         bmi = self.weight / ((self.height / 100) ** 2)
         
-        size = "M"  # default
+        size = ""  
 
         if bmi < 18.5:
             size = "S"
@@ -29,7 +29,7 @@ class userMeasurement(models.Model):
         else:
             size = "XL"
 
-        # Adjust based on waist
+        # waist
         if self.waist is not None:
             if self.waist < 75:
                 size = "S"
@@ -38,7 +38,7 @@ class userMeasurement(models.Model):
             elif self.waist > 105:
                 size = "XL"
 
-        # Adjust based on chest
+        # chest
         if self.chest is not None:
             if self.chest < 85 and size in ["M", "L"]:
                 size = "S"
@@ -47,7 +47,7 @@ class userMeasurement(models.Model):
             elif self.chest > 110:
                 size = "XL"
 
-        # Adjust based on hip
+        # hip
         if self.hip is not None:
             if self.hip < 85 and size in ["M", "L"]:
                 size = "S"
