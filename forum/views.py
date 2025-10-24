@@ -9,7 +9,10 @@ from django.utils import timezone
 # Create your views here.
 
 def show_forum_list(request):
-    return render(request, "forum.html", {})
+    context = {
+        'active_page': 'forum',
+    }
+    return render(request, "forum.html", context)
 
 def show_forum(request, id):
     forum = get_object_or_404(Forum, pk=id)
@@ -134,7 +137,7 @@ def create_comment_ajax(request):
 @require_POST
 def delete_forum_ajax(request):
     forum = get_object_or_404(Forum, pk=request.POST.get('forum_id'))
-    if forum.author != request.user:
+    if forum.author != request.user and not request.user.is_staff:
         return JsonResponse({
             'success': False,
             'message': 'You are not authorized to delete this forum.'
@@ -151,7 +154,7 @@ def delete_forum_ajax(request):
 @require_POST
 def delete_comment_ajax(request):
     comment = get_object_or_404(Comment, pk=request.POST.get('comment_id'))
-    if comment.author != request.user and comment.forum.author != request.user:
+    if comment.author != request.user and comment.forum.author != request.user and not request.user.is_staff:
         return JsonResponse({
             'success': False,
             'message': 'You are not authorized to delete this comment.'

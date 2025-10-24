@@ -118,6 +118,7 @@ const CURRENT_USER_ID = "{{ user.id|default_if_none:'' }}";
 const FORUM_DETAIL_ENDPOINT = `{% url 'forum:show_json_forum_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
 const FORUM_COMMENT_ENDPOINT =  `{% url 'forum:show_json_comment' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', FORUM_ID);
 const EDIT_FORUM_ENDPOINT = `{% url 'forum:edit_forum_ajax' %}`;
+const IS_STAFF = "{{ user.is_staff }}".toLowerCase() === "true";
 
 // DOM Elements
 const forumContent = document.getElementById('forum-content');
@@ -360,6 +361,10 @@ function renderForum(item) {
     document.getElementById('titleEdit').value = `${item.title}`;
     document.getElementById('contentEdit').value = `${item.content}`;
 
+    if (IS_STAFF) {
+        document.getElementById("deleteForumBtn").classList.remove("hidden");
+    }
+
     if (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) {
         document.getElementById("deleteForumBtn").classList.remove("hidden");
         document.getElementById("editForumBtn").classList.remove("hidden");
@@ -435,7 +440,7 @@ function buildCommentCardElement(item) {
         minute: '2-digit'
     }));
     const updatedAtSpan = item.updated_at > item.created_at ? `<span class="text-gray-400 italic text-xs">• Edited: ${updatedAt}</span>` : '';
-    const deleteComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) || (CURRENT_USER_ID && AUTHOR_FORUM_ID && Number(AUTHOR_FORUM_ID) === Number(CURRENT_USER_ID))
+    const deleteComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) || (CURRENT_USER_ID && AUTHOR_FORUM_ID && Number(AUTHOR_FORUM_ID) === Number(CURRENT_USER_ID)) || IS_STAFF
     ? `<button onclick="openDeleteCommentModal('${item.id}')" class="delete-comment-btn w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors duration-150" title="Delete comment">🗑️</button>` : ''; 
     const editComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id))
     ? `<button class="edit-comment-btn w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-150" title="Edit comment">✏️</button>` : '';

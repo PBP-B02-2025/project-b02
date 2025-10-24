@@ -39,10 +39,16 @@
 </div>
 
 <script>
+  const forumCrudModal = document.getElementById('forumCrudModal');
+forumCrudModal.addEventListener('click', (e) => {
+    if (e.target === forumCrudModal) {
+        hideForumModal();
+    }
+});
   function showForumModal() {
       const modal = document.getElementById('forumCrudModal');
       const modalContent = document.getElementById('forumCrudModalContent');
-
+      document.body.style.overflow = 'hidden';
       modal.classList.remove('hidden'); 
       setTimeout(() => {
         modalContent.classList.remove('opacity-0', 'scale-95');
@@ -53,7 +59,7 @@
   function hideForumModal() {
       const modal = document.getElementById('forumCrudModal');
       const modalContent = document.getElementById('forumCrudModalContent');
-
+      document.body.style.overflow = '';
       modalContent.classList.remove('opacity-100', 'scale-100');
       modalContent.classList.add('opacity-0', 'scale-95');
 
