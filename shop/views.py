@@ -2,11 +2,13 @@
 
 from django.shortcuts import render, get_object_or_404, redirect # Tambahkan redirect
 from django.contrib import messages # Tambahkan messages
-from .models import Product 
+from .models import Product, Transaction
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
+from voucher.models import Voucher
+from decimal import Decimal
 
 def shop_main_view(request):
     
@@ -86,6 +88,7 @@ def product_detail_view(request, product_id):
         'product': product,
         'reviews': reviews,
         'form': form,
+        'any_vouchers_exist': Voucher.objects.filter(is_active=True).exists()
     }
     
     return render(request, 'shop/product_detail.html', context)
@@ -135,3 +138,94 @@ def delete_product_view(request, product_id):
     
     # Jika user akses via GET, redirect kembali ke halaman detail
     return redirect('shop:product-detail', product_id=product.id)
+
+@login_required
+def transaction_history_view(request):
+    """
+    Menampilkan riwayat transaksi milik user yang sedang login.
+    """
+    # 1. Ambil semua transaksi milik user, urutkan dari yang paling baru
+    #    Kita pakai .select_related('product') agar lebih efisien
+    #    (Model Transaction sudah di-order by '-purchase_timestamp' di Meta)
+    user_transactions = Transaction.objects.filter(user=request.user).select_related('product')
+    
+    context = {
+        'transactions': user_transactions,
+        'active_page': 'shop-history', # Untuk menandai link nav
+    }
+    
+    # 2. Render template baru yang akan kita buat
+    return render(request, 'shop/riwayat_transaksi.html', context)
+
+@login_required
+def create_transaction_ajax_view(request):
+    if not request.method == 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Metode request tidak valid'}, status=405)
+
+    try:
+        # 1. Ambil data dari request POST
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity', 1))
+        voucher_code = request.POST.get('voucher_code', '').strip()
+        
+        if quantity < 1:
+            return JsonResponse({'status': 'error', 'message': 'Kuantitas tidak valid.'}, status=400)
+
+        # 2. Ambil objek
+        product = get_object_or_404(Product, id=product_id)
+        user = request.user
+
+        # 3. --- PROSES VOUCHER (BAGIAN YANG DIPERBARUI) ---
+        voucher_obj = None
+        discount_percentage = Decimal('0.0') 
+        
+        if voucher_code:
+            try:
+                # Langkah A: Cari voucher berdasarkan KODE saja
+                voucher_obj = Voucher.objects.get(kode=voucher_code)
+                
+                # Langkah B: Periksa apakah voucher-nya aktif
+                if not voucher_obj.is_active:
+                    # Ini adalah pesan error baru yang spesifik
+                    return JsonResponse({
+                        'status': 'error', 
+                        'message': 'Voucher yang Anda masukkan sudah tidak aktif.'
+                    }, status=400)
+                
+                # Langkah C: Jika aktif, ambil diskonnya
+                discount_percentage = voucher_obj.persentase_diskon
+                
+            except Voucher.DoesNotExist:
+                # Jika kodenya tidak ditemukan sama sekali
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Kode Voucher tidak valid atau tidak ditemukan.'
+                }, status=400)
+
+        # 4. Kalkulasi Harga
+        original_product_price = product.price # Ini adalah INT
+        total_original_price = Decimal(original_product_price * quantity)
+        discount_amount = (total_original_price * discount_percentage) / Decimal('100.0')
+        final_price = total_original_price - discount_amount # Hasilnya adalah Decimal
+
+        # 5. Buat Transaksi
+        Transaction.objects.create(
+            user=user,
+            product=product,
+            voucher=voucher_obj,
+            used_voucher_code=voucher_obj.kode if voucher_obj else None,
+            quantity=quantity,
+            original_product_price=original_product_price,
+            applied_discount_percentage=int(discount_percentage), 
+            final_price=int(final_price) 
+        )
+        
+        # 6. Kirim respon sukses
+        return JsonResponse({
+            'status': 'success', 
+            'message': 'Transaksi berhasil dicatat! Anda akan diarahkan ke riwayat.'
+        })
+
+    except Exception as e:
+        # Tangkap error jika ada
+        return JsonResponse({'status': 'error', 'message': f'Terjadi kesalahan: {str(e)}'}, status=500)

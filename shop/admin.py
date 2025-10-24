@@ -1,11 +1,6 @@
 from django.contrib import admin
-from .models import Product # <-- Ganti ini dengan nama model Anda
+from .models import Product, Transaction
 
-# Baris ini yang akan membuat model Anda muncul di admin
 admin.site.register(Product)
+admin.site.register(Transaction)
 
-# Jika Anda punya model lain, daftarkan juga:
-# from .models import Product, Category
-#
-# admin.site.register(Product)
-# admin.site.register(Category)

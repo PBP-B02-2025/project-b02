@@ -14,4 +14,6 @@ urlpatterns = [
     path('product/<uuid:product_id>/', views.product_detail_view, name='product-detail'),
     path('product/<uuid:product_id>/edit/', views.edit_product_view, name='edit-product'),
     path('product/<uuid:product_id>/delete/', views.delete_product_view, name='delete-product'),
+    path('riwayat/', views.transaction_history_view, name='transaction-history'),
+    path('create-transaction/', views.create_transaction_ajax_view, name='create-transaction-ajax'),
 ]
