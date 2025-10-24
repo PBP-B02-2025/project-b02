@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import datetime
 
@@ -140,3 +141,20 @@ def logout_user(request):
     response = redirect('main:login')
     response.delete_cookie('last_login')
     return response
+
+@login_required(login_url='/login/')
+def profil_view(request):
+    # Import userMeasurement model
+    from userMeasurement.models import userMeasurement
+    
+    # Coba ambil data measurement user
+    try:
+        measurement = userMeasurement.objects.get(user=request.user)
+    except userMeasurement.DoesNotExist:
+        measurement = None
+    
+    context = {
+        'active_page': 'profil',
+        'measurement': measurement
+    }
+    return render(request, 'profil.html', context)
