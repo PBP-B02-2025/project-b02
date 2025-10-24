@@ -167,13 +167,13 @@
     <header>
         <div class="top-bar">
             <div class="social-icons">
-                <a href="https://www.instagram.com/" target="_blank">
+                <a href="https://www.instagram.com/fasilkomuiofficial/" target="_blank">
                     <img src="{% static 'images/icons8-instagram-24.png' %}" alt="Instagram" class="social-icon">
                 </a>
-                <a href="https://discord.com/" target="_blank">
+                <a href="https://discord.gg/6VZfhBg2" target="_blank">
                     <img src="{% static 'images/icons8-discord-24.png' %}" alt="Discord" class="social-icon">
                 </a>
-                <a href="https://www.linkedin.com/" target="_blank">
+                <a href="https://id.linkedin.com/in/fiona-ratu-maheswari-52399a245" target="_blank">
                     <img src="{% static 'images/icons8-linkedin.gif' %}" alt="LinkedIn" class="social-icon">
                 </a>
             </div>
@@ -190,13 +190,15 @@
                 <a href="{% url 'main:profil' %}">
                     <img src="{% static 'images/profile.png' %}" alt="Profile" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
-                {% endif %}
                 <a href="{% url 'shop:transaction-history' %}">
                     <img src="{% static 'images/clock.png' %}" alt="History" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
-                {% if user.is_authenticated %}
                 <a href="{% url 'main:logout' %}">
                     <img src="{% static 'images/logout.png' %}" alt="Logout" style="width: 30px; height: 30px; vertical-align: middle;">
+                </a>
+                {% else %}
+                <a href="{% url 'main:login' %}">
+                    <img src="{% static 'images/login.png' %}" alt="Login" style="width: 30px; height: 30px; vertical-align: middle;">
                 </a>
                 {% endif %}
             </div>
@@ -205,7 +207,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" {% if active_page == 'home' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
                 <a href="{% url 'shop:shop-main' %}" 
                    class="{% if request.resolver_match.app_name == 'shop' or request.resolver_match.app_name == 'userMeasurement' %}active{% endif %}">
@@ -234,7 +236,7 @@
                    VOUCHER
                 </a>
             </li>
-            <li><a href="#" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
+            <li><a href="{% url 'main:about' %}" class="{% if active_page == 'about' %}active{% endif %}">ABOUT</a></li>
         </ul>
     </nav>
 
