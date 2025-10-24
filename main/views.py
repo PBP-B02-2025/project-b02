@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from .forms import CustomUserCreationForm
 import datetime
 
 # Nama fungsi ini harus sama dengan yang di main/urls.py
@@ -19,10 +20,10 @@ def main_view(request):
     return render(request, 'main.html', context)
 
 def register_user(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
     
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your account has been successfully created!')
@@ -35,11 +36,14 @@ def register_user(request):
 def register_ajax(request):
     if request.method == 'POST':
         username = request.POST.get('username')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         
         # Validasi
-        if not username or not password1 or not password2:
+        if not username or not email or not first_name or not last_name or not password1 or not password2:
             return JsonResponse({
                 'success': False,
                 'error': 'All fields are required.'
@@ -60,6 +64,19 @@ def register_ajax(request):
             }, status=400)
         
         from django.contrib.auth.models import User
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+        
+        # Validasi email format
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid email format.',
+                'errors': {'email': ['Invalid email format.']}
+            }, status=400)
+        
         if User.objects.filter(username=username).exists():
             return JsonResponse({
                 'success': False,
@@ -67,8 +84,21 @@ def register_ajax(request):
                 'errors': {'username': ['Username already exists.']}
             }, status=400)
         
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({
+                'success': False,
+                'error': 'Email already exists.',
+                'errors': {'email': ['Email already registered.']}
+            }, status=400)
+        
         try:
-            user = User.objects.create_user(username=username, password=password1)
+            user = User.objects.create_user(
+                username=username, 
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name
+            )
             user.save()
             
             return JsonResponse({
@@ -138,7 +168,7 @@ def login_ajax(request):
 
 def logout_user(request):
     logout(request)
-    response = redirect('main:login')
+    response = redirect('/')
     response.delete_cookie('last_login')
     return response
 
@@ -146,6 +176,7 @@ def logout_user(request):
 def profil_view(request):
     # Import userMeasurement model
     from userMeasurement.models import userMeasurement
+    from shop.models import Product
     
     # Coba ambil data measurement user
     try:
@@ -153,8 +184,19 @@ def profil_view(request):
     except userMeasurement.DoesNotExist:
         measurement = None
     
+    # Ambil produk yang dimiliki user (produk yang dia upload)
+    user_products = Product.objects.filter(user=request.user).order_by('-id')
+    
     context = {
         'active_page': 'profil',
-        'measurement': measurement
+        'measurement': measurement,
+        'user_products': user_products,
+        'total_products': user_products.count()
     }
     return render(request, 'profil.html', context)
+
+def about_view(request):
+    context = {
+        'active_page': 'about'
+    }
+    return render(request, 'about.html', context)

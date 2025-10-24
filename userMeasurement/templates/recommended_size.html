@@ -101,9 +101,9 @@
 
     <hr class="my-8 border-gray-200">
     <div id="measurement-actions" class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="{% url 'userMeasurement:update_measurement' %}" class="w-full sm:w-auto text-center bg-black text-white px-8 py-3 rounded-lg font-semibold tracking-wider hover:bg-gray-700 transition shadow-md">
+        <button id="update-measurement-btn" data-url="{% url 'userMeasurement:update_measurement' %}" class="w-full sm:w-auto text-center bg-black text-white px-8 py-3 rounded-lg font-semibold tracking-wider hover:bg-gray-700 transition shadow-md">
             Ubah Data Ukuran
-        </a>
+        </button>
         <button id="delete-measurement-btn" data-url="{% url 'userMeasurement:delete_measurement' %}" class="w-full sm:w-auto bg-white border border-red-600 text-red-600 px-8 py-3 rounded-lg font-medium hover:bg-red-50 hover:text-red-700 transition shadow-md">
             Hapus Data
         </button>
@@ -130,19 +130,19 @@
 
   <!-- Pilihan Kategori Produk -->
   {% if data %}
-        <div class="flex gap-4 mb-8 justify-center">
-            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
-                {% if selected_type == 'clothes' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
-                data-type="clothes">
-                Pakaian
-            </button>
-            <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
-                {% if selected_type == 'helmet' %}bg-black text-white shadow-md hover:bg-gray-800{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}" 
-                data-type="helmet">
-                Helm
-            </button>
-        </div>
-    {% endif %}
+    <div class="flex gap-4 mb-8 justify-center">
+      <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+          {% if selected_type == 'clothes' %}bg-black text-white shadow-md{% else %}bg-gray-200 text-gray-700 hover:bg-black hover:text-white{% endif %}" 
+          data-type="clothes">
+          Shirt
+      </button>
+      <button class="product-type-btn px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider transition duration-200 
+          {% if selected_type == 'helmet' %}bg-black text-white shadow-md{% else %}bg-gray-200 text-gray-700 hover:bg-black hover:text-white{% endif %}" 
+          data-type="helmet">
+          Helm
+      </button>
+    </div>
+  {% endif %}
 
   <!-- Grid Produk -->
   <div id="ajax-products-container">
@@ -238,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteBtn = document.getElementById("delete-measurement-btn");
   const updateBtn = document.getElementById("update-measurement-btn");
   const userDataContainer = document.getElementById("user-data");
-  const measurementInfo = document.getElementById("measurement-info");
+  const coreInfo = document.getElementById("core-measurement-info");
+  const additionalInfo = document.getElementById("additional-measurement-info");
   const measurementRecommendation = document.getElementById("measurement-recommendation");
 
   const deleteModal = document.getElementById("delete-modal");
@@ -251,6 +252,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let activeFilter = 'clothes';
 
+  // ===== Utility: Update category button styles =====
+  function updateCategoryButtons() {
+  document.querySelectorAll(".product-type-btn").forEach(btn => {
+      btn.classList.remove(
+        "bg-black", "text-white", "shadow-md",
+        "bg-gray-200", "text-gray-700", "hover:bg-black", "hover:text-white"
+      );
+
+      if (btn.dataset.type === activeFilter) {
+        // Tombol AKTIF
+        btn.classList.add("bg-black", "text-white", "shadow-md");
+      } else {
+        // Tombol TIDAK AKTIF
+        btn.classList.add("bg-gray-200", "text-gray-700", "hover:bg-black", "hover:text-white");
+      }
+    });
+  }
   // ===== Fetch Products =====
   async function fetchProducts(type) {
     container.innerHTML = `<div class="text-gray-500 text-center mt-4">Loading...</div>`;
@@ -262,9 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let html = '';
       if (data.products?.length) {
-        html += `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
+        let html = `<div class="product-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">`;
         data.products.forEach(p => {
           html += `
             <a href="/shop/product/${p.id}/" class="group">
@@ -281,28 +298,23 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         });
         html += `</div>`;
+        container.innerHTML = html;
       } else {
-        html = `<div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-                  <p>Tidak ada produk yang sesuai ukuranmu.</p>
-                </div>`;
+        container.innerHTML = `<div class="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+                                  <p>Tidak ada produk yang sesuai ukuranmu.</p>
+                               </div>`;
       }
-
-      container.innerHTML = html;
     } catch (err) {
       console.error(err);
       container.innerHTML = `<div class="text-red-600 text-center mt-4">Gagal memuat produk.</div>`;
     }
   }
-  // ===== Product Filter =====
+
+  // ===== Category Button Click =====
   document.addEventListener("click", e => {
     if (e.target.classList.contains("product-type-btn")) {
       activeFilter = e.target.dataset.type;
-      document.querySelectorAll(".product-type-btn").forEach(b => {
-        b.classList.remove("bg-black", "text-white");
-        b.classList.add("bg-gray-200");
-      });
-      e.target.classList.remove("bg-gray-200");
-      e.target.classList.add("bg-black", "text-white");
+      updateCategoryButtons();
       fetchProducts(activeFilter);
     }
   });
@@ -346,13 +358,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Update Measurement Modal =====
+  // ===== Open Update Modal =====
   updateBtn?.addEventListener("click", async () => {
     modal.classList.remove("hidden");
     try {
-      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
-        headers: { "X-Requested-With": "XMLHttpRequest" }
-      });
+      const res = await fetch(updateBtn.dataset.url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
       const data = await res.json();
       if (data.status === "ok") {
         const m = data.measurement;
@@ -364,18 +374,19 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("form-head").value = m.head_circumference || "";
       }
     } catch (err) {
-      console.error(err);
+      console.error("Gagal load data measurement:", err);
     }
   });
 
   cancelModal.addEventListener("click", () => modal.classList.add("hidden"));
 
-  // ===== Submit Update Measurement =====
+  // ===== Submit Update Form =====
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const formData = new FormData(form);
+
     try {
-      const res = await fetch("{% url 'userMeasurement:update_measurement' %}", {
+      const res = await fetch(updateBtn.dataset.url, {
         method: "POST",
         headers: {
           "X-CSRFToken": getCookie("csrftoken"),
@@ -383,51 +394,69 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: formData
       });
+
       const data = await res.json();
+
       if (data.status === "success") {
         const m = data.measurement;
 
-        // ==== Update only ====
-        measurementInfo.innerHTML = `
-          <div class="space-y-2">
-            <p><span class="font-semibold">Tinggi:</span> ${m.height} cm</p>
-            <p><span class="font-semibold">Berat:</span> ${m.weight} kg</p>
+        // ==== Update Core Info ====
+        coreInfo.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Tinggi:</span> ${m.height} cm</p>
           </div>
-          <div class="space-y-2">
-            ${m.waist ? `<p><span class="font-semibold">Lingkar Pinggang:</span> ${m.waist} cm</p>` : ''}
-            ${m.hip ? `<p><span class="font-semibold">Lingkar Pinggul:</span> ${m.hip} cm</p>` : ''}
-            ${m.chest ? `<p><span class="font-semibold">Lingkar Dada:</span> ${m.chest} cm</p>` : ''}
-            ${m.head_circumference ? `<p><span class="font-semibold">Lingkar Kepala:</span> ${m.head_circumference} cm</p>` : ''}
+          <div class="flex items-center space-x-3">
+            <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Berat:</span> ${m.weight} kg</p>
           </div>
+          ${m.head_circumference ? `
+          <div class="flex items-center space-x-3">
+            <p class="text-gray-800 text-lg"><span class="font-bold text-gray-900">Kepala:</span> ${m.head_circumference} cm</p>
+          </div>` : ''}
         `;
 
+        // ==== Update Additional Info ====
+        const addHTML = [];
+        if (m.waist) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Pinggang</p><p class="font-bold text-gray-900 text-xl mt-1">${m.waist} cm</p></div>`);
+        if (m.hip) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Pinggul</p><p class="font-bold text-gray-900 text-xl mt-1">${m.hip} cm</p></div>`);
+        if (m.chest) addHTML.push(`<div class="flex flex-col items-center p-3 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition"><p class="text-xs text-gray-500 uppercase tracking-wider">Dada</p><p class="font-bold text-gray-900 text-xl mt-1">${m.chest} cm</p></div>`);
+
+        additionalInfo.innerHTML = addHTML.join("");
+
+        // ==== Update Recommendations ====
         measurementRecommendation.innerHTML = `
-          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
-            <span class="font-semibold text-gray-800">Ukuran Pakaian</span>
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.clothes_size || "Belum dihitung"}</span>
+          <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+            <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Pakaian</span>
+            <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg">${m.clothes_size || "N/A"}</span>
           </div>
-          <div class="bg-blue-50 rounded-lg p-4 shadow-sm flex items-center justify-between">
-            <span class="font-semibold text-gray-800">Ukuran Helm</span>
-            <span class="bg-white text-blue-800 px-3 py-1 rounded-md font-medium">${m.helmet_size || "Belum dihitung"}</span>
+          <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-5 flex flex-col items-center">
+            <span class="font-bold text-gray-800 mb-2 text-base uppercase tracking-wider">Ukuran Helm</span>
+            <span class="text-4xl font-extrabold text-white bg-black px-8 py-3 rounded-md shadow-lg">${m.helmet_size || "N/A"}</span>
           </div>
         `;
 
         modal.classList.add("hidden");
         showToast("Berhasil", data.message, "success");
+
+        // ==== Reapply category button style & refresh products ====
+        updateCategoryButtons();
+        fetchProducts(activeFilter);
+
       } else {
         showToast("Gagal", data.message || "Periksa input form", "error");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error saat update measurement:", err);
       showToast("Error", "Terjadi error saat update", "error");
     }
   });
 
-  // ===== Load Products =====
+  // ===== Initialize =====
+  updateCategoryButtons();
   fetchProducts(activeFilter);
 
 });
 </script>
+
 
 
 {% endblock %}

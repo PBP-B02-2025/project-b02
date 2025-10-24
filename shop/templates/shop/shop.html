@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Shop - Modern Shop{% endblock %}
 
@@ -58,7 +59,7 @@
                         <h4 class="product-name">{{ product.name }}</h4>
                     </a>
                     <span class="product-size">Size: {{ product.size }}</span>
-                    <h5 class="product-price">Rp {{ product.price }}</h5>
+                    <h5 class="product-price">Rp {{ product.price |intcomma}}</h5>
                 </div>
             </div>
             {% empty %}
@@ -91,7 +92,8 @@
 
     </section>
 
-</div>
+ </div>
+{% if not request.user.is_staff and not request.user.is_superuser %}
 <div class="fab" id="open-add-modal-btn" title="Tambah Produk Baru">
     +
 </div>
@@ -113,6 +115,7 @@
         </form>
     </div>
 </div>
+{% endif %}
 
 
 <script>
@@ -125,18 +128,20 @@ $(document).ready(function() {
 
     // Buka modal saat FAB diklik
     fab.on('click', function() {
-        modal.css('display', 'block');
+        // GANTI INI: modal.css('display', 'block');
+        modal.addClass('modal-visible');
     });
 
     // Tutup modal saat tombol 'x' diklik
     closeBtn.on('click', function() {
-        modal.css('display', 'none');
+        // GANTI INI: modal.css('display', 'none');
+        modal.removeClass('modal-visible');
     });
 
     // Tutup modal saat klik di luar area konten modal
     $(window).on('click', function(event) {
         if (event.target == modal[0]) {
-            modal.css('display', 'none');
+            modal.removeClass('modal-visible');
         }
     });
 
@@ -158,14 +163,16 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status === 'success') {
                     // Jika sukses:
-                    alert(response.message);
+                    showToast('Sukses!', response.message, 'success');
                     // Tutup modal
-                    modal.css('display', 'none');
-                    // Muat ulang halaman untuk melihat produk baru
-                    location.reload(); 
+                    modal.removeClass('modal-visible');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
                 } else if (response.status === 'error') {
                     // Jika gagal (form tidak valid):
                     // Tampilkan error di dalam modal
+                    showToast('Gagal', 'Data tidak valid. Periksa kembali isian Anda.', 'error');
                     var errors = response.errors;
                     for (var field in errors) {
                         var errorList = $('<ul>').addClass('form-error-list');
@@ -179,7 +186,7 @@ $(document).ready(function() {
             },
             error: function(xhr, errmsg, err) {
                 console.log("AJAX error:", errmsg);
-                alert("Terjadi kesalahan pada server. Silakan coba lagi.");
+                showToast('Server Error', 'Gagal terhubung ke server. Coba lagi.', 'error');
             }
         });
     });

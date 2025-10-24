@@ -1,10 +1,55 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}{{ product.name }} - Shop{% endblock %}
 
 {% block content %}
 
+<style>
+    /* CSS untuk Quantity Counter di Modal */
+    .qty-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+    .qty-counter button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        cursor: pointer;
+    }
+    .qty-counter input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        font-size: 1.2rem;
+        border: 1px solid #ddd;
+        border-left: none;
+        border-right: none;
+        /* Sembunyikan panah default input number */
+        -moz-appearance: textfield;
+    }
+    .qty-counter input::-webkit-outer-spin-button,
+    .qty-counter input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Styling untuk harga total di modal */
+    .modal-total-price {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 1.2rem;
+    }
+    .modal-total-price span {
+        font-weight: 700;
+        color: #cda34f;
+    }
+</style>
 <section class="shop-header-bar">
     <div class="shop-header-content">
         <h1>{{ product.name }}</h1>
@@ -31,7 +76,7 @@
                     <span class="product-detail-featured-tag">FEATURED</span>
                 {% endif %}
             </h2>
-            <div class="product-detail-price">Rp {{ product.price }}</div>
+            <div class="product-detail-price">Rp {{ product.price|intcomma }}</div>
             
             <div class="product-detail-meta">
                 <ul>
@@ -46,23 +91,32 @@
                 <p>{{ product.description|linebreaksbr }}</p> 
             </div>
 
-            <div class="product-buy-action">
-                <button type="button" class="buy-button">Beli Sekarang</button>
-            </div>
-
             {% if product.user == request.user %}
                 <div class="product-owner-actions">
                     <a href="{% url 'shop:edit-product' product.id %}" class="edit-button">
                         Edit Product
                     </a>
                     
-                    <form action="{% url 'shop:delete-product' product.id %}" method="POST" 
-                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
+                    <form id="delete-product-form" action="{% url 'shop:delete-product' product.id %}" method="POST" class="delete-form">
                         {% csrf_token %}
-                        <button type="submit" class="delete-button">
+                        <button type="button" id="open-delete-modal-btn" class="delete-button">
                             Delete Product
                         </button>
                     </form>
+                </div>
+            {% elif request.user.is_staff or request.user.is_superuser %}
+                <!-- Admin tidak bisa beli produk, tapi boleh hapus produk -->
+                <form id="delete-product-form" action="{% url 'shop:delete-product' product.id %}" method="POST" class="delete-form">
+                    {% csrf_token %}
+                    <button type="button" id="open-delete-modal-btn" class="delete-button">
+                        Delete Product (Admin)
+                    </button>
+                </form>
+            {% else %}
+                <div class="product-buy-action">
+                    <button type="button" class="buy-button" id="open-buy-modal-btn">
+                        Beli Sekarang
+                    </button>
                 </div>
             {% endif %}
 
@@ -71,9 +125,204 @@
     <div class="product-reviews-section">
         <h2>Product Reviews</h2>
         
-        <!-- <p>Belum ada review untuk produk ini.</p> -->
-
         {% include "review_of_product.html" with product=product %}
     </div>
 
-</div> {% endblock %}
+</div> 
+
+<div id="buy-product-modal" class="ajax-modal">
+    <div class="ajax-modal-content">
+        <span class="modal-close-btn" id="buy-modal-close-btn">&times;</span>
+        
+        <h3>Konfirmasi Pembelian</h3>
+        <p style="text-align: center; font-weight: 600;">{{ product.name }}</p>
+
+        <form id="buy-product-form" novalidate>
+            {% csrf_token %}
+            
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+
+            <label style="display: block; text-align: center; font-weight: 600; margin-top: 1rem;">Jumlah:</label>
+            <div class="qty-counter">
+                <button type="button" id="qty-minus">-</button>
+                <input type="number" id="qty-input" name="quantity" value="1" min="1" readonly>
+                <button type="button" id="qty-plus">+</button>
+            </div>
+
+            <label for="voucher_code" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Kode Voucher (Opsional):</label>
+            <input type="text" id="voucher_code" name="voucher_code" class="form-control-ajax" placeholder="Masukkan kode voucher...">
+            
+            <div class="modal-total-price">
+                Harga Asli: <span id="modal-original-price">Rp {{ product.price |intcomma}}</span>
+            </div>
+
+            <button type="submit" class="buy-button" style="width: 100%; margin-top: 1.5rem;">
+                Buat Transaksi
+            </button>
+        </form>
+    </div>
+</div>
+<div id="delete-confirm-modal" class="ajax-modal">
+    <div class="ajax-modal-content" style="max-width: 450px;">
+        <span class="modal-close-btn" id="delete-modal-close-btn">&times;</span>
+        
+        <h3 style="text-align: center; color: #e53e3e;">Konfirmasi Penghapusan</h3>
+        <p style="text-align: center; margin: 1.5rem 0; font-size: 1.05rem;">
+            Apakah Anda yakin ingin menghapus produk ini?
+            <br>
+            <strong style="display: block; margin-top: 0.5rem;">{{ product.name }}</strong>
+        </p>
+        <p style="text-align: center; font-size: 0.9rem; color: #555;">Tindakan ini tidak dapat dibatalkan.</p>
+
+        <div class="product-owner-actions" style="margin-top: 2rem;">
+            <button type="button" id="delete-modal-cancel-btn" class="edit-button">
+                Batal
+            </button>
+            <button type="button" id="delete-modal-confirm-btn" class="delete-button">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    
+    // --- Variabel Global untuk Modal ---
+    var modal = $('#buy-product-modal');
+    var openBtn = $('#open-buy-modal-btn');
+    var closeBtn = $('#buy-modal-close-btn');
+    
+    // Variabel untuk counter
+    var qtyInput = $('#qty-input');
+    var qtyPlus = $('#qty-plus');
+    var qtyMinus = $('#qty-minus');
+
+    // Variabel harga
+    var originalPrice = parseFloat("{{ product.price|default:0 }}");
+    var priceDisplay = $('#modal-original-price');
+    var anyVouchers = "{{ any_vouchers_exist|yesno:'true,false' }}" === "true";
+    var deleteModal = $('#delete-confirm-modal');
+    var openDeleteBtn = $('#open-delete-modal-btn');
+    var closeDeleteBtn = $('#delete-modal-close-btn');
+    var cancelDeleteBtn = $('#delete-modal-cancel-btn');
+    var confirmDeleteBtn = $('#delete-modal-confirm-btn');
+    var deleteForm = $('#delete-product-form');
+    openBtn.on('click', function() {
+        modal.addClass('modal-visible');
+
+        // Gunakan variabel JavaScript yang sudah kita buat
+        if (anyVouchers === false) {
+            // Tampilkan toast info
+            showToast('Info', 'Saat ini tidak ada voucher yang tersedia.', 'normal');
+        }
+    });
+
+    closeBtn.on('click', function() {
+        modal.removeClass('modal-visible');
+    });
+
+    openDeleteBtn.on('click', function() {
+        deleteModal.addClass('modal-visible');
+    });
+
+    // Sembunyikan modal saat tombol 'x' diklik
+    closeDeleteBtn.on('click', function() {
+        deleteModal.removeClass('modal-visible');
+    });
+
+    // Sembunyikan modal saat tombol "Batal" diklik
+    cancelDeleteBtn.on('click', function() {
+        deleteModal.removeClass('modal-visible');
+    });
+
+    // Saat tombol "Ya, Hapus" diklik, submit form-nya
+    confirmDeleteBtn.on('click', function() {
+        // Tampilkan loading state (opsional tapi bagus)
+        $(this).prop('disabled', true).text('Menghapus...');
+        
+        // Submit form delete yang asli
+        deleteForm.submit();
+    });
+    $(window).on('click', function(event) {
+        if (event.target == modal[0]) {
+            modal.removeClass('modal-visible');
+        }
+        if (event.target == deleteModal[0]) {
+            deleteModal.removeClass('modal-visible');
+        }
+    });
+
+    // --- 2. Logika Quantity Counter ---
+    function updatePrice() {
+        var quantity = parseInt(qtyInput.val());
+        var total = originalPrice * quantity;
+        // Format ke Rupiah (sederhana)
+        priceDisplay.text('Rp ' + total.toLocaleString('id-ID'));
+    }
+
+    qtyPlus.on('click', function() {
+        var currentQty = parseInt(qtyInput.val());
+        qtyInput.val(currentQty + 1);
+        updatePrice(); // Update harga saat tambah
+    });
+
+    qtyMinus.on('click', function() {
+        var currentQty = parseInt(qtyInput.val());
+        if (currentQty > 1) {
+            qtyInput.val(currentQty - 1);
+            updatePrice(); // Update harga saat kurang
+        }
+    });
+
+    // --- 3. Logika Submit Transaksi via AJAX ---
+    $('#buy-product-form').on('submit', function(e) {
+        e.preventDefault(); // Hentikan submit form standar
+
+        var form = $(this);
+        var submitButton = form.find('button[type="submit"]');
+        submitButton.prop('disabled', true).text('Memproses...');
+
+        $.ajax({
+            type: "POST",
+            // URL yang kita buat di Langkah 1
+            url: "{% url 'shop:create-transaction-ajax' %}", 
+            data: form.serialize(), // Ambil semua data form (csrf, product_id, qty, voucher)
+            
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Gunakan toast.js
+                    showToast('Sukses!', response.message, 'success');
+                    
+                    // Arahkan ke halaman riwayat setelah 2 detik
+                    setTimeout(function() {
+                        window.location.href = "{% url 'shop:transaction-history' %}";
+                    }, 2000);
+                    
+                } else {
+                    // Tampilkan error jika voucher tidak valid, dll.
+                    showToast('Error', response.message || 'Terjadi kesalahan.', 'error');
+                    submitButton.prop('disabled', false).text('Buat Transaksi');
+                }
+            },
+            error: function(xhr, errmsg, err) {
+                // -- LOGIKA ERROR BARU --
+                var title = 'Server Error';
+                var message = 'Gagal terhubung ke server. Silakan coba lagi.';
+
+                // Coba baca pesan error spesifik dari server (jika ada)
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    title = 'Error';
+                    message = xhr.responseJSON.message;
+                }
+                
+                showToast(title, message, 'error');
+                submitButton.prop('disabled', false).text('Buat Transaksi');
+                // -- AKHIR LOGIKA ERROR BARU --
+            }
+        });
+    });
+
+});
+</script>
+
+{% endblock %}
