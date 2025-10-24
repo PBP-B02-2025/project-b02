@@ -126,18 +126,20 @@ $(document).ready(function() {
 
     // Buka modal saat FAB diklik
     fab.on('click', function() {
-        modal.css('display', 'block');
+        // GANTI INI: modal.css('display', 'block');
+        modal.addClass('modal-visible');
     });
 
     // Tutup modal saat tombol 'x' diklik
     closeBtn.on('click', function() {
-        modal.css('display', 'none');
+        // GANTI INI: modal.css('display', 'none');
+        modal.removeClass('modal-visible');
     });
 
     // Tutup modal saat klik di luar area konten modal
     $(window).on('click', function(event) {
         if (event.target == modal[0]) {
-            modal.css('display', 'none');
+            modal.removeClass('modal-visible');
         }
     });
 
@@ -161,12 +163,10 @@ $(document).ready(function() {
                     // Jika sukses:
                     showToast('Sukses!', response.message, 'success');
                     // Tutup modal
-                    modal.css('display', 'none');
+                    modal.removeClass('modal-visible');
                     setTimeout(function() {
                         location.reload();
                     }, 2000);
-                    // Muat ulang halaman untuk melihat produk baru
-                    location.reload(); 
                 } else if (response.status === 'error') {
                     // Jika gagal (form tidak valid):
                     // Tampilkan error di dalam modal

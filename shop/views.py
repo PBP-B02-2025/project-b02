@@ -174,7 +174,11 @@ def create_transaction_ajax_view(request):
         # 2. Ambil objek
         product = get_object_or_404(Product, id=product_id)
         user = request.user
-
+        if product.user == user:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Anda tidak dapat membeli produk Anda sendiri.'
+            }, status=400) # 400 = Bad Request
         # 3. --- PROSES VOUCHER (BAGIAN YANG DIPERBARUI) ---
         voucher_obj = None
         discount_percentage = Decimal('0.0') 
