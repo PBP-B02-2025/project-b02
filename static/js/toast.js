@@ -26,6 +26,7 @@ function showToast(title, message, type = 'normal', duration = 3000) {
 
     toastTitle.textContent = title;
     toastMessage.textContent = message;
+    toastComponent.classList.remove('hidden');
 
     toastComponent.classList.remove('opacity-0', 'translate-y-64');
     toastComponent.classList.add('opacity-100', 'translate-y-0');
@@ -33,5 +34,8 @@ function showToast(title, message, type = 'normal', duration = 3000) {
     setTimeout(() => {
         toastComponent.classList.remove('opacity-100', 'translate-y-0');
         toastComponent.classList.add('opacity-0', 'translate-y-64');
+        setTimeout(() => {
+            toastComponent.classList.add('hidden');
+        }, 500);
     }, duration);
 }
