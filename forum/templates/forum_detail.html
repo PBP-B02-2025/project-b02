@@ -269,7 +269,12 @@ document.getElementById('confirmDeleteCommentBtn').addEventListener('click', asy
         }
         const data = await response.json();
         showToast(data.message, "", "success");
-        document.dispatchEvent(new CustomEvent('commentDeleted'));
+        document.getElementById(`comment-${data.comment_id}`).remove();
+        let text = commentCount.textContent;
+        let numberMatch = text.match(/\d+/);
+        let count = numberMatch ? Number(numberMatch[0]) : 0;
+        count = Math.max(0, count - 1);
+        commentCount.textContent = `Comment (${count})`;
     } catch (err) {
         console.error(err);
         showToast("Failed to delete comment", err.message, "error");
@@ -421,6 +426,7 @@ function renderAllComment(comments) {
 
 function buildCommentCardElement(item) {
     const card = document.createElement('div');
+    card.id = `comment-${item.id}`;
     card.className = 'bg-gray-50 p-3 border border-gray-200 rounded-lg mb-3 transition-shadow duration-200 shadow-sm hover:shadow-md flex justify-between';
     const author = DOMPurify.sanitize(item.author)
     const content = DOMPurify.sanitize(item.content);
@@ -439,7 +445,6 @@ function buildCommentCardElement(item) {
         hour: '2-digit',
         minute: '2-digit'
     }));
-    const updatedAtSpan = item.updated_at > item.created_at ? `<span class="text-gray-400 italic text-xs">• Edited: ${updatedAt}</span>` : '';
     const deleteComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id)) || (CURRENT_USER_ID && AUTHOR_FORUM_ID && Number(AUTHOR_FORUM_ID) === Number(CURRENT_USER_ID)) || IS_STAFF
     ? `<button onclick="openDeleteCommentModal('${item.id}')" class="delete-comment-btn w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors duration-150" title="Delete comment">🗑️</button>` : ''; 
     const editComment = (CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.author_id))
@@ -450,9 +455,9 @@ function buildCommentCardElement(item) {
                     <div class="flex flex-wrap items-center text-sm text-gray-500 gap-1 mb-1">
                         <span class="font-medium text-gray-700">${author}</span>
                         <span>• Posted: ${createdAt}</span>
-                        ${updatedAtSpan}
+                        <span class="hidden updated-at-comment text-gray-400 italic text-xs">• Edited: ${updatedAt}</span>
                     </div>
-                    <p class="text-gray-700 text-sm leading-relaxed break-words">${content}</p>
+                    <p class="content-comment text-gray-700 text-sm leading-relaxed break-words">${content}</p>
                 </div>
                 <div class="container-action flex gap-2 order-2 sm:ml-auto flex-wrap sm:flex-nowrap">
                     ${editComment}
@@ -462,6 +467,9 @@ function buildCommentCardElement(item) {
     
     card.innerHTML = cardHtml;
     card.dataset.commentId = item.id;
+    if (item.updated_at > item.created_at) {
+        card.querySelector('.updated-at-comment').classList.remove('hidden');
+    }
     const editCommentBtn = card.querySelector('.edit-comment-btn');
     if (editCommentBtn != null) {
         editCommentBtn.addEventListener('click', (e) => {
@@ -534,7 +542,18 @@ function buildCommentCardElement(item) {
                             tombolDelete.classList.remove('hidden');
                         }
                         showToast(data.message, '', 'success');
-                        document.dispatchEvent(new CustomEvent('commentEdited'));
+                        const formattedDateUpdate = DOMPurify.sanitize(new Date(data.comment.updated_at).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' ,
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }));
+                        forumUpdated.innerHTML = `<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4v12h12V4H4zm2 2h8v8H6V6z"/></svg>${formattedDateUpdate} `;
+                        const card = document.getElementById(`comment-${data.comment.id}`);
+                        card.querySelector('.updated-at-comment').innerHTML = `• Edited: ${formattedDateUpdate}`;
+                        card.querySelector('.updated-at-comment').classList.remove('hidden');
+                        card.querySelector('.content-comment').innerHTML = `${data.comment.content}`;
                     } else {
                         showToast(data.message, '', 'error');
                     }
@@ -576,8 +595,19 @@ async function addCommentEntry() {
     const data = await response.json();
     document.getElementById("comment-form").reset();
     showToast('Comment added successfully!', '', 'success');
-
-    document.dispatchEvent(new CustomEvent('commentAdded'));
+    const formattedDateUpdate = DOMPurify.sanitize(new Date(data.comment.updated_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' ,
+        hour: '2-digit',
+        minute: '2-digit'
+    }));
+    forumUpdated.innerHTML = `<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4v12h12V4H4zm2 2h8v8H6V6z"/></svg>${formattedDateUpdate} `;
+    commentContainer.appendChild(buildCommentCardElement(data.comment));
+    let text = commentCount.textContent;
+    let numberMatch = text.match(/\d+/);
+    let count = numberMatch ? Number(numberMatch[0]) : 0;
+    commentCount.textContent = `Comment (${count + 1})`;
   } catch (err) {
     console.error('Failed to add comment:', err);
     showToast('Failed to add comment', err.message, 'error');
@@ -596,21 +626,8 @@ if (commentForm && addCommentBtn) {
         commentForm.querySelector('textarea').focus();
     });
 }
-
-document.addEventListener("commentAdded", function(e) {
-    loadAll()
-})
-
-document.addEventListener("commentDeleted", function(e) {
-    loadAll()
-})
-
 document.addEventListener("forumEdited", function(e) {
-    loadAll()
-})
-
-document.addEventListener("commentEdited", function(e) {
-    loadAll()
+    loadAll();
 })
 
 function loadAll() {

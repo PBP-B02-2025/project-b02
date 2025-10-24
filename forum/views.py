@@ -130,7 +130,14 @@ def create_comment_ajax(request):
     return JsonResponse({
         'success': True,
         'message': 'Comment created successfully!',
-        'comment_id': new_comment.id
+        'comment': {
+            'id': str(new_comment.id),
+            'author': new_comment.author.username,
+            'content': new_comment.content,
+            'created_at': new_comment.created_at.isoformat(),
+            'updated_at': new_comment.updated_at.isoformat(),
+            'author_id': new_comment.author_id,
+        }
     }, status=201)
 
 @login_required(login_url='/login')
@@ -159,10 +166,12 @@ def delete_comment_ajax(request):
             'success': False,
             'message': 'You are not authorized to delete this comment.'
         }, status=403)
+    id = comment.id
     comment.delete()
     response = JsonResponse({
         'success': True,
         'message': 'Comment deleted succesful!',
+        'comment_id': str(id)
     })
     return response
 
@@ -203,5 +212,12 @@ def edit_comment_ajax(request):
     return JsonResponse({
         "success": True,
         "message": "Comment updated successfully!",
-        "comment_id": comment.id
+        'comment': {
+            'id': str(comment.id),
+            'author': comment.author.username,
+            'content': comment.content,
+            'created_at': comment.created_at.isoformat(),
+            'updated_at': comment.updated_at.isoformat(),
+            'author_id': comment.author_id,
+        }
     })
