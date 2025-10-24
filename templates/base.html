@@ -134,7 +134,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'main:main-view' %}" class="active">HOME</a></li>
+            <li><a href="{% url 'main:main-view' %}" {% if request.resolver_match.app_name == 'main' %}class="active"{% endif %}>HOME</a></li>
             <li class="dropdown">
                 <a href="#" class="{% if active_page == 'shop-classic' or active_page == 'shop-size' %}active{% endif %}">SHOP ▾</a>
                 <ul class="dropdown-menu">
