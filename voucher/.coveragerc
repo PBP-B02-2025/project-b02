@@ -1,0 +1,23 @@
+[run]
+source = .
+omit = 
+    migrations/*
+    tests.py
+    test_*.py
+    htmlcov/*
+    __pycache__/*
+    run_voucher_tests.py
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+include = 
+    models.py
+    views.py
+    forms.py
+    admin.py
+    urls.py
+
+[html]
+directory = htmlcov
