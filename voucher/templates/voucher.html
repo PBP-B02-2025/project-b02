@@ -5,7 +5,11 @@
 {% block content %}
 <div class="voucher-container">
     <h1>Voucher Diskon</h1>
+    {% if is_admin %}
     <p class="subtitle">Kelola voucher diskon untuk pelanggan Anda</p>
+    {% else %}
+    <p class="subtitle">Temukan berbagai voucher diskon menarik untuk berbelanja Anda</p>
+    {% endif %}
     
     <!-- Container untuk voucher cards -->
     <div id="voucher-cards-container" class="voucher-grid">
@@ -88,9 +92,8 @@
         margin-top: 30px;
     }
     
-    /* Voucher Card */
+    /* Voucher Card - Variasi Warna Gradien */
     .voucher-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 15px;
         padding: 25px;
         color: white;
@@ -98,6 +101,37 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         position: relative;
         overflow: hidden;
+    }
+    
+    /* Variasi Warna Gradien - Random assignment via nth-child */
+    /* 1. Purple Bliss (Original) */
+    .voucher-card:nth-child(6n+1) {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* 2. Sunset Orange */
+    .voucher-card:nth-child(6n+2) {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    /* 3. Ocean Blue */
+    .voucher-card:nth-child(6n+3) {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    /* 4. Fresh Green */
+    .voucher-card:nth-child(6n+4) {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    /* 5. Golden Hour */
+    .voucher-card:nth-child(6n+5) {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    /* 6. Royal Purple */
+    .voucher-card:nth-child(6n+6) {
+        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
     }
     
     .voucher-card::before {
@@ -113,7 +147,7 @@
     }
     
     .voucher-card.inactive {
-        background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
+        background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%) !important;
         opacity: 0.7;
     }
     

@@ -158,6 +158,7 @@ def delete_voucher_ajax(request, voucher_id):
             'message': f'Terjadi kesalahan: {str(e)}'
         }, status=500)
 
+@login_required(login_url='/login/')
 def get_vouchers_json(request):
     vouchers = Voucher.objects.all().order_by('-id')
     vouchers_list = []
