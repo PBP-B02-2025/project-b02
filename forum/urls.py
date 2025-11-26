@@ -16,4 +16,10 @@ urlpatterns = [
     path('delete-comment-ajax/', delete_comment_ajax, name='delete_comment_ajax'),
     path('edit-comment-ajax/', edit_comment_ajax, name='edit_comment_ajax'),
     path('json-forum-sort/', show_json_forum_sort, name='json_forum_sort'),
+    path('create-forum-flutter/', create_forum_flutter, name='create_forum_flutter'),
+    path('edit-forum-flutter/', edit_forum_flutter, name='edit_forum_flutter'),
+    path('delete-forum-flutter/', delete_forum_flutter, name='delete-forum-flutter'),
+    path('create-comment-flutter/', add_comment_flutter, name='create_comment_flutter'),
+    path('edit-comment-flutter/', edit_comment_flutter, name='edit_comment_flutter'),
+    path('delete-comment-flutter/', delete_comment_flutter, name='delete-comment-flutter'),
 ]

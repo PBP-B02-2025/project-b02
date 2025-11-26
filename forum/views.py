@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+import json
 # Create your views here.
 
 def show_forum_list(request):
@@ -222,3 +224,143 @@ def edit_comment_ajax(request):
             'author_id': comment.author_id,
         }
     })
+
+@csrf_exempt
+def create_forum_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        title = strip_tags(data.get("title"))
+        content = strip_tags(data.get("content"))
+        author = request.user
+        new_forum = Forum(
+            title=title,
+            content=content,
+            author=author,
+        )
+        new_forum.save()
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+    
+@csrf_exempt
+def edit_forum_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        forum = get_object_or_404(Forum, pk=data.get('forum_id'))
+        if forum.author != request.user:
+            return JsonResponse({
+                'status': "error",
+                'message': 'You are not authorized to edit this forum.'
+            }, status=403)
+        forum.title = strip_tags(data.get("title"))
+        forum.content = strip_tags(data.get("content"))
+        forum.updated_at = timezone.now()
+        forum.save()
+        return JsonResponse({
+            "status": "success",
+            "message": "Forum updated successfully!",
+            "forum_id": forum.id
+        },status=200)
+    else:
+        return JsonResponse({"status":"error"},status=401)
+    
+@csrf_exempt
+def delete_forum_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        forum = get_object_or_404(Forum, pk=data.get('forum_id'))
+        if forum.author != request.user and not request.user.is_staff:
+            return JsonResponse({
+                'status': "error",
+                'message': 'You are not authorized to delete this forum.'
+            }, status=403)
+        forum.delete()
+        response = JsonResponse({
+            'status': "success",
+            'message': 'Forum deleted succesful!',
+        })
+        return response
+    else:
+        return JsonResponse({"status":"error"},status=401)
+
+@csrf_exempt
+def add_comment_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        forum = get_object_or_404(Forum, pk=data.get('forum_id'))
+        content = strip_tags(data.get("content"))
+        author = request.user
+        new_comment = Comment(
+            forum=forum,
+            content=content,
+            author=author,
+        )
+        new_comment.save()
+        forum.updated_at = timezone.now()
+        forum.save(update_fields=["updated_at"])
+        return JsonResponse({
+            'status': "success",
+            'message': 'Comment created successfully!',
+            'comment': {
+                'id': str(new_comment.id),
+                'author': new_comment.author.username,
+                'content': new_comment.content,
+                'created_at': new_comment.created_at.isoformat(),
+                'updated_at': new_comment.updated_at.isoformat(),
+                'author_id': new_comment.author_id,
+            }
+        }, status=201)
+    else:
+        return JsonResponse({"status":"error"},status=401)
+    
+@csrf_exempt
+def edit_comment_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        comment = get_object_or_404(Comment, pk=data.get('comment_id'))
+        if comment.author != request.user:
+            return JsonResponse({
+                'status': "error",
+                'message': 'You are not authorized to edit this comment.'
+            }, status=403)
+        forum = comment.forum
+        forum.updated_at = timezone.now()
+        forum.save()
+        comment.content = strip_tags(data.get("content"))
+        comment.updated_at = timezone.now()
+        comment.save()
+        return JsonResponse({
+            "status": "success",
+            "message": "Comment updated successfully!",
+            'comment': {
+                'id': str(comment.id),
+                'author': comment.author.username,
+                'content': comment.content,
+                'created_at': comment.created_at.isoformat(),
+                'updated_at': comment.updated_at.isoformat(),
+                'author_id': comment.author_id,
+            }
+        })
+    else:
+        return JsonResponse({"status":"error"},status=401)
+    
+@csrf_exempt
+def delete_comment_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        comment = get_object_or_404(Comment, pk=data.get('comment_id'))
+        if comment.author != request.user and comment.forum.author != request.user and not request.user.is_staff:
+            return JsonResponse({
+                'status': "error",
+                'message': 'You are not authorized to delete this comment.'
+            }, status=403)
+        id = comment.id
+        comment.delete()
+        response = JsonResponse({
+            'status': "success",
+            'message': 'Comment deleted succesful!',
+            'comment_id': str(id)
+        })
+        return response
+    else:
+        return JsonResponse({"status":"error"},status=401)
